@@ -9,40 +9,38 @@ namespace VenusHR.API.Endpoints
     {
         public static void MapDocumentsEndpoints(this WebApplication app)
         {
-            var group = app.MapGroup("/api/documents");
-
             // 🔹 1. رفع المرفقات
-            group.MapPost("/upload-attachment", UploadAttachment);
+            app.MapPost("/api/documents/upload-attachment", UploadAttachment);
 
             // 🔹 2. إضافة مستند
-            group.MapPost("/add-document", AddDocument);
+            app.MapPost("/api/documents/add-document", AddDocument);
 
             // 🔹 3. الحصول على المرفقات
-            group.MapGet("/attachments", GetAttachments);
+            app.MapGet("/api/documents/attachments", GetAttachments);
 
             // 🔹 4. تحميل المرفق
-            group.MapGet("/download/{attachmentId}", DownloadAttachment);
+            app.MapGet("/api/documents/download/{attachmentId}", DownloadAttachment);
 
             // 🔹 5. حذف المرفق
-            group.MapDelete("/delete-attachment/{attachmentId}", DeleteAttachment);
+            app.MapDelete("/api/documents/delete-attachment/{attachmentId}", DeleteAttachment);
 
             // 🔹 6. تفاصيل المستندات
-            group.MapGet("/document-details", GetDocumentDetails);
+            app.MapGet("/api/documents/document-details", GetDocumentDetails);
 
             // 🔹 7. أنواع المستندات
-            group.MapGet("/document-types", GetDocumentTypes);
+            app.MapGet("/api/documents/document-types", GetDocumentTypes);
 
             // 🔹 8. تفاصيل مستند محدد
-            group.MapGet("/document-detail/{documentDetailId}", GetDocumentDetail);
+            app.MapGet("/api/documents/document-detail/{documentDetailId}", GetDocumentDetail);
 
             // 🔹 9. تحديث المستند
-            group.MapPut("/update-document/{documentDetailId}", UpdateDocumentDetail);
+            app.MapPut("/api/documents/update-document/{documentDetailId}", UpdateDocumentDetail);
 
             // 🔹 10. حذف المستند
-            group.MapDelete("/delete-document/{documentDetailId}", DeleteDocumentDetail);
+            app.MapDelete("/api/documents/delete-document/{documentDetailId}", DeleteDocumentDetail);
 
             // 🔹 11. معلومات المرفق
-            group.MapGet("/attachment-info/{attachmentId}", GetAttachmentInfo);
+            app.MapGet("/api/documents/attachment-info/{attachmentId}", GetAttachmentInfo);
         }
 
         // =========== Implementation Methods ===========
@@ -469,7 +467,7 @@ namespace VenusHR.API.Endpoints
         }
     }
 
-    // Request Models (نفس الموديلات موجودة)
+    // Request Models
     public class UploadAttachmentRequest
     {
         public int DocumentId { get; set; }
