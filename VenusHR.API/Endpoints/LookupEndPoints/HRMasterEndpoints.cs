@@ -4,7 +4,7 @@ using VenusHR.Application.Common.Interfaces.HR_Master;
 using VenusHR.Core.Master;
 using WorkFlow_EF;
 
-namespace YourNamespace
+namespace VenusHR.API.Endpoints.LookupEndPoints
 {
     public static class HRMasterEndpoints
     {

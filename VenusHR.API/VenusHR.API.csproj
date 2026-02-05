@@ -21,8 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Master\" />
-    <Folder Include="Models\" />
+    <Folder Include="Endpoints\EmployeeEndPoints\" />
+    <Folder Include="Endpoints\AttendanceEndpoints\" />
+    <Folder Include="Endpoints\EndOfService\" />
+    <Folder Include="Endpoints\Appraial\" />
+    <Folder Include="Endpoints\Salaries\" />
+    <Folder Include="Endpoints\VacationsEndPoints\" />
   </ItemGroup>
 
 </Project>

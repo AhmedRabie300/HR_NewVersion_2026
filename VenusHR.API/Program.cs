@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using VenusHR.API.Endpoints;
+using VenusHR.API.Endpoints.LookupEndPoints;
 using VenusHR.Application.Common.Interfaces;
 using VenusHR.Application.Common.Interfaces.Attendance;
 using VenusHR.Application.Common.Interfaces.Documents;
@@ -14,7 +16,6 @@ using VenusHR.Infrastructure.Presistence.HRServices;
 using VenusHR.Infrastructure.Presistence.Login;
 using VenusHR.Infrastructure.Presistence.SelfService;
 using VenusHR.Infrastructure.Services.Documents;
-using YourNamespace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,7 @@ app.MapLoginEndpoints();
 app.MapSelfServiceEndpoints();
 app.MapAttendanceEndpoints();
 app.MapHRMasterEndpoints();
+app.MapDocumentsEndpoints();
 
 
 
