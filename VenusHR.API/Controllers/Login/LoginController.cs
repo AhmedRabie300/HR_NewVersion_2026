@@ -23,7 +23,7 @@ namespace VenusHR.API.Controllers.Login
             _Login = login;
         }
         [HttpPost, Route("Login")]
-        public ActionResult<ILoginServices> Login([FromBody] SysUser User, [FromQuery] int Lang)
+        public ActionResult<ILoginServices> Login([FromBody] Sys_Users User, [FromQuery] int Lang)
         {
 
             var Result = _Login.Login(User.Code, User.Password, Lang, User.DeviceToken);

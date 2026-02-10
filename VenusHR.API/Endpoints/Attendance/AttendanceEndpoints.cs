@@ -10,17 +10,13 @@ public static class AttendanceEndpoints
         // Check In/Out
         app.MapPost("/api/attendance/check-in-out", CheckInOut);
 
-        // Get Attendance History
-        app.MapGet("/api/attendance/history", GetAttendanceHistory);
+         app.MapGet("/api/attendance/history", GetAttendanceHistory);
 
-        // Daily Summary
-        app.MapGet("/api/attendance/daily-summary", GetDailySummary);
+         app.MapGet("/api/attendance/daily-summary", GetDailySummary);
 
-        // Monthly Report
-        app.MapGet("/api/attendance/monthly-report", GetMonthlyReport);
+         app.MapGet("/api/attendance/monthly-report", GetMonthlyReport);
 
-        // Employee Attendance
-        app.MapGet("/api/attendance/employee/{employeeId}", GetEmployeeAttendance);
+         app.MapGet("/api/attendance/employee/{employeeId}", GetEmployeeAttendance);
     }
 
     // =========== Check In/Out ===========
@@ -98,8 +94,7 @@ public static class AttendanceEndpoints
         }
     }
 
-    // =========== Daily Summary ===========
-
+ 
     private static async Task<IResult> GetDailySummary(
         [FromQuery] int employeeID,
         [FromQuery] DateTime? fromDate,
@@ -140,8 +135,7 @@ public static class AttendanceEndpoints
         }
     }
 
-    // =========== Monthly Report ===========
-
+ 
     private static async Task<IResult> GetMonthlyReport(
         [FromQuery] int employeeID,
         [FromQuery] int year,
@@ -193,8 +187,7 @@ public static class AttendanceEndpoints
         }
     }
 
-    // =========== Employee Attendance ===========
-
+ 
     private static async Task<IResult> GetEmployeeAttendance(
         int employeeId,
         [FromQuery] int lang,

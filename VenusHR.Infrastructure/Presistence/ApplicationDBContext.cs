@@ -47,7 +47,7 @@ namespace VenusHR.Infrastructure.Presistence
         public virtual DbSet<hrs_Educations> hrs_Educations { get; set; }
         public virtual DbSet<Hrs_NewEmployee> Hrs_NewEmployee { get; set; }
         public virtual DbSet<Hrs_Profession> Hrs_Professions { get; set; }
-        public virtual DbSet<SysUser> Sys_Users { get; set; }
+        public virtual DbSet<Sys_Users> Sys_Users { get; set; }
 
         public virtual DbSet<SS_Configuration> SS_Configuration { get; set; }
         public virtual DbSet<SS_VacationRequest> SS_VacationRequest { get; set; }
@@ -91,11 +91,14 @@ namespace VenusHR.Infrastructure.Presistence
         public virtual DbSet<sys_Documents> sys_Documents { get; set; }
         public virtual DbSet<sys_DocumentsDetails> sys_DocumentsDetails { get; set; }
         public virtual DbSet<sys_ObjectsAttachments> sys_ObjectsAttachments { get; set; }
- 
 
 
 
 
+        public DbSet<Sys_Groups> Sys_Groups { get; set; }
+        public DbSet<Sys_GroupsUsers> Sys_GroupsUsers { get; set; }
+        public DbSet<Sys_Features> Sys_Features { get; set; }
+        public DbSet<Sys_GroupFeatures> Sys_GroupFeatures { get; set; }
 
 
 

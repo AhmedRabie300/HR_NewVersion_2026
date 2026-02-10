@@ -735,8 +735,7 @@ namespace VenusHR.API.Endpoints.LookupEndPoints
             }
         }
 
-        // Professions
-        private static async Task<IResult> GetAllProfessions(
+         private static async Task<IResult> GetAllProfessions(
             int lang,
             [FromServices] IHRMaster service)
         {

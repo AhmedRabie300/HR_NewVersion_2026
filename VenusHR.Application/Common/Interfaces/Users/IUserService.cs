@@ -1,0 +1,16 @@
+﻿using VenusHR.Application.Common.DTOs.Shared;
+using VenusHR.Application.Common.DTOs.Users;
+
+namespace VenusHR.Application.Common.Interfaces.Users;
+
+public interface IUserService
+{
+    Task<ApiResponse<UserDto>> GetUserByIdAsync(int id);
+    Task<ApiResponse<List<UserDto>>> GetAllUsersAsync();
+    Task<ApiResponse<UserDto>> CreateUserAsync(CreateUserDto dto);
+    Task<ApiResponse<UserDto>> UpdateUserAsync(int id, UpdateUserDto dto);
+    Task<ApiResponse<bool>> DeleteUserAsync(int id);
+    Task<ApiResponse<List<UserGroupInfoDto>>> GetUserGroupsAsync(int userId);
+    Task<ApiResponse<bool>> AddUserToGroupAsync(int userId, int groupId, bool isPrimary = false);
+    Task<ApiResponse<bool>> RemoveUserFromGroupAsync(int userId, int groupId);
+}

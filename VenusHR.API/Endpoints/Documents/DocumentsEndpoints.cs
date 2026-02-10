@@ -1,5 +1,6 @@
 ﻿// DocumentsEndpoints.cs
 using Microsoft.AspNetCore.Mvc;
+using VenusHR.API.Controllers;
 using VenusHR.Application.Common.Interfaces.Documents;
 using WorkFlow_EF;
 
@@ -28,7 +29,7 @@ namespace VenusHR.API.Endpoints
             app.MapGet("/api/documents/document-details", GetDocumentDetails);
 
             // 🔹 7. أنواع المستندات
-            app.MapGet("/api/documents/document-types", GetDocumentTypes);
+            //app.MapGet("/api/documents/document-types", GetDocumentTypes);
 
             // 🔹 8. تفاصيل مستند محدد
             app.MapGet("/api/documents/document-detail/{documentDetailId}", GetDocumentDetail);
@@ -97,8 +98,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء رفع الملف" : "Error uploading file"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -156,8 +156,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء إضافة المستند" : "Error adding document"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -187,8 +186,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء جلب المرفقات" : "Error retrieving attachments"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -247,8 +245,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء تحميل الملف" : "Error downloading file"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -277,8 +274,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء حذف المرفق" : "Error deleting attachment"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -308,14 +304,13 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء جلب المستندات" : "Error retrieving documents"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
 
         // 🔹 7. أنواع المستندات
-        private static IResult GetDocumentTypes(
+         private static IResult GetDocumentTypes(
             [FromServices] IDocumentsService documentsService,
             [FromQuery] bool? isForCompany = null,
             [FromQuery] int? documentTypesGroupId = null,
@@ -323,19 +318,21 @@ namespace VenusHR.API.Endpoints
         {
             try
             {
-                var result = documentsService.GetDocumentTypes(isForCompany, documentTypesGroupId);
+                // 🔥 تحويل صريح للنوع
+                bool? isForCompanyValue = isForCompany.HasValue ? isForCompany.Value : (bool?)null;
+                int? documentTypesGroupIdValue = documentTypesGroupId.HasValue ? documentTypesGroupId.Value : (int?)null;
+
+                var result = documentsService.GetDocumentTypes(isForCompanyValue, documentTypesGroupIdValue);
                 return Results.Ok(result);
             }
             catch (Exception ex)
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء جلب أنواع المستندات" : "Error retrieving document types"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
-
         // 🔹 8. تفاصيل مستند محدد
         private static IResult GetDocumentDetail(
             int documentDetailId,
@@ -360,8 +357,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء جلب تفاصيل المستند" : "Error retrieving document details"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -400,8 +396,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء تحديث المستند" : "Error updating document"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -430,8 +425,7 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء حذف المستند" : "Error deleting document"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
@@ -460,51 +454,11 @@ namespace VenusHR.API.Endpoints
             {
                 return Results.Problem(
                     detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: (Lang == 1) ? "حدث خطأ أثناء جلب معلومات المرفق" : "Error retrieving attachment info"
+                    statusCode: StatusCodes.Status500InternalServerError
                 );
             }
         }
     }
-
-    // Request Models
-    public class UploadAttachmentRequest
-    {
-        public int DocumentId { get; set; }
-        public int ObjectId { get; set; }
-        public long RecordId { get; set; }
-        public IFormFile File { get; set; }
-        public string? EngName { get; set; }
-        public string? ArbName { get; set; }
-        public DateTime? IssueDate { get; set; }
-        public int? IssuedCityId { get; set; }
-        public DateTime? ExpiryDate { get; set; }
-        public string? DocumentNumber { get; set; }
-        public string? ReferenceNumber { get; set; }
-        public DateTime? LastRenewalDate { get; set; }
-        public string? FolderName { get; set; }
-    }
-
-    public class AddDocumentRequest
-    {
-        public int DocumentId { get; set; }
-        public int ObjectId { get; set; }
-        public int RecordId { get; set; }
-        public string DocumentNumber { get; set; }
-        public DateTime? IssueDate { get; set; }
-        public int? IssuedCityId { get; set; }
-        public DateTime? ExpiryDate { get; set; }
-        public string? ReferenceNumber { get; set; }
-        public DateTime? LastRenewalDate { get; set; }
-    }
-
-    public class UpdateDocumentRequest
-    {
-        public string? DocumentNumber { get; set; }
-        public DateTime? IssueDate { get; set; }
-        public int? IssuedCityId { get; set; }
-        public DateTime? ExpiryDate { get; set; }
-        public DateTime? LastRenewalDate { get; set; }
-        public string? ReferenceNumber { get; set; }
-    }
 }
+
+ 

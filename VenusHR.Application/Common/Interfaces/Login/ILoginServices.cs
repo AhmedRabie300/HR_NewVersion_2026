@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VenusHR.Core.Login;
+﻿using VenusHR.Application.Common.DTOs.Login;
 
+namespace VenusHR.Application.Common.Interfaces.Login;
 
-namespace VenusHR.Application.Common.Interfaces.Login
+public interface ILoginServices
 {
-    public interface ILoginServices
-    {
-        object Login(string username, string password,int Lang, string deviceToken);
-    }
+     Task<UserLoginResponseDto> LoginAsync(LoginRequestDto request, int lang);
+
+     object Login(string username, string password, int lang, string deviceToken);
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace VenusHR.Core.Master
 {
     public class Hrs_Employees
     {
+        [Key]
         public int id { get; set; }
         public string Code { get; set; } = null!;
 

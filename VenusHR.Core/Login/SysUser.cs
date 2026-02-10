@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace VenusHR.Core.Login;
 
-public  class SysUser
+public  class Sys_Users
 {
     public int Id { get; set; }
 
@@ -50,4 +50,5 @@ public  class SysUser
 
     public int? LevelId { get; set; }
     public string? DeviceToken { get; set; }
+    public bool? IsActive { get; set; }
 }

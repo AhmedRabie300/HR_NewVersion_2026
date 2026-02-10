@@ -3350,7 +3350,7 @@ namespace VenusHR.Infrastructure.Presistence.SelfService
         public object SaveRequestActionFirstLevel(string FormCode ,int EmpID,int RequestSerial)
         {
             Result = new GeneralOutputClass<object>();
-            var recipients = new List<SysUser>();
+            var recipients = new List<Sys_Users>();
 
 
             var Configuration = _context.SS_Configuration.Where(C => C.FormCode == FormCode && C.Rank == 1).FirstOrDefault();
@@ -3376,7 +3376,7 @@ namespace VenusHR.Infrastructure.Presistence.SelfService
 
                     var managerToken = _context.Sys_Users
             .Where(u => u.RelEmployee == DitrectManager && u.DeviceToken != null)
-            .Select(u => new SysUser
+            .Select(u => new Sys_Users
             {
                 DeviceToken = u.DeviceToken,
                 EngName = u.EngName,
@@ -3424,7 +3424,7 @@ namespace VenusHR.Infrastructure.Presistence.SelfService
                 {
                     var employeeToken = _context.Sys_Users
 .Where(u => u.RelEmployee == ssEmpID && u.DeviceToken != null)
-.Select(u => new SysUser
+.Select(u => new Sys_Users
 {
 DeviceToken = u.DeviceToken,
 EngName = u.EngName,
@@ -3462,7 +3462,7 @@ Code = u.Code
                 _context.SaveChanges();  
                 var employeeToken = _context.Sys_Users
 .Where(u => u.RelEmployee == int.Parse(Configuration.EmployeeID) && u.DeviceToken != null)
-.Select(u => new SysUser
+.Select(u => new Sys_Users
 {
 DeviceToken = u.DeviceToken,
 EngName = u.EngName,
