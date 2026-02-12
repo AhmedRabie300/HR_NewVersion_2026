@@ -3598,7 +3598,7 @@ Code = u.Code
                                               SS_VFollowup.RequestEngName,
                                           //VacationType = SS_VFollowup.VacationType,
                                           FormCode = SS_VFollowup.FormCode,
-                                             CanViewDetails = true,
+                                             ViewDetails = true,
                                           HasStages = true
                                       };
 

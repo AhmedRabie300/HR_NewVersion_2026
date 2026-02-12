@@ -12,12 +12,12 @@ public class GroupFeatureDto
     public int FeatureId { get; set; }
     public string? FeatureArabicName { get; set; }
     public string? FeatureEnglishName { get; set; }
-    public bool? CanView { get; set; }
-    public bool? CanAdd { get; set; }
-    public bool? CanEdit { get; set; }
-    public bool? CanDelete { get; set; }
-    public bool? CanExport { get; set; }
-    public bool? CanPrint { get; set; }
+    public bool? View { get; set; }
+    public bool? Add { get; set; }
+    public bool? Edit { get; set; }
+    public bool? Delete { get; set; }
+    public bool? Export { get; set; }
+    public bool? Print { get; set; }
     public List<string> AllowedItems { get; set; } = new();
     public List<string> ExcludedItems { get; set; } = new();
 }

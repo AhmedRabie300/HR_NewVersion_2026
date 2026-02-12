@@ -14,7 +14,7 @@ namespace VenusHR.Core.SelfService
         public string? UserTypeID { get; set; }
         public string? PositionID { get; set; }
         public string? EmployeeID { get; set; }
-        public bool CanEdit { get; set; }
+        public bool Edit { get; set; }
         public int Rank { get; set; }
         public bool IsFinal { get; set; }
         public bool ApplyForAll { get; set; }
