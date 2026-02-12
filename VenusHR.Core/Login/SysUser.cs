@@ -51,4 +51,4 @@ public  class Sys_Users
     public int? LevelId { get; set; }
     public string? DeviceToken { get; set; }
     public bool? IsActive { get; set; }
-}
+ }

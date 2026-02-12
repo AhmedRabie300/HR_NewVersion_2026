@@ -23,6 +23,7 @@ public class UserDto
     public bool? IsAdmin { get; set; }
     public bool? IsActive { get; set; }
     public DateTime RegDate { get; set; }
+    public string? DeviceToken { get; set; }
     public List<UserGroupInfoDto> Groups { get; set; } = new();
 }
 
