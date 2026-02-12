@@ -375,8 +375,7 @@ namespace VenusHR.Infrastructure.Presistence.Users
                     Code = dto.Code,
                     EngName = dto.EngName,
                     ArbName = dto.ArbName,
-                    Password = dto.Password, // Should be encrypted
-                    IsAdmin = dto.IsAdmin,
+                     IsAdmin = dto.IsAdmin,
                    // IsActive = dto.IsActive ?? true,
                     DeviceToken = dto.DeviceToken,
                     RegDate = DateTime.Now
