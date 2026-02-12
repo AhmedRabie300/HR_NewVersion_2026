@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using VenusHR.API.Endpoints;
 using VenusHR.API.Endpoints.LookupEndPoints;
+using VenusHR.API.Endpoints.Users;
 using VenusHR.API.Helpers;
 using VenusHR.Application.Common.Interfaces;
 using VenusHR.Application.Common.Interfaces.Attendance;
@@ -11,12 +12,14 @@ using VenusHR.Application.Common.Interfaces.Documents;
 using VenusHR.Application.Common.Interfaces.HR_Master;
 using VenusHR.Application.Common.Interfaces.Login;
 using VenusHR.Application.Common.Interfaces.SelfService;
+using VenusHR.Application.Common.Interfaces.Users;
 using VenusHR.Core.Master;
 using VenusHR.Infrastructure;
 using VenusHR.Infrastructure.Presistence.Attendance;
 using VenusHR.Infrastructure.Presistence.HRServices;
 using VenusHR.Infrastructure.Presistence.Login;
 using VenusHR.Infrastructure.Presistence.SelfService;
+using VenusHR.Infrastructure.Presistence.Users;
 using VenusHR.Infrastructure.Services.Documents;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +58,7 @@ builder.Services.AddScoped<IAnnualVacationRequestService, AnnualVacationRequestS
 builder.Services.AddScoped<ILoginServices, LoginServices>();
 builder.Services.AddScoped<IAttendance, AttendanceSercives>();
 builder.Services.AddScoped<IDocumentsService, DocumentsService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Configure JWT Settings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
@@ -98,6 +102,7 @@ app.MapSelfServiceEndpoints();
 app.MapAttendanceEndpoints();
 app.MapHRMasterEndpoints();
 app.MapDocumentsEndpoints();
+app.MapUserEndpoints();
 
 // 9. Map Controllers
 app.MapControllers();
