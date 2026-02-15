@@ -10,12 +10,12 @@ namespace VenusHR.Application.Common.DTOs.Forms
     {
         public int Id { get; set; }
         public int FormId { get; set; }
-        public string? Name { get; set; }
+       // public string? Name { get; set; }
         public string? EngCaption { get; set; }
         public string? ArbCaption { get; set; }
-        public bool? Compulsory { get; set; }
-        public string? Format { get; set; }
-        public string? ArbFormat { get; set; }
+       // public bool? Compulsory { get; set; }
+       // public string? Format { get; set; }
+        //public string? ArbFormat { get; set; }
         public string? EngToolTip { get; set; }
         public string? ArbToolTip { get; set; }
         public int? MaxLength { get; set; }
@@ -27,7 +27,7 @@ namespace VenusHR.Application.Common.DTOs.Forms
         public double? MaxValue { get; set; }
         public int? FieldId { get; set; }
         public int? SearchId { get; set; }
-        public bool? IsArabic { get; set; }
+       // public bool? IsArabic { get; set; }
 
          public string? FormName { get; set; }
 

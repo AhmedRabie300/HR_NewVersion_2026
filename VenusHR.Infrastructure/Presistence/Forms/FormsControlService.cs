@@ -37,12 +37,12 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                        Name = c.Name,
+                       // Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                        Compulsory = c.Compulsory == 1,
-                        Format = c.Format,
-                        ArbFormat = c.ArbFormat,
+                     //   Compulsory = c.Compulsory == 1,
+                     //   Format = c.Format,
+                       // ArbFormat = c.ArbFormat,
                         EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
@@ -54,7 +54,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         MaxValue = c.MaxValue,
                         FieldId = c.FieldID,
                         SearchId = c.SearchID,
-                        IsArabic = c.IsArabic == 1,
+                       // IsArabic = c.IsArabic == 1,
                         FormName = c.Form != null ? c.Form.EngName : null
                     })
                     .ToListAsync();
@@ -79,12 +79,12 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                        Name = c.Name,
+                        //Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                        Compulsory = c.Compulsory == 1,
-                        Format = c.Format,
-                        ArbFormat = c.ArbFormat,
+                       // Compulsory = c.Compulsory == 1,
+                        //Format = c.Format,
+                       // ArbFormat = c.ArbFormat,
                         EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
@@ -96,7 +96,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         MaxValue = c.MaxValue,
                         FieldId = c.FieldID,
                         SearchId = c.SearchID,
-                        IsArabic = c.IsArabic == 1,
+                       // IsArabic = c.IsArabic == 1,
                         FormName = c.Form != null ? c.Form.EngName : null
                     })
                     .FirstOrDefaultAsync();
@@ -121,12 +121,12 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                        Name = c.Name,
+                       // Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                        Compulsory = c.Compulsory == 1,
-                        Format = c.Format,
-                        ArbFormat = c.ArbFormat,
+                      //  Compulsory = c.Compulsory == 1,
+                      //  Format = c.Format,
+                      //  ArbFormat = c.ArbFormat,
                         EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
@@ -138,7 +138,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         MaxValue = c.MaxValue,
                         FieldId = c.FieldID,
                         SearchId = c.SearchID,
-                        IsArabic = c.IsArabic == 1
+                       // IsArabic = c.IsArabic == 1
                     })
                     .ToListAsync();
 
@@ -162,11 +162,11 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                        Name = c.Name,
+                        //Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                        Compulsory = c.Compulsory == 1,
-                        Format = c.Format,
+                       // Compulsory = c.Compulsory == 1,
+                       // Format = c.Format,
                         MaxLength = c.MaxLength,
                         IsNumeric = c.IsNumeric == 1,
                         Rank = c.Rank
