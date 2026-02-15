@@ -69,7 +69,11 @@ namespace VenusHR.Core.Login
 
         public DateTime? CancelDate { get; set; }
 
- 
+        public string? FieldName { get; set; }
+        public int? Section { get; set; }
+        public bool? Required { get; set; }
+        public bool? Disabled { get; set; }
+        public string? ControlType { get; set; }
         [ForeignKey("FormID")]
         public virtual sys_Forms? Form { get; set; }
     }

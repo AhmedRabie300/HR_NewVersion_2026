@@ -30,5 +30,11 @@ namespace VenusHR.Application.Common.DTOs.Forms
         public bool? IsArabic { get; set; }
 
          public string? FormName { get; set; }
+
+        public string? FieldName { get; set; }
+        public int? Section { get; set; }
+        public bool? Required { get; set; }
+        public bool? Disabled { get; set; }
+        public string? ControlType { get; set; }
     }
 }

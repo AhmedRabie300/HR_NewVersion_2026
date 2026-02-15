@@ -29,5 +29,10 @@ namespace VenusHR.Application.Common.DTOs.Forms
         public int? FieldId { get; set; }
         public int? SearchId { get; set; }
         public bool? IsArabic { get; set; }
+        public string? FieldName { get; set; }
+        public int? Section { get; set; }
+        public bool? Required { get; set; }
+        public bool? Disabled { get; set; }
+        public string? ControlType { get; set; }
     }
 }
