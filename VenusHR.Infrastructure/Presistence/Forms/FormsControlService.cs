@@ -43,7 +43,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         Compulsory = c.Compulsory == 1,
                         Format = c.Format,
                         ArbFormat = c.ArbFormat,
-                        ToolTip = c.ToolTip,
+                        EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
                         IsNumeric = c.IsNumeric == 1,
@@ -85,7 +85,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         Compulsory = c.Compulsory == 1,
                         Format = c.Format,
                         ArbFormat = c.ArbFormat,
-                        ToolTip = c.ToolTip,
+                        EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
                         IsNumeric = c.IsNumeric == 1,
@@ -127,7 +127,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         Compulsory = c.Compulsory == 1,
                         Format = c.Format,
                         ArbFormat = c.ArbFormat,
-                        ToolTip = c.ToolTip,
+                        EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
                         IsNumeric = c.IsNumeric == 1,
@@ -197,7 +197,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     Compulsory = dto.Compulsory == true ? 1 : 0,
                     Format = dto.Format,
                     ArbFormat = dto.ArbFormat,
-                    ToolTip = dto.ToolTip,
+                    EngToolTip = dto.EngToolTip,
                     ArbToolTip = dto.ArbToolTip,
                     MaxLength = dto.MaxLength,
                     IsNumeric = dto.IsNumeric == true ? 1 : 0,
@@ -241,7 +241,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                 if (dto.Compulsory != null) control.Compulsory = dto.Compulsory.Value ? 1 : 0;
                 if (dto.Format != null) control.Format = dto.Format;
                 if (dto.ArbFormat != null) control.ArbFormat = dto.ArbFormat;
-                if (dto.ToolTip != null) control.ToolTip = dto.ToolTip;
+                if (dto.EngToolTip != null) control.EngToolTip = dto.EngToolTip;
                 if (dto.ArbToolTip != null) control.ArbToolTip = dto.ArbToolTip;
                 if (dto.MaxLength != null) control.MaxLength = dto.MaxLength;
                 if (dto.IsNumeric != null) control.IsNumeric = dto.IsNumeric.Value ? 1 : 0;
@@ -322,7 +322,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     Compulsory = d.Compulsory == true ? 1 : 0,
                     Format = d.Format,
                     ArbFormat = d.ArbFormat,
-                    ToolTip = d.ToolTip,
+                    EngToolTip = d.EngToolTip,
                     ArbToolTip = d.ArbToolTip,
                     MaxLength = d.MaxLength,
                     IsNumeric = d.IsNumeric == true ? 1 : 0,

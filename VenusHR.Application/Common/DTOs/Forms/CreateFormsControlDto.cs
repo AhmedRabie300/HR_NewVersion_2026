@@ -15,7 +15,7 @@ namespace VenusHR.Application.Common.DTOs.Forms
         public bool? Compulsory { get; set; }
         public string? Format { get; set; }
         public string? ArbFormat { get; set; }
-        public string? ToolTip { get; set; }
+        public string? EngToolTip { get; set; }
         public string? ArbToolTip { get; set; }
         public int? MaxLength { get; set; }
         public bool? IsNumeric { get; set; }

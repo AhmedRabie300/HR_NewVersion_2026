@@ -35,7 +35,7 @@ namespace VenusHR.Core.Login
         public string? ArbFormat { get; set; }
 
         [MaxLength(1000)]
-        public string? ToolTip { get; set; }
+        public string? EngToolTip { get; set; }
 
         [MaxLength(1000)]
         public string? ArbToolTip { get; set; }
