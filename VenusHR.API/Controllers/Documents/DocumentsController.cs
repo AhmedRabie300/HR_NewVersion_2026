@@ -185,8 +185,7 @@ namespace VenusHR.API.Controllers
 
                 if (result is GeneralOutputClass<object> output && output.ErrorCode == 1)
                 {
-                    // استخدام reflection بدلاً من dynamic
-                    var resultObject = output.ResultObject;
+                     var resultObject = output.ResultObject;
                     if (resultObject != null)
                     {
                         var type = resultObject.GetType();
@@ -440,8 +439,7 @@ namespace VenusHR.API.Controllers
         }
     }
 
-    // Request Models
-    public class UploadAttachmentRequest
+     public class UploadAttachmentRequest
     {
         public int DocumentId { get; set; }
         public int ObjectId { get; set; }

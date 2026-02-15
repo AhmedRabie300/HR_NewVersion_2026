@@ -8,8 +8,7 @@ public static class SelfServiceEndpoints
 {
     public static void MapSelfServiceEndpoints(this WebApplication app)
     {
-        // 🔹 1. Annual Vacation Requests
-        app.MapPost("/api/self-service/vacation/save-request", SaveRequest);
+         app.MapPost("/api/self-service/vacation/save-request", SaveRequest);
         app.MapGet("/api/self-service/vacation/balances/{empId:int}/{toDate:datetime}", GetAnnualVacsBalancesByEMP);
         app.MapGet("/api/self-service/vacation/service-period/{employeeId:int}/{endServiceDate:datetime}", GeatServicePeriod);
         app.MapGet("/api/self-service/vacation/stages/{requestSerial:int}/{formCode}/{lang:int}", GetRequestStages);
@@ -18,8 +17,7 @@ public static class SelfServiceEndpoints
         app.MapGet("/api/self-service/vacation/request/{requestSerial:int}/{lang:int}", GetAnnualVacationRequestByID);
         app.MapGet("/api/self-service/vacation/employee-requests/{employeeId:int}/{lang:int}", GetEmployeeRequests);
 
-        // 🔹 2. Master Endpoints (من SMaster Controller)
-        app.MapGet("/api/self-service/master/request-types", GetAllRequestTypes);
+         app.MapGet("/api/self-service/master/request-types", GetAllRequestTypes);
         app.MapGet("/api/self-service/master/employees/{lang:int}", GetAllEmployees);
         app.MapGet("/api/self-service/master/employee/{id:int}/{lang:int}", GetEmployeeByID);
         app.MapGet("/api/self-service/master/notifications/count/{employeeId}", GetUserNotificationCount);
@@ -29,13 +27,11 @@ public static class SelfServiceEndpoints
         app.MapGet("/api/self-service/master/pending-requests/{employeeId:int}/{lang:int}", GetAllPendingRequests);
         app.MapPost("/api/self-service/master/request-action", SaveRequestAction);
 
-        // 🔹 3. إضافة Endpoints إضافية لو عندك
-        // app.MapGet("/api/self-service/leaves/types", GetAllLeavesTypes);
+         // app.MapGet("/api/self-service/leaves/types", GetAllLeavesTypes);
         // app.MapPost("/api/self-service/requests/submit", SubmitRequest);
     }
 
-    // =========== Vacation Requests Methods ===========
-
+ 
     private static async Task<IResult> SaveRequest(
         [FromBody] dynamic requestData,
         [FromQuery] string requestType,

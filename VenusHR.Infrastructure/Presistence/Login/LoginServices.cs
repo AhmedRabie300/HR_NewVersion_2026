@@ -5,40 +5,53 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using VenusHR.Application.Common.DTOs.Login;
+using VenusHR.Application.Common.DTOs.Menus;
+using VenusHR.Application.Common.DTOs.Permissions;
 using VenusHR.Application.Common.Interfaces.Login;
+using VenusHR.Application.Common.Interfaces.Menus;
+using VenusHR.Application.Common.Interfaces.Permissions;
+using VenusHR.Application.Common.Interfaces.Users;
 using VenusHR.Core.Login;
 using WorkFlow_EF;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
+
 namespace VenusHR.Infrastructure.Presistence.Login
 {
     public class LoginServices : ILoginServices
     {
         private readonly ApplicationDBContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
+        private readonly IMenuService _menuService;
+        private readonly IFormPermissionService _permissionService;
         private GeneralOutputClass<object> _result;
 
-        public LoginServices(ApplicationDBContext context, IConfiguration configuration)
+        public LoginServices(
+            ApplicationDBContext context,
+            IConfiguration configuration,
+            IUserService userService,
+            IMenuService menuService,
+            IFormPermissionService permissionService)
         {
             _context = context;
             _configuration = configuration;
+            _userService = userService;
+            _menuService = menuService;
+            _permissionService = permissionService;
             _result = new GeneralOutputClass<object>();
         }
-         public async Task<UserLoginResponseDto> LoginAsync(LoginRequestDto request, int lang)
+
+        public async Task<UserLoginResponseDto> LoginAsync(LoginRequestDto request, int lang)
         {
             var response = new UserLoginResponseDto();
 
             try
             {
-                if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
+                 if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
                 {
                     response.Success = false;
                     response.Message = lang == 1
@@ -47,7 +60,7 @@ namespace VenusHR.Infrastructure.Presistence.Login
                     return response;
                 }
 
-                string encryptedPassword = Encrypt(request.Password, "DataOcean", false);
+                 string encryptedPassword = Encrypt(request.Password, "DataOcean", false);
                 var user = await _context.Sys_Users
                     .FirstOrDefaultAsync(u =>
                         u.Code == request.Username &&
@@ -71,18 +84,21 @@ namespace VenusHR.Infrastructure.Presistence.Login
                     return response;
                 }
 
-                user.DeviceToken = request.DeviceToken;
+                 user.DeviceToken = request.DeviceToken;
                 await _context.SaveChangesAsync();
 
-                var userGroups = await GetUserGroupsAsync(user.Id);
-                var userFeatures = await GetUserFeaturesAsync(user.Id, userGroups);
+                 var groupsResult = await _userService.GetUserGroupsAsync(user.Id);
+                var groups = groupsResult.Success ? groupsResult.Data ?? new() : new();
 
-                 var token = GenerateJwtToken(user, userGroups, userFeatures);
+                 var menus = await _menuService.GetUserMenusAsync(user.Id);
+                var permissions = await _permissionService.GetUserPermissionsAsync(user.Id);
 
-                var employee = await _context.Hrs_Employees
+                 var token = GenerateJwtToken(user, groups);
+
+                 var employee = await _context.Hrs_Employees
                     .FirstOrDefaultAsync(e => e.Code == user.Code);
 
-                response.Success = true;
+                 response.Success = true;
                 response.Message = "Login successful";
                 response.Data = new UserDataDto
                 {
@@ -90,37 +106,37 @@ namespace VenusHR.Infrastructure.Presistence.Login
                     Code = user.Code,
                     EngName = user.EngName,
                     ArbName = user.ArbName,
+                    UserName = user.Code,
                     IsAdmin = user.IsAdmin ?? false,
                     IsClient = false,
                     Token = token,
                     DeviceToken = request.DeviceToken,
-                    Groups = userGroups,
-                    Features = userFeatures
+                    Groups = groups,
+                    Menus = menus,
+                    FormPermissions = permissions,
+                    EmployeeId = employee.id,
+                    EmployeeName = employee?.ArbName
                 };
             }
             catch (Exception ex)
             {
                 response.Success = false;
                 response.Message = lang == 1 ? "Login failed" : "فشل تسجيل الدخول";
-            }
+             }
 
             return response;
         }
+
         public object Login(string username, string password, int lang, string deviceToken)
         {
-             _result = new GeneralOutputClass<object>();
+            _result = new GeneralOutputClass<object>();
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 _result.ErrorCode = 1;
-                if (lang == 1)
-                {
-                    _result.ErrorMessage = "Please enter username and password";
-                }
-                else
-                {
-                    _result.ErrorMessage = "برجاء ادخال اسم المستخدم و كلمة المرور";
-                }
+                _result.ErrorMessage = lang == 1
+                    ? "Please enter username and password"
+                    : "برجاء ادخال اسم المستخدم و كلمة المرور";
                 return _result;
             }
 
@@ -136,14 +152,14 @@ namespace VenusHR.Infrastructure.Presistence.Login
                     var user = _context.Sys_Users.FirstOrDefault(U => U.Code == username);
                     if (user != null)
                     {
-                         user.DeviceToken = deviceToken;
+                        user.DeviceToken = deviceToken;
                         _context.SaveChanges();
                     }
 
                     _result.ErrorCode = 1;
                     _result.ErrorMessage = "Success";
 
-                     var employee = _context.Hrs_Employees
+                    var employee = _context.Hrs_Employees
                         .FirstOrDefault(F => F.Code == username);
 
                     _result.ResultObject = employee;
@@ -165,129 +181,11 @@ namespace VenusHR.Infrastructure.Presistence.Login
             return _result;
         }
 
- 
-         private async Task<List<UserGroupDto>> GetUserGroupsAsync(int userId)
-        {
-            try
-            {
-                var query = from gu in _context.Sys_GroupsUsers
-                            join g in _context.Sys_Groups on gu.GroupId equals g.Id
-                            where gu.UserId == userId
-                            select new UserGroupDto
-                            {
-                                Id = g.Id,
-                                Code = g.Code,
-                                 ArbName = g.ArbName,
-                                EngName = g.EngName
-                                
-                            };
-
-                return await query.ToListAsync();
-
-                
-            }
-            catch (Exception)
-            {
-                return new List<UserGroupDto>();
-            }
-        }
-
-         private async Task<List<UserFeatureDto>> GetUserFeaturesAsync(int userId, List<UserGroupDto> userGroups)
-        {
-            try
-            {
-                if (!userGroups.Any())
-                    return new List<UserFeatureDto>();
-
-                var groupIds = userGroups.Select(g => g.Id).ToList();
-
-                 var groupFeatures = await _context.Sys_GroupFeatures
-                    .Where(gf => groupIds.Contains(gf.GroupId))
-                    .Include(gf => gf.Feature)
-                    .Include(gf => gf.Group)
-                    .ToListAsync();
-
-                 var featuresDict = new Dictionary<int, UserFeatureDto>();
-
-                foreach (var gf in groupFeatures)
-                {
-                    if (gf.Feature == null || !(gf.Feature.IsActive ?? true))
-                        continue;
-
-                    var featureId = gf.Feature.ID;
-
-                    if (!featuresDict.ContainsKey(featureId))
-                    {
-                        featuresDict[featureId] = new UserFeatureDto
-                        {
-                            FeatureId = featureId,
-                            FeatureName = gf.Feature.EnglishName ?? gf.Feature.ArabicName ?? "Unknown",
-                            ArabicName = gf.Feature.ArabicName,
-                            EnglishName = gf.Feature.EnglishName,
-                            ModuleId = gf.Feature.ModuleID,
-                            Hidden = false
-                        };
-                    }
-
-                    var feature = featuresDict[featureId];
-
-                     feature.View |= gf.View ?? false;
-                    feature.Add |= gf.Add ?? false;
-                    feature.Edit |= gf.Edit ?? false;
-                    feature.Delete |= gf.Delete ?? false;
-                    feature.Export |= gf.Export ?? false;
-                    feature.Print |= gf.Print ?? false;
-
-                     if (!string.IsNullOrEmpty(gf.AllowedItemsJson))
-                    {
-                        try
-                        {
-                            var items = JsonSerializer.Deserialize<List<string>>(gf.AllowedItemsJson);
-                            if (items != null)
-                            {
-                                feature.AllowedItems = feature.AllowedItems
-                                    .Union(items)
-                                    .Distinct()
-                                    .ToList();
-                            }
-                        }
-                        catch {  }
-                    }
-
-                     if (!string.IsNullOrEmpty(gf.ExcludedItemsJson))
-                    {
-                        try
-                        {
-                            var items = JsonSerializer.Deserialize<List<string>>(gf.ExcludedItemsJson);
-                            if (items != null)
-                            {
-                                feature.ExcludedItems = feature.ExcludedItems
-                                    .Union(items)
-                                    .Distinct()
-                                    .ToList();
-                            }
-                        }
-                        catch {    }
-                    }
-
-                     if (!feature.SourceGroups.Contains(gf.Group.Code))
-                    {
-                        feature.SourceGroups.Add(gf.Group.Code);
-                    }
-                }
-
-                return featuresDict.Values.ToList();
-            }
-            catch (Exception)
-            {
-                return new List<UserFeatureDto>();
-            }
-        }
-
-        private string GenerateJwtToken(Sys_Users user, List<UserGroupDto> groups, List<UserFeatureDto> features)
+        private string GenerateJwtToken(Sys_Users user, List<UserGroupDto> groups)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]);
+            var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"] ??
+                throw new ArgumentException("SecretKey not configured"));
 
             var expiryMinutes = 120;
             if (jwtSettings["ExpiryInMinutes"] != null)
@@ -296,19 +194,16 @@ namespace VenusHR.Infrastructure.Presistence.Login
             }
 
             var claims = new List<Claim>
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim("userId", user.Id.ToString()),
-        new Claim("userCode", user.Code),
-        new Claim("userName", user.EngName ?? user.ArbName ?? user.Code),
-        new Claim("arabicName", user.ArbName ?? ""),
-        new Claim("isAdmin", (user.IsAdmin ?? false).ToString()),
-        new Claim("isClient", "false")
-    };
-
-             var featuresJson = System.Text.Json.JsonSerializer.Serialize(features);
-            claims.Add(new Claim("features", featuresJson));
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("userId", user.Id.ToString()),
+                new Claim("userCode", user.Code),
+                new Claim("userName", user.EngName ?? user.ArbName ?? user.Code),
+                new Claim("arabicName", user.ArbName ?? ""),
+                new Claim("isAdmin", (user.IsAdmin ?? false).ToString()),
+                new Claim("isClient", "false")
+            };
 
             foreach (var group in groups)
             {
@@ -332,9 +227,9 @@ namespace VenusHR.Infrastructure.Presistence.Login
             return tokenHandler.WriteToken(token);
         }
 
+ 
         public string Encrypt(string sToEncrypt, string sPassword, bool ReturnOnlyNumbersAndLetters)
         {
-            string result;
             try
             {
                 string text = _Encrypt(sToEncrypt, sPassword, "777777", "SHA1", 2, "GLORY_BE_TO_GOD!", 256);
@@ -342,13 +237,12 @@ namespace VenusHR.Infrastructure.Presistence.Login
                 {
                     text = _S2N(text);
                 }
-                result = text;
+                return text;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                result = "ERROR";
+                return "ERROR";
             }
-            return result;
         }
 
         private string _Encrypt(string plainText, string passPhrase, string saltValue, string hashAlgorithm,
@@ -359,7 +253,6 @@ namespace VenusHR.Infrastructure.Presistence.Login
                 Encoding.ASCII.GetBytes(saltValue), hashAlgorithm, passwordIterations);
 
             using (var rijndaelManaged = new RijndaelManaged())
-
             {
                 rijndaelManaged.Mode = CipherMode.CBC;
 
@@ -384,13 +277,12 @@ namespace VenusHR.Infrastructure.Presistence.Login
             return new string(text.Where(c => char.IsLetterOrDigit(c)).ToArray());
         }
 
- 
         public bool ValidateToken(string token)
         {
             try
             {
                 var jwtSettings = _configuration.GetSection("JwtSettings");
-                var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
+                var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"] ?? "");
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -413,13 +305,12 @@ namespace VenusHR.Infrastructure.Presistence.Login
             }
         }
 
-         public async Task<UserLoginResponseDto> RefreshToken(string refreshToken, int lang)
+        public async Task<UserLoginResponseDto> RefreshToken(string refreshToken, int lang)
         {
             var response = new UserLoginResponseDto();
 
             try
             {
-           
                 response.Success = false;
                 response.Message = "Refresh token not implemented yet";
             }
@@ -432,21 +323,4 @@ namespace VenusHR.Infrastructure.Presistence.Login
             return response;
         }
     }
-
- 
-    //public class UserDataDto
-    //{
-    //    public int Id { get; set; }
-    //    public string Code { get; set; } = null!;
-    //    public string? EngName { get; set; }
-    //    public string? ArbName { get; set; }
-    //    public bool IsAdmin { get; set; }
-    //    public bool IsClient { get; set; }
-    //    public string Token { get; set; } = null!;
-    //    public string? DeviceToken { get; set; }
-    //    public List<UserGroupDto> Groups { get; set; } = new();
-    //    public List<UserFeatureDto> Features { get; set; } = new();
-    //    public int? EmployeeId { get; set; }
-    //    public string? EmployeeName { get; set; }
-    //}
 }

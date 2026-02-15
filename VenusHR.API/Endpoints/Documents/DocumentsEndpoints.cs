@@ -1,5 +1,4 @@
-﻿// DocumentsEndpoints.cs
-using Microsoft.AspNetCore.Mvc;
+﻿ using Microsoft.AspNetCore.Mvc;
 using VenusHR.API.Controllers;
 using VenusHR.Application.Common.Interfaces.Documents;
 using WorkFlow_EF;
@@ -10,44 +9,36 @@ namespace VenusHR.API.Endpoints
     {
         public static void MapDocumentsEndpoints(this WebApplication app)
         {
-            // 🔹 1. رفع المرفقات
+      
             app.MapPost("/api/documents/upload-attachment", UploadAttachment);
 
-            // 🔹 2. إضافة مستند
+       
             app.MapPost("/api/documents/add-document", AddDocument);
 
-            // 🔹 3. الحصول على المرفقات
+       
             app.MapGet("/api/documents/attachments", GetAttachments);
 
-            // 🔹 4. تحميل المرفق
+         
             app.MapGet("/api/documents/download/{attachmentId}", DownloadAttachment);
 
-            // 🔹 5. حذف المرفق
+  
             app.MapDelete("/api/documents/delete-attachment/{attachmentId}", DeleteAttachment);
 
-            // 🔹 6. تفاصيل المستندات
+      
             app.MapGet("/api/documents/document-details", GetDocumentDetails);
+ 
 
-            // 🔹 7. أنواع المستندات
-            //app.MapGet("/api/documents/document-types", GetDocumentTypes);
+             app.MapGet("/api/documents/document-detail/{documentDetailId}", GetDocumentDetail);
 
-            // 🔹 8. تفاصيل مستند محدد
-            app.MapGet("/api/documents/document-detail/{documentDetailId}", GetDocumentDetail);
+             app.MapPut("/api/documents/update-document/{documentDetailId}", UpdateDocumentDetail);
 
-            // 🔹 9. تحديث المستند
-            app.MapPut("/api/documents/update-document/{documentDetailId}", UpdateDocumentDetail);
+             app.MapDelete("/api/documents/delete-document/{documentDetailId}", DeleteDocumentDetail);
 
-            // 🔹 10. حذف المستند
-            app.MapDelete("/api/documents/delete-document/{documentDetailId}", DeleteDocumentDetail);
-
-            // 🔹 11. معلومات المرفق
-            app.MapGet("/api/documents/attachment-info/{attachmentId}", GetAttachmentInfo);
+             app.MapGet("/api/documents/attachment-info/{attachmentId}", GetAttachmentInfo);
         }
 
-        // =========== Implementation Methods ===========
-
-        // 🔹 1. رفع المرفقات
-        private static async Task<IResult> UploadAttachment(
+ 
+         private static async Task<IResult> UploadAttachment(
             [FromForm] UploadAttachmentRequest request,
             [FromServices] IDocumentsService documentsService,
             [FromQuery] int Lang = 0)
@@ -103,8 +94,7 @@ namespace VenusHR.API.Endpoints
             }
         }
 
-        // 🔹 2. إضافة مستند
-        private static IResult AddDocument(
+         private static IResult AddDocument(
             [FromBody] AddDocumentRequest request,
             [FromServices] IDocumentsService documentsService,
             [FromQuery] int Lang = 0)
@@ -161,8 +151,7 @@ namespace VenusHR.API.Endpoints
             }
         }
 
-        // 🔹 3. الحصول على المرفقات
-        private static IResult GetAttachments(
+         private static IResult GetAttachments(
             [FromQuery] int ObjectId,
             [FromQuery] long RecordId,
             [FromServices] IDocumentsService documentsService,
@@ -191,8 +180,7 @@ namespace VenusHR.API.Endpoints
             }
         }
 
-        // 🔹 4. تحميل المرفق
-        private static IResult DownloadAttachment(
+         private static IResult DownloadAttachment(
             int attachmentId,
             [FromServices] IDocumentsService documentsService,
             [FromQuery] int Lang = 0)
@@ -250,8 +238,7 @@ namespace VenusHR.API.Endpoints
             }
         }
 
-        // 🔹 5. حذف المرفق
-        private static IResult DeleteAttachment(
+         private static IResult DeleteAttachment(
             int attachmentId,
             [FromServices] IDocumentsService documentsService,
             [FromQuery] int Lang = 0)
@@ -279,8 +266,7 @@ namespace VenusHR.API.Endpoints
             }
         }
 
-        // 🔹 6. تفاصيل المستندات
-        private static IResult GetDocumentDetails(
+         private static IResult GetDocumentDetails(
             [FromQuery] int ObjectId,
             [FromQuery] int RecordId,
             [FromServices] IDocumentsService documentsService,
@@ -309,8 +295,7 @@ namespace VenusHR.API.Endpoints
             }
         }
 
-        // 🔹 7. أنواع المستندات
-         private static IResult GetDocumentTypes(
+          private static IResult GetDocumentTypes(
             [FromServices] IDocumentsService documentsService,
             [FromQuery] bool? isForCompany = null,
             [FromQuery] int? documentTypesGroupId = null,
@@ -333,8 +318,7 @@ namespace VenusHR.API.Endpoints
                 );
             }
         }
-        // 🔹 8. تفاصيل مستند محدد
-        private static IResult GetDocumentDetail(
+         private static IResult GetDocumentDetail(
             int documentDetailId,
             [FromServices] IDocumentsService documentsService,
             [FromQuery] int Lang = 0)
@@ -362,8 +346,7 @@ namespace VenusHR.API.Endpoints
             }
         }
 
-        // 🔹 9. تحديث المستند
-        private static IResult UpdateDocumentDetail(
+         private static IResult UpdateDocumentDetail(
             int documentDetailId,
             [FromBody] UpdateDocumentRequest request,
             [FromServices] IDocumentsService documentsService,

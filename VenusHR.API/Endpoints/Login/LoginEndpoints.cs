@@ -10,7 +10,7 @@ public static class LoginEndpoints
          app.MapPost("/api/auth/LoginOld", LoginOld);
 
          app.MapPost("/api/auth/login", LoginNew);
-
+ 
         app.MapGet("/api/auth/status", Status);
         app.MapPost("/api/auth/logout", Logout);
     }
@@ -18,7 +18,7 @@ public static class LoginEndpoints
      private static async Task<IResult> LoginNew(
         [FromBody] LoginRequestDto request,
         [FromQuery] int lang,
-        ILoginServices loginService)
+    [FromServices] ILoginServices loginService)  
     {
         var result = await loginService.LoginAsync(request, lang);
 
@@ -51,4 +51,7 @@ public static class LoginEndpoints
     {
         return Results.Ok(new { Message = "Logged out" });
     }
+
+ 
+
 }

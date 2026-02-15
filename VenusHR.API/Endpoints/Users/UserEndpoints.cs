@@ -1,5 +1,4 @@
-﻿// ✨ ملف: VenusHR.API.Endpoints.Users/UserEndpoints.cs
-using Microsoft.AspNetCore.Builder;
+﻿ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -15,29 +14,29 @@ namespace VenusHR.API.Endpoints.Users
     {
         public static void MapUserEndpoints(this WebApplication app)
         {
-             app.MapGet("/api/users", GetAllUsers)
+             app.MapGet("/api/GetAllUsers", GetAllUsers)
                 .RequirePermission("users", "View");
 
-            app.MapGet("/api/users/{id:int}", GetUserById)
+            app.MapGet("/api/GetUserById/{id:int}", GetUserById)
                 .RequirePermission("users", "View");
 
-            app.MapPost("/api/users", CreateUser)
+            app.MapPost("/api/CreateUser", CreateUser)
                 .RequirePermission("users", "Add");
 
-            app.MapPut("/api/users/{id:int}", UpdateUser)
+            app.MapPut("/api/UpdateUser/{id:int}", UpdateUser)
                 .RequirePermission("users", "Edit");
 
-            app.MapDelete("/api/users/{id:int}", DeleteUser)
+            app.MapDelete("/api/DeleteUser/{id:int}", DeleteUser)
                 .RequirePermission("users", "Delete");
 
             // 🔹 User Groups
-            app.MapGet("/api/users/{userId:int}/groups", GetUserGroups)
+            app.MapGet("/api/GetUserGroups/{userId:int}/groups", GetUserGroups)
                 .RequirePermission("users", "View");
 
-            app.MapPost("/api/users/{userId:int}/groups/{groupId:int}", AddUserToGroup)
+            app.MapPost("/api/AddUserToGroup/{userId:int}/groups/{groupId:int}", AddUserToGroup)
                 .RequirePermission("users", "Edit");
 
-            app.MapDelete("/api/users/{userId:int}/groups/{groupId:int}", RemoveUserFromGroup)
+            app.MapDelete("/api/RemoveUserFromGroup/{userId:int}/groups/{groupId:int}", RemoveUserFromGroup)
                 .RequirePermission("users", "Edit");
 
              app.MapGet("/api/users/{userId:int}/features", GetUserFeatures)
@@ -62,8 +61,7 @@ namespace VenusHR.API.Endpoints.Users
                 .RequirePermission("users", "Edit");
         }
 
-        // ============ ✅ User CRUD ============
-
+ 
         private static async Task<IResult> GetAllUsers(
             [FromServices] IUserService userService)
         {
@@ -198,8 +196,7 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
-        // ============ ✅ User Groups ============
-
+ 
         private static async Task<IResult> GetUserGroups(
             int userId,
             [FromServices] IUserService userService)
@@ -283,8 +280,7 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
-        // ============ ✅ User Features ============
-
+ 
         private static async Task<IResult> GetUserFeatures(
             int userId,
             [FromServices] IUserService userService)
@@ -340,8 +336,7 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
-        // ============ ✅ User Status ============
-
+ 
         private static async Task<IResult> ActivateUser(
             int userId,
             [FromServices] IUserService userService)
@@ -446,8 +441,7 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
-        // ============ ✅ User Device ============
-
+ 
         private static async Task<IResult> UpdateDeviceToken(
             int userId,
             [FromBody] string deviceToken,

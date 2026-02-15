@@ -1,5 +1,4 @@
-﻿// ✨ ملف: VenusHR.Infrastructure.Services.Auth/PermissionService.cs
-using Microsoft.Extensions.Caching.Memory;
+﻿ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VenusHR.Application.Common.DTOs.Login;
 using VenusHR.Application.Common.Interfaces.Auth;
@@ -27,16 +26,13 @@ namespace VenusHR.Infrastructure.Services.Auth
         {
             try
             {
-                // 1. نشوف لو Admin
-                var isAdminResult = await _userService.IsAdminAsync(userId);
+                 var isAdminResult = await _userService.IsAdminAsync(userId);
                 if (isAdminResult.Success && isAdminResult.Data)
                     return true;
 
-                // 2. نجيب Features اليوزر
-                var features = await GetUserPermissionsAsync(userId);
+                 var features = await GetUserPermissionsAsync(userId);
 
-                // 3. نفحص الصلاحية
-                return features.Any(f =>
+                 return features.Any(f =>
                     f.FeatureName.Equals(featureName, StringComparison.OrdinalIgnoreCase) &&
                     HasAction(f, action));
             }

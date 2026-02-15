@@ -99,6 +99,11 @@ namespace VenusHR.Infrastructure.Presistence
         public DbSet<Sys_GroupsUsers> Sys_GroupsUsers { get; set; }
         public DbSet<Sys_Features> Sys_Features { get; set; }
         public DbSet<Sys_GroupFeatures> Sys_GroupFeatures { get; set; }
+        public DbSet<sys_Forms> sys_Forms { get; set; }
+        public DbSet<Sys_Modules> Sys_Modules { get; set; }
+        public DbSet<sys_FormsPermissions> sys_FormsPermissions { get; set; }
+        public DbSet<sys_Menus> sys_Menus { get; set; }
+        public DbSet<sys_FormsControls> sys_FormsControls { get; set; }
 
 
 

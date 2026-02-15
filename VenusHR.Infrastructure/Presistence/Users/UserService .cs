@@ -1,5 +1,4 @@
-﻿// ✨ ملف: VenusHR.Infrastructure.Presistence.Users/UserService.cs
-using Microsoft.EntityFrameworkCore;
+﻿ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -26,8 +25,7 @@ namespace VenusHR.Infrastructure.Presistence.Users
             _logger = logger;
         }
 
-        // ============ ✅ User Groups ============
-
+ 
         public async Task<ApiResponse<List<UserGroupDto>>> GetUserGroupsAsync(int userId)
         {
             try
@@ -112,7 +110,6 @@ namespace VenusHR.Infrastructure.Presistence.Users
             }
         }
 
-        // ============ ✅ User Features ============
 
         public async Task<ApiResponse<List<UserFeatureDto>>> GetUserFeaturesAsync(int userId)
         {
@@ -209,8 +206,7 @@ namespace VenusHR.Infrastructure.Presistence.Users
             }
         }
 
-        // ============ ✅ User Status ============
-
+ 
         public async Task<ApiResponse<bool>> IsAdminAsync(int userId)
         {
             try
@@ -269,8 +265,7 @@ namespace VenusHR.Infrastructure.Presistence.Users
             }
         }
 
-        // ============ ✅ User Device ============
-
+ 
         public async Task<ApiResponse<bool>> UpdateDeviceTokenAsync(int userId, string deviceToken)
         {
             try
@@ -361,8 +356,7 @@ namespace VenusHR.Infrastructure.Presistence.Users
         {
             try
             {
-                // Check if user already exists
-                var existingUser = await _context.Sys_Users
+                 var existingUser = await _context.Sys_Users
                     .FirstOrDefaultAsync(u => u.Code == dto.Code);
 
                 if (existingUser != null)
@@ -376,8 +370,7 @@ namespace VenusHR.Infrastructure.Presistence.Users
                     EngName = dto.EngName,
                     ArbName = dto.ArbName,
                      IsAdmin = dto.IsAdmin,
-                   // IsActive = dto.IsActive ?? true,
-                    DeviceToken = dto.DeviceToken,
+                     DeviceToken = dto.DeviceToken,
                     RegDate = DateTime.Now
                 };
 

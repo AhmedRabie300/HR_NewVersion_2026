@@ -1,5 +1,4 @@
-﻿// CreateFeatureDto.cs
-namespace VenusHR.Application.Common.DTOs.Features;
+﻿ namespace VenusHR.Application.Common.DTOs.Features;
 
 public class CreateFeatureDto
 {
