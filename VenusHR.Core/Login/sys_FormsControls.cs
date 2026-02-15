@@ -19,6 +19,9 @@ namespace VenusHR.Core.Login
 
         [MaxLength(200)]
         public string? Name { get; set; }
+        [MaxLength(200)]
+        public string? ControlName { get; set; }
+
 
         [MaxLength(500)]
         public string? EngCaption { get; set; }
@@ -58,19 +61,20 @@ namespace VenusHR.Core.Login
 
         public int? SearchID { get; set; }
 
+        public int? Width { get; set; }
+
         public int? IsArabic { get; set; }
 
         public int? RegUserID { get; set; }
 
         [MaxLength(50)]
         public string? RegComputerID { get; set; }
-
         public DateTime RegDate { get; set; }
 
         public DateTime? CancelDate { get; set; }
 
         public string? FieldName { get; set; }
-        public int? Section { get; set; }
+        public int? SectionID { get; set; }
         public bool? Required { get; set; }
         public bool? Disabled { get; set; }
         public string? ControlType { get; set; }

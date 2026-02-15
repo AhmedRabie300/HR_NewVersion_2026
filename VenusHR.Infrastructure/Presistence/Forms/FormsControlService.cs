@@ -8,8 +8,8 @@ using global::VenusHR.Application.Common.Interfaces.Forms;
 using global::VenusHR.Core.Login;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 namespace VenusHR.Infrastructure.Presistence.Forms
- 
 {
     public class FormsControlService : IFormsControlService
     {
@@ -37,12 +37,8 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                       // Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                     //   Compulsory = c.Compulsory == 1,
-                     //   Format = c.Format,
-                       // ArbFormat = c.ArbFormat,
                         EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
@@ -54,7 +50,6 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         MaxValue = c.MaxValue,
                         FieldId = c.FieldID,
                         SearchId = c.SearchID,
-                       // IsArabic = c.IsArabic == 1,
                         FormName = c.Form != null ? c.Form.EngName : null
                     })
                     .ToListAsync();
@@ -79,12 +74,8 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                        //Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                       // Compulsory = c.Compulsory == 1,
-                        //Format = c.Format,
-                       // ArbFormat = c.ArbFormat,
                         EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
@@ -96,7 +87,6 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         MaxValue = c.MaxValue,
                         FieldId = c.FieldID,
                         SearchId = c.SearchID,
-                       // IsArabic = c.IsArabic == 1,
                         FormName = c.Form != null ? c.Form.EngName : null
                     })
                     .FirstOrDefaultAsync();
@@ -121,12 +111,8 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                       // Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                      //  Compulsory = c.Compulsory == 1,
-                      //  Format = c.Format,
-                      //  ArbFormat = c.ArbFormat,
                         EngToolTip = c.EngToolTip,
                         ArbToolTip = c.ArbToolTip,
                         MaxLength = c.MaxLength,
@@ -138,7 +124,6 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         MaxValue = c.MaxValue,
                         FieldId = c.FieldID,
                         SearchId = c.SearchID,
-                       // IsArabic = c.IsArabic == 1
                     })
                     .ToListAsync();
 
@@ -162,11 +147,8 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                     {
                         Id = c.ID,
                         FormId = c.FormID,
-                        //Name = c.Name,
                         EngCaption = c.EngCaption,
                         ArbCaption = c.ArbCaption,
-                       // Compulsory = c.Compulsory == 1,
-                       // Format = c.Format,
                         MaxLength = c.MaxLength,
                         IsNumeric = c.IsNumeric == 1,
                         Rank = c.Rank
@@ -377,7 +359,66 @@ namespace VenusHR.Infrastructure.Presistence.Forms
             }
         }
 
-        // ============ HELPERS ============
+         public async Task<FormsControlResponseDto> GetFormControlsStructureAsync(int formId)
+        {
+            try
+            {
+                var controls = await _context.sys_FormsControls
+                    .Where(c => c.FormID == formId && c.CancelDate == null)
+                    .OrderBy(c => c.Rank)
+                    .Select(c => new FormControlDetailDto
+                    {
+                        ControlName = c.Name,
+                        FieldName = c.FieldName,
+                        ArbCaption = c.ArbCaption,
+                        EngCaption = c.EngCaption,
+                        IsHidden = c.IsHide == 1,
+                        Required = c.Required==true ,
+                        ControlType = c.ControlType,
+                        SearchID = c.SearchID,
+                        AnotherCriteria = null,
+                        Disabled = c.Disabled ==true, 
+                        Width = null,
+                        SectionID = c.SectionID ?? 0,
+                        EngToolTip = c.EngToolTip,
+                        ArbToolTip = c.ArbToolTip
+                    })
+                    .ToListAsync();
+
+                return new FormsControlResponseDto
+                {
+                    FormId = formId,
+                    FormControls = controls
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting form controls structure for form {FormId}", formId);
+                return new FormsControlResponseDto { FormId = formId };
+            }
+        }
+
+        //private string GetControlType(string? format, int? searchId)
+        //{
+        //    if (searchId.HasValue && searchId > 0)
+        //        return "SearchAutoComplete";
+
+        //    return format?.ToLower() switch
+        //    {
+        //        "textbox" => "TextField",
+        //        "checkbox" => "CheckBox",
+        //        "dropdownlist" => "DropDown",
+        //        "dropdown" => "DropDown",
+        //        "datechooser" => "DatePicker",
+        //        "label" => "Label",
+        //        "button" => "Button",
+        //        "imagebutton" => "Button",
+        //        "linkbutton" => "LinkButton",
+        //        "hiddenfield" => "Hidden",
+        //        "grid" => "Grid",
+        //        _ => "TextField"
+        //    };
+        //}
 
         public async Task<bool> ControlExistsAsync(int id)
         {

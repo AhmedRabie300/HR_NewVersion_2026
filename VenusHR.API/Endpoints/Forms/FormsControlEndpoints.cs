@@ -83,25 +83,20 @@ namespace VenusHR.API.Endpoints.Forms
             }
         }
 
-        private static async Task<IResult> GetControlsByFormId(
-            int formId,
-            [FromServices] IFormsControlService service)
+      private static async Task<IResult> GetControlsByFormId(
+    int formId,
+    [FromServices] IFormsControlService service)
         {
             try
             {
-                var result = await service.GetControlsByFormIdAsync(formId);
-                return Results.Ok(new
-                {
-                    success = true,
-                    data = result
-                });
+                var result = await service.GetFormControlsStructureAsync(formId);
+                return Results.Ok(result);  // ✅ من غير wrap
             }
             catch (Exception ex)
             {
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
         }
-
         private static async Task<IResult> GetVisibleControlsByFormId(
             int formId,
             [FromServices] IFormsControlService service)
