@@ -116,7 +116,7 @@ namespace VenusHR.API.Endpoints.Users
         }
 
         private static async Task<IResult> CreateUser(
-            [FromBody] CreateUserDto dto,
+            [FromBody] UserDto dto,
             [FromServices] IUserService userService)
         {
             try

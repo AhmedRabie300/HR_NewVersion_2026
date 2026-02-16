@@ -9,7 +9,7 @@ namespace VenusHR.Application.Common.Interfaces.Users
     {
          Task<ApiResponse<UserDto>> GetUserByIdAsync(int id);
         Task<ApiResponse<List<UserDto>>> GetAllUsersAsync();
-        Task<ApiResponse<UserDto>> CreateUserAsync(CreateUserDto dto);
+        Task<ApiResponse<UserDto>> CreateUserAsync(UserDto dto);
         Task<ApiResponse<UserDto>> UpdateUserAsync(int id, UpdateUserDto dto);
         Task<ApiResponse<bool>> DeleteUserAsync(int id);
 

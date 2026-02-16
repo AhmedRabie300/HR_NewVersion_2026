@@ -352,7 +352,7 @@ namespace VenusHR.Infrastructure.Presistence.Users
             }
         }
 
-        public async Task<ApiResponse<UserDto>> CreateUserAsync(CreateUserDto dto)
+        public async Task<ApiResponse<UserDto>> CreateUserAsync(UserDto dto)
         {
             try
             {
