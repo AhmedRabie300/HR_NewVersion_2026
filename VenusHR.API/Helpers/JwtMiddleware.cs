@@ -45,8 +45,7 @@ namespace VenusHR.API.Helpers
                 return;
             }
 
-            // Extract token
-            var token = ExtractTokenFromHeader(context.Request.Headers);
+             var token = ExtractTokenFromHeader(context.Request.Headers);
 
             if (string.IsNullOrEmpty(token))
             {
@@ -55,8 +54,7 @@ namespace VenusHR.API.Helpers
                 return;
             }
 
-            // Validate token
-            var validationResult = await ValidateToken(token);
+             var validationResult = await ValidateToken(token);
 
             if (!validationResult.IsValid)
             {

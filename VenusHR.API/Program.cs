@@ -71,8 +71,7 @@ builder.Services.AddScoped<IFormsControlService, FormsControlService>();
 
  builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
-
-var app = builder.Build();
+ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
@@ -89,12 +88,12 @@ app.UseStaticFiles();
  app.UseRouting();
 
 app.UseMiddleware<JwtMiddleware>();
-app.UsePermissionMiddleware();
 
  app.UseAuthentication();
 app.UseAuthorization();
+app.UsePermissionMiddleware();
 
- app.MapLoginEndpoints();
+app.MapLoginEndpoints();
 app.MapSelfServiceEndpoints();
 app.MapAttendanceEndpoints();
 app.MapHRMasterEndpoints();

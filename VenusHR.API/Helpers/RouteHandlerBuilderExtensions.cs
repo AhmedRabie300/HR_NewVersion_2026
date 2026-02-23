@@ -112,18 +112,38 @@ namespace VenusHR.API.Helpers
 
             await _next(context);
         }
-
         private bool CheckPermission(List<UserFeatureDto> features, string featureName, string action)
         {
+            _logger.LogInformation($" Searching for feature: '{featureName}'");
+
+            // 1. بحث بالـ EnglishName
             var feature = features.FirstOrDefault(f =>
-                f.EnglishName?.Equals(featureName, StringComparison.OrdinalIgnoreCase) == true ||
-                f.ArabicName?.Equals(featureName, StringComparison.OrdinalIgnoreCase) == true);
+                f.EnglishName != null &&
+                f.EnglishName.Contains(featureName, StringComparison.OrdinalIgnoreCase));
+
+            // 2. لو ملقتش، بحث بالـ ArabicName
+            if (feature == null)
+            {
+                feature = features.FirstOrDefault(f =>
+                    f.ArabicName != null &&
+                    f.ArabicName.Contains(featureName, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 3. لسة ملقتش؟ جرب match تام (case insensitive)
+            if (feature == null)
+            {
+                feature = features.FirstOrDefault(f =>
+                    f.EnglishName?.Equals(featureName, StringComparison.OrdinalIgnoreCase) == true ||
+                    f.ArabicName?.Equals(featureName, StringComparison.OrdinalIgnoreCase) == true);
+            }
 
             if (feature == null)
             {
-                _logger.LogWarning($"Feature '{featureName}' not found for user");
+                _logger.LogWarning($" Feature '{featureName}' not found. Available features: {string.Join(", ", features.Select(f => f.EnglishName))}");
                 return false;
             }
+
+            _logger.LogInformation($"✅ Found feature: '{feature.EnglishName}' (ID: {feature.FeatureId})");
 
             var result = action.ToLower() switch
             {
@@ -136,9 +156,35 @@ namespace VenusHR.API.Helpers
                 _ => false
             };
 
-            _logger.LogDebug($"Permission check - Feature: {featureName}, Action: {action}, Result: {result}");
+            _logger.LogInformation($"🔐 Permission check - Feature: {feature.EnglishName}, Action: {action}, Result: {result}");
             return result;
         }
+        //private bool CheckPermission(List<UserFeatureDto> features, string featureName, string action)
+        //{
+        //    var feature = features.FirstOrDefault(f =>
+        //        f.EnglishName?.Equals(featureName, StringComparison.OrdinalIgnoreCase) == true ||
+        //        f.ArabicName?.Equals(featureName, StringComparison.OrdinalIgnoreCase) == true);
+
+        //    if (feature == null)
+        //    {
+        //        _logger.LogWarning($"Feature '{featureName}' not found for user");
+        //        return false;
+        //    }
+
+        //    var result = action.ToLower() switch
+        //    {
+        //        "view" => feature.View,
+        //        "add" => feature.Add,
+        //        "edit" => feature.Edit,
+        //        "delete" => feature.Delete,
+        //        "export" => feature.Export,
+        //        "print" => feature.Print,
+        //        _ => false
+        //    };
+
+        //    _logger.LogDebug($"Permission check - Feature: {featureName}, Action: {action}, Result: {result}");
+        //    return result;
+        //}
 
         private string GetActionName(string action)
         {

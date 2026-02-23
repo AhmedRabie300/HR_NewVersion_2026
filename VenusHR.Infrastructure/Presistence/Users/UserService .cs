@@ -109,13 +109,11 @@ namespace VenusHR.Infrastructure.Presistence.Users
                 return ApiResponse<bool>.Failed("Failed to remove user from group");
             }
         }
-
-
         public async Task<ApiResponse<List<UserFeatureDto>>> GetUserFeaturesAsync(int userId)
         {
             try
             {
-                var userGroups = await GetUserGroupsAsync(userId);
+                 var userGroups = await GetUserGroupsAsync(userId);
                 if (!userGroups.Success || userGroups.Data == null || !userGroups.Data.Any())
                 {
                     return ApiResponse<List<UserFeatureDto>>.Succeeded(new List<UserFeatureDto>());
@@ -123,44 +121,81 @@ namespace VenusHR.Infrastructure.Presistence.Users
 
                 var groupIds = userGroups.Data.Select(g => g.Id).ToList();
 
-                var groupFeatures = await _context.Sys_GroupFeatures
-                    .Where(gf => groupIds.Contains(gf.GroupId))
-                    .Include(gf => gf.Feature)
+                 var formsPermissions = await _context.sys_FormsPermissions
+                    .Where(fp => groupIds.Contains(fp.GroupID.Value) && fp.CancelDate == null)
+                    .Include(fp => fp.Form)
                     .ToListAsync();
 
-                var featuresDict = new Dictionary<int, UserFeatureDto>();
+                 var userPermissions = await _context.sys_FormsPermissions
+                    .Where(fp => fp.UserID == userId && fp.CancelDate == null)
+                    .Include(fp => fp.Form)
+                    .ToListAsync();
 
-                foreach (var gf in groupFeatures)
+                 var permissionsDict = new Dictionary<int, UserFeatureDto>();
+
+                 foreach (var fp in formsPermissions)
                 {
-                    if (gf.Feature == null || !(gf.Feature.IsActive ?? true))
+                    if (fp.Form == null || fp.Form.CancelDate != null)
                         continue;
 
-                    var featureId = gf.Feature.ID;
+                    var formId = fp.Form.ID;
 
-                    if (!featuresDict.ContainsKey(featureId))
+                    if (!permissionsDict.ContainsKey(formId))
                     {
-                        featuresDict[featureId] = new UserFeatureDto
+                        permissionsDict[formId] = new UserFeatureDto
                         {
-                            FeatureId = featureId,
-                            FeatureName = gf.Feature.EnglishName ?? gf.Feature.ArabicName ?? "Unknown",
-                            ArabicName = gf.Feature.ArabicName,
-                            EnglishName = gf.Feature.EnglishName,
-                            ModuleId = gf.Feature.ModuleID,
+                            FeatureId = formId,
+                            FeatureName = fp.Form.EngName ?? fp.Form.ArbName ?? "Unknown",
+                            ArabicName = fp.Form.ArbName,
+                            EnglishName = fp.Form.EngName,
+                            ModuleId = fp.Form.ModuleID,
                             Hidden = false
                         };
                     }
 
-                    var feature = featuresDict[featureId];
+                    var form = permissionsDict[formId];
 
-                    feature.View |= gf.View ?? false;
-                    feature.Add |= gf.Add ?? false;
-                    feature.Edit |= gf.Edit ?? false;
-                    feature.Delete |= gf.Delete ?? false;
-                    feature.Export |= gf.Export ?? false;
-                    feature.Print |= gf.Print ?? false;
+                     form.View |= fp.AllowView ?? false;
+                    form.Add |= fp.AllowAdd ?? false;
+                    form.Edit |= fp.AllowEdit ?? false;
+                    form.Delete |= fp.AllowDelete ?? false;
+                    form.Print |= fp.AllowPrint ?? false;
+                 }
+
+                 foreach (var fp in userPermissions)
+                {
+                    if (fp.Form == null || fp.Form.CancelDate != null)
+                        continue;
+
+                    var formId = fp.Form.ID;
+
+                    if (!permissionsDict.ContainsKey(formId))
+                    {
+                        permissionsDict[formId] = new UserFeatureDto
+                        {
+                            FeatureId = formId,
+                            FeatureName = fp.Form.EngName ?? fp.Form.ArbName ?? "Unknown",
+                            ArabicName = fp.Form.ArbName,
+                            EnglishName = fp.Form.EngName,
+                            ModuleId = fp.Form.ModuleID,
+                            Hidden = false
+                        };
+                    }
+
+                    var form = permissionsDict[formId];
+
+                     if (fp.AllowView != null) form.View = fp.AllowView.Value;
+                    if (fp.AllowAdd != null) form.Add = fp.AllowAdd.Value;
+                    if (fp.AllowEdit != null) form.Edit = fp.AllowEdit.Value;
+                    if (fp.AllowDelete != null) form.Delete = fp.AllowDelete.Value;
+                    if (fp.AllowPrint != null) form.Print = fp.AllowPrint.Value;
                 }
 
-                return ApiResponse<List<UserFeatureDto>>.Succeeded(featuresDict.Values.ToList());
+                 var result = permissionsDict.Values
+                    .Where(f => f.View || f.Add || f.Edit || f.Delete || f.Print)
+                    .ToList();
+
+                return ApiResponse<List<UserFeatureDto>>.Succeeded(result);
             }
             catch (Exception ex)
             {
@@ -168,6 +203,65 @@ namespace VenusHR.Infrastructure.Presistence.Users
                 return ApiResponse<List<UserFeatureDto>>.Failed("Failed to get user features");
             }
         }
+
+
+        //public async Task<ApiResponse<List<UserFeatureDto>>> GetUserFeaturesAsync(int userId)
+        //{
+        //    try
+        //    {
+        //        var userGroups = await GetUserGroupsAsync(userId);
+        //        if (!userGroups.Success || userGroups.Data == null || !userGroups.Data.Any())
+        //        {
+        //            return ApiResponse<List<UserFeatureDto>>.Succeeded(new List<UserFeatureDto>());
+        //        }
+
+        //        var groupIds = userGroups.Data.Select(g => g.Id).ToList();
+
+        //        var groupFeatures = await _context.Sys_GroupFeatures
+        //            .Where(gf => groupIds.Contains(gf.GroupId))
+        //            .Include(gf => gf.Feature)
+        //            .ToListAsync();
+
+        //        var featuresDict = new Dictionary<int, UserFeatureDto>();
+
+        //        foreach (var gf in groupFeatures)
+        //        {
+        //            if (gf.Feature == null || !(gf.Feature.IsActive ?? true))
+        //                continue;
+
+        //            var featureId = gf.Feature.ID;
+
+        //            if (!featuresDict.ContainsKey(featureId))
+        //            {
+        //                featuresDict[featureId] = new UserFeatureDto
+        //                {
+        //                    FeatureId = featureId,
+        //                    FeatureName = gf.Feature.EnglishName ?? gf.Feature.ArabicName ?? "Unknown",
+        //                    ArabicName = gf.Feature.ArabicName,
+        //                    EnglishName = gf.Feature.EnglishName,
+        //                    ModuleId = gf.Feature.ModuleID,
+        //                    Hidden = false
+        //                };
+        //            }
+
+        //            var feature = featuresDict[featureId];
+
+        //            feature.View |= gf.View ?? false;
+        //            feature.Add |= gf.Add ?? false;
+        //            feature.Edit |= gf.Edit ?? false;
+        //            feature.Delete |= gf.Delete ?? false;
+        //            feature.Export |= gf.Export ?? false;
+        //            feature.Print |= gf.Print ?? false;
+        //        }
+
+        //        return ApiResponse<List<UserFeatureDto>>.Succeeded(featuresDict.Values.ToList());
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error getting features for user {UserId}", userId);
+        //        return ApiResponse<List<UserFeatureDto>>.Failed("Failed to get user features");
+        //    }
+        //}
 
         public async Task<ApiResponse<List<UserFeatureDto>>> GetUserFeaturesByGroupAsync(int userId, int groupId)
         {
