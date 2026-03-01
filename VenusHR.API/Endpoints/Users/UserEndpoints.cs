@@ -1,4 +1,4 @@
-﻿ using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VenusHR.API.Helpers;
 using VenusHR.Application.Common.DTOs.Users;
 using VenusHR.Application.Common.Interfaces.Users;
+using MediatR;
 
 namespace VenusHR.API.Endpoints.Users
 {
@@ -29,8 +30,7 @@ namespace VenusHR.API.Endpoints.Users
             routes.MapDelete("/api/DeleteUser/{id:int}", DeleteUser)
                 .RequirePermission("users", "Delete");
 
-            // 🔹 User Groups
-            routes.MapGet("/api/GetUserGroups/{userId:int}/groups", GetUserGroups)
+             routes.MapGet("/api/GetUserGroups/{userId:int}/groups", GetUserGroups)
                 .RequirePermission("users", "View");
 
             routes.MapPost("/api/AddUserToGroup/{userId:int}/groups/{groupId:int}", AddUserToGroup)
@@ -39,13 +39,15 @@ namespace VenusHR.API.Endpoints.Users
             routes.MapDelete("/api/RemoveUserFromGroup/{userId:int}/groups/{groupId:int}", RemoveUserFromGroup)
                 .RequirePermission("users", "Edit");
 
-             routes.MapGet("/api/users/{userId:int}/features", GetUserFeatures)
+            // =============== User Features Routes ===============
+            routes.MapGet("/api/users/{userId:int}/features", GetUserFeatures)
                 .RequirePermission("users", "View");
 
             routes.MapGet("/api/users/{userId:int}/groups/{groupId:int}/features", GetUserFeaturesByGroup)
                 .RequirePermission("users", "View");
 
-             routes.MapPut("/api/users/{userId:int}/activate", ActivateUser)
+            // =============== User Status Routes ===============
+            routes.MapPut("/api/users/{userId:int}/activate", ActivateUser)
                 .RequirePermission("users", "Edit");
 
             routes.MapPut("/api/users/{userId:int}/deactivate", DeactivateUser)
@@ -57,25 +59,27 @@ namespace VenusHR.API.Endpoints.Users
             routes.MapGet("/api/users/{userId:int}/is-active", CheckIsActive)
                 .RequirePermission("users", "View");
 
-             routes.MapPut("/api/users/{userId:int}/device-token", UpdateDeviceToken)
+            // =============== Device Token Routes ===============
+            routes.MapPut("/api/users/{userId:int}/device-token", UpdateDeviceToken)
                 .RequirePermission("users", "Edit");
         }
 
- 
-        private static async Task<IResult> GetAllUsers(
-            [FromServices] IUserService userService)
+        // =============== QUERIES ===============
+
+        private static async Task<IResult> GetAllUsers([FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.GetAllUsersAsync();
+                var result = await mediator.Send(new UserQueries.GetAllUsersQuery());
 
+                // ApiResponse: Success = true يعني نجاح
                 if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
                     success = true,
-                    message = "Users retrieved successfully",
+                    message = result.Message ?? "Users retrieved successfully",
                     data = result.Data
                 });
             }
@@ -90,19 +94,19 @@ namespace VenusHR.API.Endpoints.Users
 
         private static async Task<IResult> GetUserById(
             int id,
-            [FromServices] IUserService userService)
+            [FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.GetUserByIdAsync(id);
+                var result = await mediator.Send(new UserQueries.GetUserByIdQuery(id));
 
                 if (!result.Success)
-                    return Results.NotFound(new { error = result.Message });
+                    return Results.NotFound(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
                     success = true,
-                    message = "User retrieved successfully",
+                    message = result.Message ?? "User retrieved successfully",
                     data = result.Data
                 });
             }
@@ -115,103 +119,21 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
-        private static async Task<IResult> CreateUser(
-            [FromBody] UserDto dto,
-            [FromServices] IUserService userService)
-        {
-            try
-            {
-                var result = await userService.CreateUserAsync(dto);
-
-                if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
-
-                return Results.Created($"/api/users/{result.Data?.Id}", new
-                {
-                    success = true,
-                    message = "User created successfully",
-                    data = result.Data
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError
-                );
-            }
-        }
-
-        private static async Task<IResult> UpdateUser(
-            int id,
-            [FromBody] UpdateUserDto dto,
-            [FromServices] IUserService userService)
-        {
-            try
-            {
-                var result = await userService.UpdateUserAsync(id, dto);
-
-                if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
-
-                return Results.Ok(new
-                {
-                    success = true,
-                    message = "User updated successfully",
-                    data = result.Data
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError
-                );
-            }
-        }
-
-        private static async Task<IResult> DeleteUser(
-            int id,
-            [FromServices] IUserService userService)
-        {
-            try
-            {
-                var result = await userService.DeleteUserAsync(id);
-
-                if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
-
-                return Results.Ok(new
-                {
-                    success = true,
-                    message = "User deleted successfully"
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError
-                );
-            }
-        }
-
- 
         private static async Task<IResult> GetUserGroups(
             int userId,
-            [FromServices] IUserService userService)
+            [FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.GetUserGroupsAsync(userId);
+                var result = await mediator.Send(new UserQueries.GetUserGroupsQuery(userId));
 
                 if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
                     success = true,
-                    message = "User groups retrieved successfully",
+                    message = result.Message ?? "User groups retrieved successfully",
                     data = result.Data
                 });
             }
@@ -224,78 +146,21 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
-        private static async Task<IResult> AddUserToGroup(
-           int userId,
-    int groupId,
-    [FromServices] IUserService userService,
-    [FromQuery] bool isPrimary = false)
-
-        {
-            try
-            {
-                var result = await userService.AddUserToGroupAsync(userId, groupId, isPrimary);
-
-                if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
-
-                return Results.Ok(new
-                {
-                    success = true,
-                    message = "User added to group successfully"
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError
-                );
-            }
-        }
-
-        private static async Task<IResult> RemoveUserFromGroup(
-            int userId,
-            int groupId,
-            [FromServices] IUserService userService)
-        {
-            try
-            {
-                var result = await userService.RemoveUserFromGroupAsync(userId, groupId);
-
-                if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
-
-                return Results.Ok(new
-                {
-                    success = true,
-                    message = "User removed from group successfully"
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError
-                );
-            }
-        }
-
- 
         private static async Task<IResult> GetUserFeatures(
             int userId,
-            [FromServices] IUserService userService)
+            [FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.GetUserFeaturesAsync(userId);
+                var result = await mediator.Send(new UserQueries.GetUserFeaturesQuery(userId));
 
                 if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
                     success = true,
-                    message = "User features retrieved successfully",
+                    message = result.Message ?? "User features retrieved successfully",
                     data = result.Data
                 });
             }
@@ -311,73 +176,20 @@ namespace VenusHR.API.Endpoints.Users
         private static async Task<IResult> GetUserFeaturesByGroup(
             int userId,
             int groupId,
-            [FromServices] IUserService userService)
+            [FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.GetUserFeaturesByGroupAsync(userId, groupId);
+                var result = await mediator.Send(new UserQueries.GetUserFeaturesByGroupQuery(userId, groupId));
 
                 if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
                     success = true,
-                    message = "Group features retrieved successfully",
+                    message = result.Message ?? "Group features retrieved successfully",
                     data = result.Data
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError
-                );
-            }
-        }
-
- 
-        private static async Task<IResult> ActivateUser(
-            int userId,
-            [FromServices] IUserService userService)
-        {
-            try
-            {
-                var result = await userService.UpdateUserStatusAsync(userId, true);
-
-                if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
-
-                return Results.Ok(new
-                {
-                    success = true,
-                    message = "User activated successfully"
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: StatusCodes.Status500InternalServerError
-                );
-            }
-        }
-
-        private static async Task<IResult> DeactivateUser(
-            int userId,
-            [FromServices] IUserService userService)
-        {
-            try
-            {
-                var result = await userService.UpdateUserStatusAsync(userId, false);
-
-                if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
-
-                return Results.Ok(new
-                {
-                    success = true,
-                    message = "User deactivated successfully"
                 });
             }
             catch (Exception ex)
@@ -391,14 +203,14 @@ namespace VenusHR.API.Endpoints.Users
 
         private static async Task<IResult> CheckIsAdmin(
             int userId,
-            [FromServices] IUserService userService)
+            [FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.IsAdminAsync(userId);
+                var result = await mediator.Send(new UserQueries.CheckIsAdminQuery(userId));
 
                 if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
@@ -417,14 +229,14 @@ namespace VenusHR.API.Endpoints.Users
 
         private static async Task<IResult> CheckIsActive(
             int userId,
-            [FromServices] IUserService userService)
+            [FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.IsActiveAsync(userId);
+                var result = await mediator.Send(new UserQueries.CheckIsActiveQuery(userId));
 
                 if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
@@ -441,23 +253,212 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
- 
-        private static async Task<IResult> UpdateDeviceToken(
-            int userId,
-            [FromBody] string deviceToken,
-            [FromServices] IUserService userService)
+        // =============== COMMANDS ===============
+
+        private static async Task<IResult> CreateUser(
+            [FromBody] UserDto dto,
+            [FromServices] IMediator mediator)
         {
             try
             {
-                var result = await userService.UpdateDeviceTokenAsync(userId, deviceToken);
+                var result = await mediator.Send(new UserCommands.CreateUserCommand(dto));
 
                 if (!result.Success)
-                    return Results.BadRequest(new { error = result.Message });
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
+
+                return Results.Created($"/api/users/{result.Data?.Id}", new
+                {
+                    success = true,
+                    message = result.Message ?? "User created successfully",
+                    data = result.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        private static async Task<IResult> UpdateUser(
+            int id,
+            [FromBody] UpdateUserDto dto,
+            [FromServices] IMediator mediator)
+        {
+            try
+            {
+                var result = await mediator.Send(new UserCommands.UpdateUserCommand(id, dto));
+
+                if (!result.Success)
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
                 {
                     success = true,
-                    message = "Device token updated successfully"
+                    message = result.Message ?? "User updated successfully",
+                    data = result.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        private static async Task<IResult> DeleteUser(
+            int id,
+            [FromServices] IMediator mediator)
+        {
+            try
+            {
+                var result = await mediator.Send(new UserCommands.DeleteUserCommand(id));
+
+                if (!result.Success)
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    message = result.Message ?? "User deleted successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        private static async Task<IResult> AddUserToGroup(
+            int userId,
+            int groupId,
+            [FromServices] IMediator mediator,
+            [FromQuery] bool isPrimary = false)
+        {
+            try
+            {
+                var result = await mediator.Send(new UserCommands.AddUserToGroupCommand(userId, groupId, isPrimary));
+
+                if (!result.Success)
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    message = result.Message ?? "User added to group successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        private static async Task<IResult> RemoveUserFromGroup(
+            int userId,
+            int groupId,
+            [FromServices] IMediator mediator)
+        {
+            try
+            {
+                var result = await mediator.Send(new UserCommands.RemoveUserFromGroupCommand(userId, groupId));
+
+                if (!result.Success)
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    message = result.Message ?? "User removed from group successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        private static async Task<IResult> ActivateUser(
+            int userId,
+            [FromServices] IMediator mediator)
+        {
+            try
+            {
+                var result = await mediator.Send(new UserCommands.UpdateUserStatusCommand(userId, true));
+
+                if (!result.Success)
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    message = result.Message ?? "User activated successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        private static async Task<IResult> DeactivateUser(
+            int userId,
+            [FromServices] IMediator mediator)
+        {
+            try
+            {
+                var result = await mediator.Send(new UserCommands.UpdateUserStatusCommand(userId, false));
+
+                if (!result.Success)
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    message = result.Message ?? "User deactivated successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    detail: ex.Message,
+                    statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+        }
+
+        private static async Task<IResult> UpdateDeviceToken(
+            int userId,
+            [FromBody] string deviceToken,
+            [FromServices] IMediator mediator)
+        {
+            try
+            {
+                var result = await mediator.Send(new UserCommands.UpdateDeviceTokenCommand(userId, deviceToken));
+
+                if (!result.Success)
+                    return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    message = result.Message ?? "Device token updated successfully"
                 });
             }
             catch (Exception ex)

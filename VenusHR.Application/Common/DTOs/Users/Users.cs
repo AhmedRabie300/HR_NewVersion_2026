@@ -1,5 +1,4 @@
-﻿// UserDto.cs
-namespace VenusHR.Application.Common.DTOs.Users;
+﻿ namespace VenusHR.Application.Common.DTOs.Users;
 
 public class UserDto
 {
