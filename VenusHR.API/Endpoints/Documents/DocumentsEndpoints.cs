@@ -7,34 +7,34 @@ namespace VenusHR.API.Endpoints
 {
     public static class DocumentsEndpoints
     {
-        public static void MapDocumentsEndpoints(this WebApplication app)
+        public static void MapDocumentsEndpoints(this IEndpointRouteBuilder routes)
         {
       
-            app.MapPost("/api/documents/upload-attachment", UploadAttachment);
+            routes.MapPost("/api/documents/upload-attachment", UploadAttachment);
 
        
-            app.MapPost("/api/documents/add-document", AddDocument);
+            routes.MapPost("/api/documents/add-document", AddDocument);
 
        
-            app.MapGet("/api/documents/attachments", GetAttachments);
+            routes.MapGet("/api/documents/attachments", GetAttachments);
 
          
-            app.MapGet("/api/documents/download/{attachmentId}", DownloadAttachment);
+            routes.MapGet("/api/documents/download/{attachmentId}", DownloadAttachment);
 
   
-            app.MapDelete("/api/documents/delete-attachment/{attachmentId}", DeleteAttachment);
+            routes.MapDelete("/api/documents/delete-attachment/{attachmentId}", DeleteAttachment);
 
       
-            app.MapGet("/api/documents/document-details", GetDocumentDetails);
+            routes.MapGet("/api/documents/document-details", GetDocumentDetails);
  
 
-             app.MapGet("/api/documents/document-detail/{documentDetailId}", GetDocumentDetail);
+             routes.MapGet("/api/documents/document-detail/{documentDetailId}", GetDocumentDetail);
 
-             app.MapPut("/api/documents/update-document/{documentDetailId}", UpdateDocumentDetail);
+             routes.MapPut("/api/documents/update-document/{documentDetailId}", UpdateDocumentDetail);
 
-             app.MapDelete("/api/documents/delete-document/{documentDetailId}", DeleteDocumentDetail);
+             routes.MapDelete("/api/documents/delete-document/{documentDetailId}", DeleteDocumentDetail);
 
-             app.MapGet("/api/documents/attachment-info/{attachmentId}", GetAttachmentInfo);
+             routes.MapGet("/api/documents/attachment-info/{attachmentId}", GetAttachmentInfo);
         }
 
  

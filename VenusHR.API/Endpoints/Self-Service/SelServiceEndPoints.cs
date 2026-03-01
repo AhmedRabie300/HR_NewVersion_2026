@@ -6,29 +6,29 @@ using System.Dynamic;
 
 public static class SelfServiceEndpoints
 {
-    public static void MapSelfServiceEndpoints(this WebApplication app)
+    public static void MapSelfServiceEndpoints(this IEndpointRouteBuilder routes)
     {
-         app.MapPost("/api/self-service/vacation/save-request", SaveRequest);
-        app.MapGet("/api/self-service/vacation/balances/{empId:int}/{toDate:datetime}", GetAnnualVacsBalancesByEMP);
-        app.MapGet("/api/self-service/vacation/service-period/{employeeId:int}/{endServiceDate:datetime}", GeatServicePeriod);
-        app.MapGet("/api/self-service/vacation/stages/{requestSerial:int}/{formCode}/{lang:int}", GetRequestStages);
-        app.MapGet("/api/self-service/vacation/request-details/{requestType}/{requestId:int}/{lang:int}/{configId:int}", GetSelfServiceRequestDetails);
-        app.MapGet("/api/self-service/vacation/my-request-details/{requestType}/{requestId:int}/{lang:int}", GetMySelfServiceRequestDetails);
-        app.MapGet("/api/self-service/vacation/request/{requestSerial:int}/{lang:int}", GetAnnualVacationRequestByID);
-        app.MapGet("/api/self-service/vacation/employee-requests/{employeeId:int}/{lang:int}", GetEmployeeRequests);
+        routes.MapPost("/api/self-service/vacation/save-request", SaveRequest);
+        routes.MapGet("/api/self-service/vacation/balances/{empId:int}/{toDate:datetime}", GetAnnualVacsBalancesByEMP);
+        routes.MapGet("/api/self-service/vacation/service-period/{employeeId:int}/{endServiceDate:datetime}", GeatServicePeriod);
+        routes.MapGet("/api/self-service/vacation/stages/{requestSerial:int}/{formCode}/{lang:int}", GetRequestStages);
+        routes.MapGet("/api/self-service/vacation/request-details/{requestType}/{requestId:int}/{lang:int}/{configId:int}", GetSelfServiceRequestDetails);
+        routes.MapGet("/api/self-service/vacation/my-request-details/{requestType}/{requestId:int}/{lang:int}", GetMySelfServiceRequestDetails);
+        routes.MapGet("/api/self-service/vacation/request/{requestSerial:int}/{lang:int}", GetAnnualVacationRequestByID);
+        routes.MapGet("/api/self-service/vacation/employee-requests/{employeeId:int}/{lang:int}", GetEmployeeRequests);
 
-         app.MapGet("/api/self-service/master/request-types", GetAllRequestTypes);
-        app.MapGet("/api/self-service/master/employees/{lang:int}", GetAllEmployees);
-        app.MapGet("/api/self-service/master/employee/{id:int}/{lang:int}", GetEmployeeByID);
-        app.MapGet("/api/self-service/master/notifications/count/{employeeId}", GetUserNotificationCount);
-        app.MapGet("/api/self-service/master/vacation-types/{lang:int}", GetAllVacationsTypes);
-        app.MapGet("/api/self-service/master/resignation-reasons/{lang:int}", GetEndOfServiceAllResignationReason);
-        app.MapGet("/api/self-service/master/experience-rates/{lang:int}", GetEndOfServiceAllExperienceRate);
-        app.MapGet("/api/self-service/master/pending-requests/{employeeId:int}/{lang:int}", GetAllPendingRequests);
-        app.MapPost("/api/self-service/master/request-action", SaveRequestAction);
+         routes.MapGet("/api/self-service/master/request-types", GetAllRequestTypes);
+        routes.MapGet("/api/self-service/master/employees/{lang:int}", GetAllEmployees);
+        routes.MapGet("/api/self-service/master/employee/{id:int}/{lang:int}", GetEmployeeByID);
+        routes.MapGet("/api/self-service/master/notifications/count/{employeeId}", GetUserNotificationCount);
+        routes.MapGet("/api/self-service/master/vacation-types/{lang:int}", GetAllVacationsTypes);
+        routes.MapGet("/api/self-service/master/resignation-reasons/{lang:int}", GetEndOfServiceAllResignationReason);
+        routes.MapGet("/api/self-service/master/experience-rates/{lang:int}", GetEndOfServiceAllExperienceRate);
+        routes.MapGet("/api/self-service/master/pending-requests/{employeeId:int}/{lang:int}", GetAllPendingRequests);
+        routes.MapPost("/api/self-service/master/request-action", SaveRequestAction);
 
-         // app.MapGet("/api/self-service/leaves/types", GetAllLeavesTypes);
-        // app.MapPost("/api/self-service/requests/submit", SubmitRequest);
+         // routes.MapGet("/api/self-service/leaves/types", GetAllLeavesTypes);
+        // routes.MapPost("/api/self-service/requests/submit", SubmitRequest);
     }
 
  

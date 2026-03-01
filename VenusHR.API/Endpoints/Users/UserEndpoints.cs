@@ -12,52 +12,52 @@ namespace VenusHR.API.Endpoints.Users
 {
     public static class UserEndpoints
     {
-        public static void MapUserEndpoints(this WebApplication app)
+        public static void MapUserEndpoints(this IEndpointRouteBuilder routes)
         {
-             app.MapGet("/api/GetAllUsers", GetAllUsers)
+             routes.MapGet("/api/GetAllUsers", GetAllUsers)
                 .RequirePermission("users", "View");
 
-            app.MapGet("/api/GetUserById/{id:int}", GetUserById)
+            routes.MapGet("/api/GetUserById/{id:int}", GetUserById)
                 .RequirePermission("users", "View");
 
-            app.MapPost("/api/CreateUser", CreateUser)
+            routes.MapPost("/api/CreateUser", CreateUser)
                 .RequirePermission("users", "Add");
 
-            app.MapPut("/api/UpdateUser/{id:int}", UpdateUser)
+            routes.MapPut("/api/UpdateUser/{id:int}", UpdateUser)
                 .RequirePermission("users", "Edit");
 
-            app.MapDelete("/api/DeleteUser/{id:int}", DeleteUser)
+            routes.MapDelete("/api/DeleteUser/{id:int}", DeleteUser)
                 .RequirePermission("users", "Delete");
 
             // 🔹 User Groups
-            app.MapGet("/api/GetUserGroups/{userId:int}/groups", GetUserGroups)
+            routes.MapGet("/api/GetUserGroups/{userId:int}/groups", GetUserGroups)
                 .RequirePermission("users", "View");
 
-            app.MapPost("/api/AddUserToGroup/{userId:int}/groups/{groupId:int}", AddUserToGroup)
+            routes.MapPost("/api/AddUserToGroup/{userId:int}/groups/{groupId:int}", AddUserToGroup)
                 .RequirePermission("users", "Edit");
 
-            app.MapDelete("/api/RemoveUserFromGroup/{userId:int}/groups/{groupId:int}", RemoveUserFromGroup)
+            routes.MapDelete("/api/RemoveUserFromGroup/{userId:int}/groups/{groupId:int}", RemoveUserFromGroup)
                 .RequirePermission("users", "Edit");
 
-             app.MapGet("/api/users/{userId:int}/features", GetUserFeatures)
+             routes.MapGet("/api/users/{userId:int}/features", GetUserFeatures)
                 .RequirePermission("users", "View");
 
-            app.MapGet("/api/users/{userId:int}/groups/{groupId:int}/features", GetUserFeaturesByGroup)
+            routes.MapGet("/api/users/{userId:int}/groups/{groupId:int}/features", GetUserFeaturesByGroup)
                 .RequirePermission("users", "View");
 
-             app.MapPut("/api/users/{userId:int}/activate", ActivateUser)
+             routes.MapPut("/api/users/{userId:int}/activate", ActivateUser)
                 .RequirePermission("users", "Edit");
 
-            app.MapPut("/api/users/{userId:int}/deactivate", DeactivateUser)
+            routes.MapPut("/api/users/{userId:int}/deactivate", DeactivateUser)
                 .RequirePermission("users", "Edit");
 
-            app.MapGet("/api/users/{userId:int}/is-admin", CheckIsAdmin)
+            routes.MapGet("/api/users/{userId:int}/is-admin", CheckIsAdmin)
                 .RequirePermission("users", "View");
 
-            app.MapGet("/api/users/{userId:int}/is-active", CheckIsActive)
+            routes.MapGet("/api/users/{userId:int}/is-active", CheckIsActive)
                 .RequirePermission("users", "View");
 
-             app.MapPut("/api/users/{userId:int}/device-token", UpdateDeviceToken)
+             routes.MapPut("/api/users/{userId:int}/device-token", UpdateDeviceToken)
                 .RequirePermission("users", "Edit");
         }
 

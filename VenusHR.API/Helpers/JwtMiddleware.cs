@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -36,7 +37,13 @@ namespace VenusHR.API.Helpers
         public async Task Invoke(HttpContext context)
         {
             var path = context.Request.Path.Value ?? "";
-
+            var endpoint = context.GetEndpoint();
+            if (endpoint?.Metadata.GetMetadata<AllowAnonymousAttribute>() != null)
+            {
+                _logger.LogDebug($"AllowAnonymous endpoint: {path}");
+                await _next(context);
+                return;
+            }
             // Skip public endpoints
             if (IsPublicEndpoint(path))
             {

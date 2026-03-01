@@ -2,109 +2,111 @@
 using VenusHR.API.Helpers;
 using VenusHR.Application.Common.Interfaces.HR_Master;
 using VenusHR.Core.Master;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using WorkFlow_EF;
 
 namespace VenusHR.API.Endpoints.LookupEndPoints
 {
     public static class HRMasterEndpoints
     {
-        public static void MapHRMasterEndpoints(this WebApplication app)
+        public static void MapHRMasterEndpoints(this IEndpointRouteBuilder routes)
         {
-            app.MapGet("/api/hr-master/lookups/all/{lang}", GetAllMasterData)
+            routes.MapGet("/api/hr-master/lookups/all/{lang}", GetAllMasterData)
                 .RequirePermission("Lookups", "View");
 
-            app.MapGet("/api/hr-master/lookups/by-type/{lookupType}/{lang}", GetLookupByType)
+            routes.MapGet("/api/hr-master/lookups/by-type/{lookupType}/{lang}", GetLookupByType)
                 .RequirePermission("Lookups", "View");
 
-            app.MapGet("/api/hr-master/lookups/search", SearchLookups)
+            routes.MapGet("/api/hr-master/lookups/search", SearchLookups)
                 .RequirePermission("Lookups", "View");
 
-            app.MapGet("/api/hr-master/cities/all/{lang}", GetAllCities)
+            routes.MapGet("/api/hr-master/cities/all/{lang}", GetAllCities)
                 .RequirePermission("Cities", "View");
 
-            app.MapGet("/api/hr-master/cities/{id:int}/{lang}", GetCityById)
+            routes.MapGet("/api/hr-master/cities/{id:int}/{lang}", GetCityById)
                 .RequirePermission("Cities", "View");
 
-            app.MapGet("/api/hr-master/nationalities/all/{lang}", GetAllNationalities)
+            routes.MapGet("/api/hr-master/nationalities/all/{lang}", GetAllNationalities)
                 .RequirePermission("Nationalities", "View");
 
-            app.MapGet("/api/hr-master/nationalities/{id:int}/{lang}", GetNationalityById)
+            routes.MapGet("/api/hr-master/nationalities/{id:int}/{lang}", GetNationalityById)
                 .RequirePermission("Nationalities", "View");
 
-            app.MapPost("/api/hr-master/nationalities", CreateNationality)
+            routes.MapPost("/api/hr-master/nationalities", CreateNationality)
                 .RequirePermission("Nationalities", "Add");
 
-            app.MapPut("/api/hr-master/nationalities/{id:int}", UpdateNationality)
+            routes.MapPut("/api/hr-master/nationalities/{id:int}", UpdateNationality)
                 .RequirePermission("Nationalities", "Edit");
 
-            app.MapGet("/api/hr-master/banks/all/{lang}", GetAllBanks)
+            routes.MapGet("/api/hr-master/banks/all/{lang}", GetAllBanks)
                 .RequirePermission("Banks", "View");
 
-            app.MapGet("/api/hr-master/banks/{id:int}/{lang}", GetBankById)
+            routes.MapGet("/api/hr-master/banks/{id:int}/{lang}", GetBankById)
                 .RequirePermission("Banks", "View");
 
-            app.MapPost("/api/hr-master/banks", CreateBank)
+            routes.MapPost("/api/hr-master/banks", CreateBank)
                 .RequirePermission("Banks", "Add");
 
-            app.MapPut("/api/hr-master/banks/{id:int}", UpdateBank)
+            routes.MapPut("/api/hr-master/banks/{id:int}", UpdateBank)
                 .RequirePermission("Banks", "Edit");
 
-            app.MapGet("/api/hr-master/religions/all/{lang}", GetAllReligions)
+            routes.MapGet("/api/hr-master/religions/all/{lang}", GetAllReligions)
                 .RequirePermission("Religions", "View");
 
-            app.MapGet("/api/hr-master/religions/{id:int}/{lang}", GetReligionById)
+            routes.MapGet("/api/hr-master/religions/{id:int}/{lang}", GetReligionById)
                 .RequirePermission("Religions", "View");
 
-            app.MapGet("/api/hr-master/marital-status/all/{lang}", GetAllMaritalStatus)
+            routes.MapGet("/api/hr-master/marital-status/all/{lang}", GetAllMaritalStatus)
                 .RequirePermission("MaritalStatus", "View");
 
-            app.MapGet("/api/hr-master/marital-status/{id:int}/{lang}", GetMaritalStatusById)
+            routes.MapGet("/api/hr-master/marital-status/{id:int}/{lang}", GetMaritalStatusById)
                 .RequirePermission("MaritalStatus", "View");
 
-            app.MapGet("/api/hr-master/blood-groups/all/{lang}", GetAllBloodGroups)
+            routes.MapGet("/api/hr-master/blood-groups/all/{lang}", GetAllBloodGroups)
                 .RequirePermission("BloodGroups", "View");
 
-            app.MapGet("/api/hr-master/blood-groups/{id:int}/{lang}", GetBloodGroupById)
+            routes.MapGet("/api/hr-master/blood-groups/{id:int}/{lang}", GetBloodGroupById)
                 .RequirePermission("BloodGroups", "View");
 
-            app.MapPost("/api/hr-master/blood-groups", CreateBloodGroup)
+            routes.MapPost("/api/hr-master/blood-groups", CreateBloodGroup)
                 .RequirePermission("BloodGroups", "Add");
 
-            app.MapPut("/api/hr-master/blood-groups/{id:int}", UpdateBloodGroup)
+            routes.MapPut("/api/hr-master/blood-groups/{id:int}", UpdateBloodGroup)
                 .RequirePermission("BloodGroups", "Edit");
 
-            app.MapDelete("/api/hr-master/blood-groups/{id:int}", DeleteBloodGroup)
+            routes.MapDelete("/api/hr-master/blood-groups/{id:int}", DeleteBloodGroup)
                 .RequirePermission("BloodGroups", "Delete");
 
-            app.MapGet("/api/hr-master/educations/all/{lang}", GetAllEducations)
+            routes.MapGet("/api/hr-master/educations/all/{lang}", GetAllEducations)
                 .RequirePermission("Educations", "View");
 
-            app.MapGet("/api/hr-master/educations/{id:int}/{lang}", GetEducationById)
+            routes.MapGet("/api/hr-master/educations/{id:int}/{lang}", GetEducationById)
                 .RequirePermission("Educations", "View");
 
-            app.MapPost("/api/hr-master/educations", CreateEducation)
+            routes.MapPost("/api/hr-master/educations", CreateEducation)
                 .RequirePermission("Educations", "Add");
 
-            app.MapPut("/api/hr-master/educations/{id:int}", UpdateEducation)
+            routes.MapPut("/api/hr-master/educations/{id:int}", UpdateEducation)
                 .RequirePermission("Educations", "Edit");
 
-            app.MapGet("/api/hr-master/professions/all/{lang}", GetAllProfessions)
+            routes.MapGet("/api/hr-master/professions/all/{lang}", GetAllProfessions)
                 .RequirePermission("Professions", "View");
 
-            app.MapGet("/api/hr-master/professions/{id:int}/{lang}", GetProfessionById)
+            routes.MapGet("/api/hr-master/professions/{id:int}/{lang}", GetProfessionById)
                 .RequirePermission("Professions", "View");
 
-            app.MapGet("/api/hr-master/companies/all/{lang}", GetAllCompanies)
+            routes.MapGet("/api/hr-master/companies/all/{lang}", GetAllCompanies)
                 .RequirePermission("Companies", "View");
 
-            app.MapGet("/api/hr-master/companies/{id:int}/{lang}", GetCompanyById)
+            routes.MapGet("/api/hr-master/companies/{id:int}/{lang}", GetCompanyById)
                 .RequirePermission("Companies", "View");
 
-            app.MapPost("/api/hr-master/employees/new", SaveNewEmployeeForm)
+            routes.MapPost("/api/hr-master/employees/new", SaveNewEmployeeForm)
                 .RequirePermission("Employees", "Add");
 
-            app.MapGet("/api/hr-master/health", TestConnection);
-            app.MapGet("/api/test-jwt-simple", TestJwtSimple);
+            routes.MapGet("/api/hr-master/health", TestConnection);
+            routes.MapGet("/api/test-jwt-simple", TestJwtSimple);
         }
 
         private static async Task<IResult> GetAllMasterData(

@@ -5,18 +5,18 @@ using WorkFlow_EF;
 
 public static class AttendanceEndpoints
 {
-    public static void MapAttendanceEndpoints(this WebApplication app)
+    public static void MapAttendanceEndpoints(this IEndpointRouteBuilder routes)
     {
         // Check In/Out
-        app.MapPost("/api/attendance/check-in-out", CheckInOut);
+        routes.MapPost("/api/attendance/check-in-out", CheckInOut);
 
-         app.MapGet("/api/attendance/history", GetAttendanceHistory);
+         routes.MapGet("/api/attendance/history", GetAttendanceHistory);
 
-         app.MapGet("/api/attendance/daily-summary", GetDailySummary);
+         routes.MapGet("/api/attendance/daily-summary", GetDailySummary);
 
-         app.MapGet("/api/attendance/monthly-report", GetMonthlyReport);
+         routes.MapGet("/api/attendance/monthly-report", GetMonthlyReport);
 
-         app.MapGet("/api/attendance/employee/{employeeId}", GetEmployeeAttendance);
+         routes.MapGet("/api/attendance/employee/{employeeId}", GetEmployeeAttendance);
     }
 
     // =========== Check In/Out ===========

@@ -10,36 +10,36 @@ namespace VenusHR.API.Endpoints.Forms
 {
     public static class FormsControlEndpoints
     {
-        public static void MapFormsControlEndpoints(this WebApplication app)
+        public static void MapFormsControlEndpoints(this IEndpointRouteBuilder routes)
         {
-             app.MapGet("/api/GetAllControls", GetAllControls)
+             routes.MapGet("/api/GetAllControls", GetAllControls)
                 .RequirePermission("Forms", "View");
 
-            app.MapGet("/api/GetControlById/{id:int}", GetControlById)
+            routes.MapGet("/api/GetControlById/{id:int}", GetControlById)
                 .RequirePermission("Forms", "View");
 
-            app.MapGet("/api/GetControlsByFormId/{formId:int}", GetControlsByFormId);
+            routes.MapGet("/api/GetControlsByFormId/{formId:int}", GetControlsByFormId);
                 //.RequirePermission("Forms", "View");
 
-            app.MapGet("/api/forms/{formId:int}/controls/visible", GetVisibleControlsByFormId);
+            routes.MapGet("/api/forms/{formId:int}/controls/visible", GetVisibleControlsByFormId);
                 //.RequirePermission("Forms", "View");
 
-             app.MapPost("/api/forms-controls", CreateControl)
+             routes.MapPost("/api/forms-controls", CreateControl)
                 .RequirePermission("Forms", "Add");
 
-            app.MapPost("/api/forms-controls/bulk", CreateBulkControls)
+            routes.MapPost("/api/forms-controls/bulk", CreateBulkControls)
                 .RequirePermission("Forms", "Add");
 
-             app.MapPut("/api/forms-controls/{id:int}", UpdateControl)
+             routes.MapPut("/api/forms-controls/{id:int}", UpdateControl)
                 .RequirePermission("Forms", "Edit");
 
-            app.MapGet("/api/forms/{formId:int}/controls/reorder", ReorderControls)
+            routes.MapGet("/api/forms/{formId:int}/controls/reorder", ReorderControls)
                 .RequirePermission("Forms", "Edit");
 
-             app.MapDelete("/api/forms-controls/{id:int}", DeleteControl)
+             routes.MapDelete("/api/forms-controls/{id:int}", DeleteControl)
                 .RequirePermission("Forms", "Delete");
 
-            app.MapDelete("/api/forms/{formId:int}/controls", DeleteControlsByFormId)
+            routes.MapDelete("/api/forms/{formId:int}/controls", DeleteControlsByFormId)
                 .RequirePermission("Forms", "Delete");
         }
 
@@ -90,7 +90,7 @@ namespace VenusHR.API.Endpoints.Forms
             try
             {
                 var result = await service.GetFormControlsStructureAsync(formId);
-                return Results.Ok(result);  // ✅ من غير wrap
+                return Results.Ok(result);   
             }
             catch (Exception ex)
             {
