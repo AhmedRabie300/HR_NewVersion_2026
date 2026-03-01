@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
+using ProblemDetailsFactory = API.Common.Errors.ProblemDetailsFactory;
 
 namespace API.Helpers
 {
@@ -28,7 +29,7 @@ namespace API.Helpers
             {
                 await next(context);
             }
-            catch (ValidationException ex)
+            catch (FluentValidation.ValidationException ex)
             {
                 context.Response.ContentType = "application/problem+json";
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
