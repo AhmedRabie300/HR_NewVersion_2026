@@ -223,8 +223,7 @@ namespace VenusHR.Infrastructure.Presistence.HRServices
             try
             {
                 nationality.RegDate = DateTime.Now;
-                // nationality.RegUserID = GetCurrentUserId();
-                // nationality.RegComputerID = GetCurrentComputerId();
+       
 
                 _context.sys_Nationalities.Add(nationality);
                 await _context.SaveChangesAsync();

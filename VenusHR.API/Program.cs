@@ -1,8 +1,9 @@
 ﻿global using Microsoft.AspNetCore.Builder;
-global using Microsoft.AspNetCore.Routing;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
-
+global using Microsoft.AspNetCore.Routing;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -18,6 +19,7 @@ using VenusHR.Application.Common.Interfaces.Documents;
 using VenusHR.Application.Common.Interfaces.Forms;
 using VenusHR.Application.Common.Interfaces.HR_Master;
 using VenusHR.Application.Common.Interfaces.Login;
+using VenusHR.Application.Common.Interfaces.Login.Command;
 using VenusHR.Application.Common.Interfaces.Menus;
 using VenusHR.Application.Common.Interfaces.Permissions;
 using VenusHR.Application.Common.Interfaces.SelfService;
@@ -32,8 +34,6 @@ using VenusHR.Infrastructure.Presistence.SelfService;
 using VenusHR.Infrastructure.Presistence.Users;
 using VenusHR.Infrastructure.Services;
 using VenusHR.Infrastructure.Services.Documents;
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,7 +102,8 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 // Authentication & Authorization
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
-
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(LoginCommandHandler).Assembly));
 var app = builder.Build();
 
 // Middleware Pipeline
