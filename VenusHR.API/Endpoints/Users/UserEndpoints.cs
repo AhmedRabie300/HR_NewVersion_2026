@@ -72,8 +72,7 @@ namespace VenusHR.API.Endpoints.Users
             {
                 var result = await mediator.Send(new UserQueries.GetAllUsersQuery());
 
-                // ApiResponse: Success = true يعني نجاح
-                if (!result.Success)
+                 if (!result.Success)
                     return Results.BadRequest(new { error = result.Message, errorCode = result.ErrorCode });
 
                 return Results.Ok(new
@@ -253,8 +252,7 @@ namespace VenusHR.API.Endpoints.Users
             }
         }
 
-        // =============== COMMANDS ===============
-
+ 
         private static async Task<IResult> CreateUser(
             [FromBody] UserDto dto,
             [FromServices] IMediator mediator)
