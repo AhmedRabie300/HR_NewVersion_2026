@@ -39,14 +39,12 @@ namespace VenusHR.API.Endpoints.Users
             routes.MapDelete("/api/RemoveUserFromGroup/{userId:int}/groups/{groupId:int}", RemoveUserFromGroup)
                 .RequirePermission("users", "Edit");
 
-            // =============== User Features Routes ===============
             routes.MapGet("/api/users/{userId:int}/features", GetUserFeatures)
                 .RequirePermission("users", "View");
 
             routes.MapGet("/api/users/{userId:int}/groups/{groupId:int}/features", GetUserFeaturesByGroup)
                 .RequirePermission("users", "View");
 
-            // =============== User Status Routes ===============
             routes.MapPut("/api/users/{userId:int}/activate", ActivateUser)
                 .RequirePermission("users", "Edit");
 
@@ -59,12 +57,10 @@ namespace VenusHR.API.Endpoints.Users
             routes.MapGet("/api/users/{userId:int}/is-active", CheckIsActive)
                 .RequirePermission("users", "View");
 
-            // =============== Device Token Routes ===============
             routes.MapPut("/api/users/{userId:int}/device-token", UpdateDeviceToken)
                 .RequirePermission("users", "Edit");
         }
 
-        // =============== QUERIES ===============
 
         private static async Task<IResult> GetAllUsers([FromServices] IMediator mediator)
         {

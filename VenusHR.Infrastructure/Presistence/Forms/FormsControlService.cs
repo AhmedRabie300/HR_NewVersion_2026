@@ -372,7 +372,7 @@ namespace VenusHR.Infrastructure.Presistence.Forms
                         FieldName = c.FieldName,
                         ArbCaption = c.ArbCaption,
                         EngCaption = c.EngCaption,
-                        IsHidden = c.IsHide == 1,
+                        IsHidden = c.IsHide == 0,
                         Required = c.Required==true ,
                         ControlType = c.ControlType,
                         SearchID = c.SearchID,
