@@ -1,0 +1,60 @@
+﻿using Application.UARbac.Modules.Dtos;
+using Application.UARbac.Abstractions;
+using Domain.UARbac;
+using FluentValidation;
+using MediatR;
+using Application.UARbac.Modules.Validators;  
+
+namespace Application.UARbac.Modules.Commands
+{
+    public static class CreateModule
+    {
+        public record Command(CreateModuleDto Data) : IRequest<int>;
+
+        public sealed class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(x => x.Data)
+                  .SetValidator(new CreateModuleValidator());
+            }
+        }
+
+        public class Handler : IRequestHandler<Command, int>
+        {
+            private readonly IModuleRepository _repo;
+
+            public Handler(IModuleRepository repo)
+            {
+                _repo = repo;
+            }
+
+            public async Task<int> Handle(Command request, CancellationToken cancellationToken)
+            {
+                var exists = await _repo.CodeExistsAsync(request.Data.Code);
+                if (exists)
+                    throw new Exception($"Module with code '{request.Data.Code}' already exists");
+
+                var module = new Module(
+                    code: request.Data.Code,
+                    prefix: request.Data.Prefix,
+                    engName: request.Data.EngName,
+                    arbName: request.Data.ArbName,
+                    arbName4S: request.Data.ArbName4S,
+                    formId: request.Data.FormId,
+                    isRegistered: request.Data.IsRegistered,
+                    fiscalYearDependant: request.Data.FiscalYearDependant,
+                    rank: request.Data.Rank,
+                    remarks: request.Data.Remarks,
+                    regUserId: request.Data.RegUserId,
+                    regComputerId: request.Data.RegComputerId
+                );
+
+                await _repo.AddAsync(module);
+                await _repo.SaveChangesAsync(cancellationToken);
+
+                return module.Id;
+            }
+        }
+    }
+}
