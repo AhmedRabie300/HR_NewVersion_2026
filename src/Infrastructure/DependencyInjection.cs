@@ -41,6 +41,12 @@ namespace Infrastructure
             services.AddSingleton<ILocalizationService, LocalizationService>();
 
             //Master Data
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IBranchRepository, BranchRepository>();
+            services.AddScoped<ISectorRepository, SectorRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<ILocationRepository, LocationRepository>();
+            services.AddScoped<IPositionRepository, PositionRepository>();
             services.AddScoped<INationalityRepository, NationalityRepository>();
 
             services.AddDbContext<ApplicationDbContext>(opt =>

@@ -29,10 +29,12 @@ public static class Update
         public async Task<Unit> Handle(Command request, CancellationToken ct)
         {
             var dto = request.Dto;
-
-            var entity = await _repo.GetByIdAsync(dto.Id, ct)
-                ?? throw new NotFoundException("FormControl not found.");
-
+ ;
+            var entity = await _repo.GetByIdAsync(dto.Id, ct);
+            if (entity == null)
+            {
+                 throw new NotFoundException("FormControl", dto.Id);
+            }
             // Only updates these fields, nothing else
             entity.UpdateUiSettings(dto.EngCaption, dto.ArbCaption, dto.IsDisabled, dto.IsHide);
 

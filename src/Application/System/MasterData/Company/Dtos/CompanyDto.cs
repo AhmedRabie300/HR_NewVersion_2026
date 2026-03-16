@@ -1,0 +1,38 @@
+﻿namespace Application.System.MasterData.Company.Dtos
+{
+    public sealed record CompanyDto(
+        int Id,
+        string Code,
+        string? EngName,
+        string? ArbName,
+        string? ArbName4S,
+        bool? IsHigry,
+        bool? IncludeAbsencDays,
+        string? EmpFirstName,
+        string? EmpSecondName,
+        string? EmpThirdName,
+        string? EmpFourthName,
+        char? EmpNameSeparator,
+        string? Remarks,
+        int? PrepareDay,
+        string? DefaultTheme,
+        bool? VacationIsAccum,
+        bool? HasSequence,
+        int? SequenceLength,
+        int? Prefix,
+        string? Separator,
+        byte? SalaryCalculation,
+        bool? DefaultAttend,
+        bool? CountEmployeeVacationDaysTotal,
+        bool? ZeroBalAfterVac,
+        bool? VacSettlement,
+        bool? AllowOverVacation,
+        bool? VacationFromPrepareDay,
+        int? ExecuseRequestHoursallowed,
+        bool? EmployeeDocumentsAutoSerial,
+        bool? UserDepartmentsPermissions,
+        DateTime RegDate,
+        DateTime? CancelDate,
+        bool IsActive
+    );
+}

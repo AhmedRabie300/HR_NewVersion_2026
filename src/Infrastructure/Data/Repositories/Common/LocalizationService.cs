@@ -129,7 +129,83 @@ namespace Infrastructure.Services
                 {
                     { 1, "At least one permission must be granted" },
                     { 2, "يجب منح صلاحية واحدة على الأقل" }
-                }
+                },
+
+
+// ===== Sector Specific Messages =====
+["Sector"] = new Dictionary<int, string>
+{
+    { 1, "Sector" },
+    { 2, "القطاع" }
+},
+                ["ParentSector"] = new Dictionary<int, string>
+{
+    { 1, "Parent sector" },
+    { 2, "القطاع الأب" }
+},
+                ["Company"] = new Dictionary<int, string>
+{
+    { 1, "Company" },
+    { 2, "الشركة" }
+},
+                ["Code"] = new Dictionary<int, string>
+{
+    { 1, "Code" },
+    { 2, "الكود" }
+},
+                ["ParentMustBeSameCompany"] = new Dictionary<int, string>
+{
+    { 1, "Parent sector must belong to the same company" },
+    { 2, "القطاع الأب يجب أن يكون تابع لنفس الشركة" }
+},
+                ["CannotDeleteHasChildren"] = new Dictionary<int, string>
+{
+    { 1, "Cannot delete {0} because it has child sectors" },
+    { 2, "لا يمكن حذف {0} لأنه يحتوي على قطاعات فرعية" }
+}
+            ,
+                // ===== Location Specific Messages =====
+                ["Location"] = new Dictionary<int, string>
+{
+    { 1, "Location" },
+    { 2, "الموقع" }
+},
+                ["Branch"] = new Dictionary<int, string>
+{
+    { 1, "Branch" },
+    { 2, "الفرع" }
+},
+                ["Department"] = new Dictionary<int, string>
+{
+    { 1, "Department" },
+    { 2, "الإدارة" }
+},
+                ["AtLeastOneIdentifier"] = new Dictionary<int, string>
+{
+    { 1, "At least one identifier (Company or Branch) must be provided" },
+    { 2, "يجب توفير معرّف واحد على الأقل (شركة أو فرع)" }
+}
+
+                ,
+
+                // ===== Position Specific Messages =====
+                ["Position"] = new Dictionary<int, string>
+{
+    { 1, "Position" },
+    { 2, "الوظيفة" }
+},
+                ["ParentPosition"] = new Dictionary<int, string>
+{
+    { 1, "Parent position" },
+    { 2, "الوظيفة الأب" }
+},
+                ["CannotDeleteHasChildren"] = new Dictionary<int, string>
+{
+    { 1, "Cannot delete {0} because it has child positions" },
+    { 2, "لا يمكن حذف {0} لأنه يحتوي على وظائف فرعية" }
+}
+
+
             };
         }
 

@@ -32,6 +32,12 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Menu> Menus => Set<Menu>();
     public DbSet<Form> Forms => Set<Form>();
     public DbSet<FormPermission> FormPermissions => Set<FormPermission>();
+    public DbSet<Company> Companies => Set<Company>();
+    public DbSet<Branch> Branches => Set<Branch>();
+    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<Sector> Sectors => Set<Sector>();
+    public DbSet<Location> Locations => Set<Location>();
+    public DbSet<Position> Positions => Set<Position>();
    
     
     
