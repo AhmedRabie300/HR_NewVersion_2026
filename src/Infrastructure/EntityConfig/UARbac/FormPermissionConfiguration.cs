@@ -17,7 +17,7 @@ namespace Infrastructure.EntityConfig.UARbac
                 .IsRequired()
                 .HasColumnName("FormId");
 
-            builder.Property(x => x.RegComputerId)
+            builder.Property(x => x.regComputerId)
                 .HasMaxLength(50);
 
             builder.Property(x => x.RegDate)

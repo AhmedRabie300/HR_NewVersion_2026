@@ -22,7 +22,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListLocations.Query(lang), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Locations", "View")
+           // .RequirePermission("Locations", "View")
             .WithName("GetAllLocations")
             .WithOpenApi();
 
@@ -42,7 +42,7 @@ namespace API.System.MasterData
                     ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Locations", "View")
+           // .RequirePermission("Locations", "View")
             .WithName("GetPagedLocations")
             .WithOpenApi();
 
@@ -56,7 +56,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetLocationById.Query(id, lang), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Locations", "View")
+           // .RequirePermission("Locations", "View")
             .WithName("GetLocationById")
             .WithOpenApi();
 
@@ -72,7 +72,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetLocationsByCompany.Query(companyId, lang), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Locations", "View")
+           // .RequirePermission("Locations", "View")
             .WithName("GetLocationsByCompany")
             .WithOpenApi();
 
@@ -86,7 +86,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateLocation.Command(dto, lang), ct);
                 return Results.Created($"/api/hr/master-data/locations/{id}", new { id });
             })
-            .RequirePermission("Locations", "Add")
+           // .RequirePermission("Locations", "Add")
             .WithName("CreateLocation")
             .WithOpenApi();
 
@@ -102,7 +102,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateLocation.Command(fixedDto, lang), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Locations", "Edit")
+           // .RequirePermission("Locations", "Edit")
             .WithName("UpdateLocation")
             .WithOpenApi();
 
@@ -117,7 +117,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteLocation.Command(id, regUserId, lang), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Locations", "Delete")
+           // .RequirePermission("Locations", "Delete")
             .WithName("SoftDeleteLocation")
             .WithOpenApi();
 

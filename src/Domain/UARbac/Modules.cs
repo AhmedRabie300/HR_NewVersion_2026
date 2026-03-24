@@ -29,7 +29,7 @@ namespace Domain.UARbac
         public bool? IsSYS { get; private set; }     
 
          public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
 
        
@@ -47,7 +47,7 @@ namespace Domain.UARbac
             int? rank,
             string? remarks,
             int? regUserId,
-            string? regComputerId)
+            int? regComputerId)
         {
             Code = code;
             Prefix = prefix;
@@ -60,7 +60,7 @@ namespace Domain.UARbac
             Rank = rank;
             Remarks = remarks;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             RegDate = DateTime.UtcNow;
 
              IsAR = false;

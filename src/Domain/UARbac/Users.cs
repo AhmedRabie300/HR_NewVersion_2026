@@ -19,7 +19,7 @@ namespace Domain.UARbac
         public DateTime? PasswordExpiry { get; private set; }
         public DateTime? PasswordChangedOn { get; private set; }
         public string? Remarks { get; private set; }
-        public int? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
         public int? RelEmployee { get; private set; }
         public int? LevelId { get; private set; }

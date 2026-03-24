@@ -15,6 +15,6 @@
         int? CompanyId,
         string? Remarks,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

@@ -18,7 +18,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListReligions.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Religions", "View")
+           // .RequirePermission("Religions", "View")
             .WithName("GetAllReligions");
 
             group.MapGet("/paged", async (
@@ -32,7 +32,7 @@ namespace API.System.MasterData
                     new GetPagedReligions.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Religions", "View")
+           // .RequirePermission("Religions", "View")
             .WithName("GetPagedReligions");
 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -40,7 +40,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetReligionById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Religions", "View")
+           // .RequirePermission("Religions", "View")
             .WithName("GetReligionById");
 
             group.MapPost("/", async (IMediator mediator, CreateReligionDto dto, CancellationToken ct) =>
@@ -48,7 +48,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateReligion.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/religions/{id}", new { id });
             })
-            .RequirePermission("Religions", "Add")
+           // .RequirePermission("Religions", "Add")
             .WithName("CreateReligion");
 
             group.MapPut("/{id:int}", async (
@@ -61,7 +61,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateReligion.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Religions", "Edit")
+           // .RequirePermission("Religions", "Edit")
             .WithName("UpdateReligion");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -69,7 +69,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new DeleteReligion.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .RequirePermission("Religions", "Delete")
+           // .RequirePermission("Religions", "Delete")
             .WithName("DeleteReligion");
 
             group.MapDelete("/{id:int}/soft", async (
@@ -81,7 +81,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteReligion.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Religions", "Delete")
+           // .RequirePermission("Religions", "Delete")
             .WithName("SoftDeleteReligion");
 
             return routes;

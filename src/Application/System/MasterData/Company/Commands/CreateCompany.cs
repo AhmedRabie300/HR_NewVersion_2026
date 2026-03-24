@@ -11,14 +11,14 @@ namespace Application.System.MasterData.Company.Commands
     {
         public record Command(CreateCompanyDto Data) : IRequest<int>;
 
-        public sealed class Validator : AbstractValidator<Command>
-        {
-            public Validator()
-            {
-                RuleFor(x => x.Data)
-                    .SetValidator(new CreateCompanyValidator());
-            }
-        }
+        //public sealed class Validator : AbstractValidator<Command>
+        //{
+        //    public Validator()
+        //    {
+        //        RuleFor(x => x.Data)
+        //            .SetValidator(new CreateCompanyValidator());
+        //    }
+        //}
 
         public class Handler : IRequestHandler<Command, int>
         {
@@ -49,7 +49,7 @@ namespace Application.System.MasterData.Company.Commands
                     empNameSeparator: request.Data.EmpNameSeparator,
                     remarks: request.Data.Remarks,
                     regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.RegComputerId,
+                    regComputerId: request.Data.regComputerId,
                     prepareDay: request.Data.PrepareDay,
                     defaultTheme: request.Data.DefaultTheme,
                     vacationIsAccum: request.Data.VacationIsAccum,

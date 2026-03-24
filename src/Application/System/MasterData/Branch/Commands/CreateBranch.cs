@@ -65,7 +65,7 @@ namespace Application.System.MasterData.Branch.Commands
                     affectPeriod: request.Data.AffectPeriod,
                     remarks: request.Data.Remarks,
                     regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.RegComputerId
+                    regComputerId: request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(branch);

@@ -18,7 +18,7 @@ namespace API.Endpoints
                     var result = await mediator.Send(new GetUserGroups.Query(userId), ct);
                     return Results.Ok(result);
                 })
-                .RequirePermission("SystemGroups", "View") 
+               // .RequirePermission("SystemGroups", "View") 
                 .WithName("GetUserGroups");
 
  
@@ -28,7 +28,7 @@ namespace API.Endpoints
                     var result = await mediator.Send(new GetGroupUsers.Query(groupId), ct);
                     return Results.Ok(result);
                 })
-                .RequirePermission("SystemGroups", "View")  
+               // .RequirePermission("SystemGroups", "View")  
                 .WithName("GetGroupUsers");
 
   
@@ -38,7 +38,7 @@ namespace API.Endpoints
                     var id = await mediator.Send(new AddUserToGroup.Command(dto), ct);
                     return Results.Created($"/user-groups/{id}", new { id });
                 })
-                .RequirePermission("SystemGroups", "Edit")  
+               // .RequirePermission("SystemGroups", "Edit")  
                 .WithName("AddUserToGroup");
 
          

@@ -19,7 +19,7 @@ namespace Domain.UARbac
         public string? Image { get; private set; }
         public int? ViewType { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
 
         // Navigation properties
@@ -46,7 +46,7 @@ namespace Domain.UARbac
             string? image,
             int? viewType,
             int? regUserId,
-            string? regComputerId)
+            int? regComputerId)
         {
             Code = code;
             EngName = engName;
@@ -62,7 +62,7 @@ namespace Domain.UARbac
             Image = image;
             ViewType = viewType;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             RegDate = DateTime.UtcNow;
         }
 

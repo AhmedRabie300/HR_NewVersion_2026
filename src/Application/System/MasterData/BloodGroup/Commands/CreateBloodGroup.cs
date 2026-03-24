@@ -40,7 +40,7 @@ namespace Application.System.MasterData.BloodGroup.Commands
                     request.Data.ArbName4S,
                     request.Data.Remarks,
                     request.Data.RegUserId,
-                    request.Data.RegComputerId
+                    request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(bloodGroup);

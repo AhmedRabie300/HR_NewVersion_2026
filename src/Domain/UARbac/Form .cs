@@ -17,7 +17,7 @@ namespace Domain.UARbac
         public int? Width { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
         public string? Layout { get; private set; }
         public string? LinkTarget { get; private set; }
@@ -49,7 +49,7 @@ namespace Domain.UARbac
             int? width,
             string? remarks,
             int? regUserId,
-            string? regComputerId,
+            int? regComputerId,
             string? layout,
             string? linkTarget,
             string? linkUrl,
@@ -69,7 +69,7 @@ namespace Domain.UARbac
             Width = width;
             Remarks = remarks;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             Layout = layout;
             LinkTarget = linkTarget;
             LinkUrl = linkUrl;

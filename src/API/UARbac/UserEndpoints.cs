@@ -34,7 +34,7 @@ public static class UserEndpoints
                     );
                 }
             })
-           .RequirePermission("Users", "View")
+          // .RequirePermission("Users", "View")
             .WithName("GetAllUsers");
 
         users.MapGet("/{id:int}",
@@ -56,7 +56,7 @@ public static class UserEndpoints
                     );
                 }
             })
-            .RequirePermission("Users", "View")
+           // .RequirePermission("Users", "View")
             .WithName("GetUserById");
 
         // POST - إنشاء مستخدم جديد
@@ -79,7 +79,7 @@ public static class UserEndpoints
                     );
                 }
             })
-            .RequirePermission("Users", "Add")
+           // .RequirePermission("Users", "Add")
             .WithName("CreateUser");
 
         users.MapPut("/{id:int}",
@@ -102,7 +102,7 @@ public static class UserEndpoints
                     );
                 }
             })
-            .RequirePermission("Users", "Edit")
+           // .RequirePermission("Users", "Edit")
             .WithName("UpdateUser");
 
         users.MapDelete("/{id:int}",
@@ -124,7 +124,7 @@ public static class UserEndpoints
                     );
                 }
             })
-            .RequirePermission("Users", "Delete")
+           // .RequirePermission("Users", "Delete")
             .WithName("DeleteUser");
 
         return routes;

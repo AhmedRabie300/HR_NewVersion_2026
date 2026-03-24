@@ -10,7 +10,7 @@
         int? TravelClass,
         string? Remarks,
         int? RegUserId,
-        string? RegComputerId,
+        int? regComputerId,
         double? TicketAmount
     );
 }

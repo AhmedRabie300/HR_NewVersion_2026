@@ -16,6 +16,6 @@ namespace Application.UARbac.Menus.Dtos
         string? Image,
         int? ViewType,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

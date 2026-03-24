@@ -19,7 +19,7 @@ namespace API.Endpoints
                     var result = await mediator.Send(new ListGroups.Query(), ct);
                     return Results.Ok(result);
                 })
-                .RequirePermission("Usergroups", "View") // صلاحية عرض
+               // .RequirePermission("Usergroups", "View") // صلاحية عرض
                 .WithName("GetAllGroups");
 
              groups.MapGet("/{id:int}",
@@ -28,7 +28,7 @@ namespace API.Endpoints
                     var result = await mediator.Send(new GetGroupById.Query(id), ct);
                     return Results.Ok(result);
                 })
-                .RequirePermission("Usergroups", "View")  
+               // .RequirePermission("Usergroups", "View")  
                 .WithName("GetGroupById");
 
              groups.MapGet("/{id:int}/with-users",
@@ -37,7 +37,7 @@ namespace API.Endpoints
                     var result = await mediator.Send(new GetGroupWithUsers.Query(id), ct);
                     return Results.Ok(result);
                 })
-                .RequirePermission("Usergroups", "View")  
+               // .RequirePermission("Usergroups", "View")  
                 .WithName("GetGroupWithUsers");
 
              groups.MapPost("/",
@@ -46,7 +46,7 @@ namespace API.Endpoints
                     var id = await mediator.Send(new CreateGroup.Command(dto), ct);
                     return Results.Created($"/groups/{id}", new { id });
                 })
-                .RequirePermission("Usergroups", "Add")  
+               // .RequirePermission("Usergroups", "Add")  
                 .WithName("CreateGroup");
 
              groups.MapPut("/{id:int}",
@@ -56,7 +56,7 @@ namespace API.Endpoints
                     await mediator.Send(new UpdateGroup.Command(fixedDto), ct);
                     return Results.NoContent();
                 })
-                .RequirePermission("Usergroups", "Edit")  
+               // .RequirePermission("Usergroups", "Edit")  
                 .WithName("UpdateGroup");
 
              groups.MapDelete("/{id:int}",
@@ -65,7 +65,7 @@ namespace API.Endpoints
                     var result = await mediator.Send(new DeleteGroup.Command(id), ct);
                     return result ? Results.NoContent() : Results.NotFound();
                 })
-                .RequirePermission("Usergroups", "Delete")  
+               // .RequirePermission("Usergroups", "Delete")  
                 .WithName("DeleteGroup");
 
             return routes;

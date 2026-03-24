@@ -50,7 +50,7 @@ namespace Application.System.MasterData.Education.Commands
                     request.Data.RequiredYears,
                     request.Data.Remarks,
                     request.Data.RegUserId,
-                    request.Data.RegComputerId
+                    request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(entity);

@@ -45,7 +45,7 @@ namespace Application.System.MasterData.Nationality.Commands
                     travelClass: request.Data.TravelClass,
                     remarks: request.Data.Remarks,
                     regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.RegComputerId,
+                    regComputerId: request.Data.regComputerId,
                     ticketAmount: request.Data.TicketAmount
                 );
 

@@ -8,6 +8,6 @@
         string? ArbName4S,
         string? Remarks,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

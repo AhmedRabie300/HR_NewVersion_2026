@@ -17,7 +17,7 @@
         string? Image,
         int? ViewType,
         int? RegUserId,
-        string? RegComputerId,
+        int? regComputerId,
         DateTime RegDate,
         DateTime? CancelDate,
         int ChildrenCount

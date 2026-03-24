@@ -14,7 +14,7 @@ namespace Domain.System.MasterData
         public int? EvalRecruitmentId { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
         public int? EmployeesNo { get; private set; }
         public bool? ApplyValidation { get; private set; }
@@ -43,7 +43,7 @@ namespace Domain.System.MasterData
             string? positionBudget,
             int? appraisalTypeGroupId,
             int? regUserId,
-            string? regComputerId)
+            int? regComputerId)
         {
             Code = code;
             EngName = engName;
@@ -59,7 +59,7 @@ namespace Domain.System.MasterData
             PositionBudget = positionBudget;
             AppraisalTypeGroupId = appraisalTypeGroupId;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             RegDate = DateTime.UtcNow;
         }
 

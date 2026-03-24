@@ -60,7 +60,7 @@ namespace Application.System.MasterData.Department.Commands
                     parentId: request.Data.ParentId,
                     remarks: request.Data.Remarks,
                     regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.RegComputerId,
+                    regComputerId: request.Data.regComputerId,
                     costCenterCode: request.Data.CostCenterCode
                 );
 

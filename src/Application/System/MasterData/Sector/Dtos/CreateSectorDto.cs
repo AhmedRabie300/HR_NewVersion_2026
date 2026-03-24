@@ -9,6 +9,6 @@
         int? ParentId,
         string? Remarks,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

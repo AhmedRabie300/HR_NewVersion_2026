@@ -20,7 +20,7 @@ namespace API.Endpoints
                 var result = await mediator.Send(new ListModules.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("frmModules", "View")  
+           // .RequirePermission("frmModules", "View")  
             .WithName("GetAllModules")
             .WithDescription("Get all modules")
             .Produces<List<GetModuleDto>>(StatusCodes.Status200OK);
@@ -31,7 +31,7 @@ namespace API.Endpoints
                 var result = await mediator.Send(new GetActiveModules.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("frmModules", "View")
+           // .RequirePermission("frmModules", "View")
             .WithName("GetActiveModules")
             .WithDescription("Get only active modules")
             .Produces<List<GetModuleDto>>(StatusCodes.Status200OK);
@@ -44,7 +44,7 @@ namespace API.Endpoints
                 var result = await mediator.Send(new GetModulesByType.Query(type), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("frmModules", "View")
+           // .RequirePermission("frmModules", "View")
             .WithName("GetModulesByType")
             .WithDescription("Get modules by type (HR, GL, AR, AP, etc)")
             .Produces<List<GetModuleDto>>(StatusCodes.Status200OK);
@@ -60,7 +60,7 @@ namespace API.Endpoints
                     ? Results.Ok(result)
                     : Results.NotFound(new { message = $"Module with ID {id} not found" });
             })
-            .RequirePermission("frmModules", "View")
+           // .RequirePermission("frmModules", "View")
             .WithName("GetModuleById")
             .WithDescription("Get module by ID")
             .Produces<GetModuleDto>(StatusCodes.Status200OK)
@@ -75,7 +75,7 @@ namespace API.Endpoints
                 var id = await mediator.Send(new CreateModule.Command(dto), ct);
                 return Results.Created($"/modules/{id}", new { id });
             })
-            .RequirePermission("frmModules", "Add")
+           // .RequirePermission("frmModules", "Add")
             .WithName("CreateModule")
             .WithDescription("Create new module")
             .Produces(StatusCodes.Status201Created)
@@ -92,7 +92,7 @@ namespace API.Endpoints
                 await mediator.Send(new UpdateModule.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("frmModules", "Edit")
+           // .RequirePermission("frmModules", "Edit")
             .WithName("UpdateModule")
             .WithDescription("Update existing module")
             .Produces(StatusCodes.Status204NoContent)
@@ -109,7 +109,7 @@ namespace API.Endpoints
                     ? Results.NoContent()
                     : Results.NotFound(new { message = $"Module with ID {id} not found" });
             })
-            .RequirePermission("frmModules", "Delete")
+           // .RequirePermission("frmModules", "Delete")
             .WithName("DeleteModule")
             .WithDescription("Delete module")
             .Produces(StatusCodes.Status204NoContent)

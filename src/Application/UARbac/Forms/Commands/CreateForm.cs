@@ -70,7 +70,7 @@
 //                    request.Data.Width,
 //                    request.Data.Remarks,
 //                    request.Data.RegUserId,
-//                    request.Data.RegComputerId,
+//                    request.Data.regComputerId,
 //                    request.Data.Layout,
 //                    request.Data.LinkTarget,
 //                    request.Data.LinkUrl,

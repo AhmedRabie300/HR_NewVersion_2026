@@ -10,6 +10,6 @@
         bool? AllowDelete,
         bool? AllowPrint,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

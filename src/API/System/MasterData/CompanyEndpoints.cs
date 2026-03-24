@@ -19,7 +19,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListCompanies.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Companies", "View")
+           //// .RequirePermission("Companies", "View")
             .WithName("GetAllCompanies");
 
             // GET /api/hr/master-data/companies/paged
@@ -35,7 +35,7 @@ namespace API.System.MasterData
                     ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Companies", "View")
+           // .RequirePermission("Companies", "View")
             .WithName("GetPagedCompanies");
 
             // GET /api/hr/master-data/companies/{id}
@@ -47,7 +47,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetCompanyById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Companies", "View")
+           // .RequirePermission("Companies", "View")
             .WithName("GetCompanyById");
 
             // GET /api/hr/master-data/companies/by-code/{code}
@@ -59,7 +59,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetCompanyByCode.Query(code), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Companies", "View")
+           // .RequirePermission("Companies", "View")
             .WithName("GetCompanyByCode");
 
             // POST /api/hr/master-data/companies
@@ -71,7 +71,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateCompany.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/companies/{id}", new { id });
             })
-            .RequirePermission("Companies", "Add")
+           // .RequirePermission("Companies", "Add")
             .WithName("CreateCompany");
 
             // PUT /api/hr/master-data/companies/{id}
@@ -85,7 +85,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateCompany.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Companies", "Edit")
+           // .RequirePermission("Companies", "Edit")
             .WithName("UpdateCompany");
 
             // DELETE /api/hr/master-data/companies/{id} (Soft Delete)
@@ -99,7 +99,7 @@ namespace API.System.MasterData
                 // await mediator.Send(new SoftDeleteCompany.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Companies", "Delete")
+           // .RequirePermission("Companies", "Delete")
             .WithName("SoftDeleteCompany");
 
             return routes;

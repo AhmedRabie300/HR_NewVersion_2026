@@ -60,7 +60,7 @@ namespace Application.System.MasterData.Currency.Commands
                     request.Data.CompanyId,
                     request.Data.Remarks,
                     request.Data.RegUserId,
-                    request.Data.RegComputerId
+                    request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(entity);

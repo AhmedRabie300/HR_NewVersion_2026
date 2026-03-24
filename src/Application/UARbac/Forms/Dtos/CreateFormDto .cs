@@ -15,7 +15,7 @@ namespace Application.UARbac.Forms.Dtos
         int? Width,
         string? Remarks,
         int? RegUserId,
-        string? RegComputerId,
+        int? regComputerId,
         string? Layout,
         string? LinkTarget,
         string? LinkUrl,

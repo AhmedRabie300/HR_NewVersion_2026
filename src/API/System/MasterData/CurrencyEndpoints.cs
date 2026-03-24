@@ -18,7 +18,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListCurrencies.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Currencies", "View")
+           // .RequirePermission("Currencies", "View")
             .WithName("GetAllCurrencies");
 
             group.MapGet("/paged", async (
@@ -33,7 +33,7 @@ namespace API.System.MasterData
                     new GetPagedCurrencies.Query(pageNumber, pageSize, searchTerm, companyId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Currencies", "View")
+           // .RequirePermission("Currencies", "View")
             .WithName("GetPagedCurrencies");
 
       
@@ -43,7 +43,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetCurrencyById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Currencies", "View")
+           // .RequirePermission("Currencies", "View")
             .WithName("GetCurrencyById");
 
             group.MapPost("/", async (IMediator mediator, CreateCurrencyDto dto, CancellationToken ct) =>
@@ -51,7 +51,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateCurrency.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/currencies/{id}", new { id });
             })
-            .RequirePermission("Currencies", "Add")
+           // .RequirePermission("Currencies", "Add")
             .WithName("CreateCurrency");
 
             group.MapPut("/{id:int}", async (
@@ -64,7 +64,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateCurrency.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Currencies", "Edit")
+           // .RequirePermission("Currencies", "Edit")
             .WithName("UpdateCurrency");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -72,7 +72,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new DeleteCurrency.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .RequirePermission("Currencies", "Delete")
+           // .RequirePermission("Currencies", "Delete")
             .WithName("DeleteCurrency");
 
             group.MapDelete("/{id:int}/soft", async (
@@ -84,7 +84,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteCurrency.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Currencies", "Delete")
+           // .RequirePermission("Currencies", "Delete")
             .WithName("SoftDeleteCurrency");
 
             return routes;

@@ -18,7 +18,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListMaritalStatuses.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("MaritalStatus", "View")
+           // .RequirePermission("MaritalStatus", "View")
             .WithName("GetAllMaritalStatuses");
 
             group.MapGet("/paged", async (
@@ -32,7 +32,7 @@ namespace API.System.MasterData
                     new GetPagedMaritalStatuses.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("MaritalStatus", "View")
+           // .RequirePermission("MaritalStatus", "View")
             .WithName("GetPagedMaritalStatuses");
 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -40,7 +40,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetMaritalStatusById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("MaritalStatus", "View")
+           // .RequirePermission("MaritalStatus", "View")
             .WithName("GetMaritalStatusById");
 
             group.MapPost("/", async (IMediator mediator, CreateMaritalStatusDto dto, CancellationToken ct) =>
@@ -48,7 +48,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateMaritalStatus.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/marital-status/{id}", new { id });
             })
-            .RequirePermission("MaritalStatus", "Add")
+           // .RequirePermission("MaritalStatus", "Add")
             .WithName("CreateMaritalStatus");
 
             group.MapPut("/{id:int}", async (
@@ -61,7 +61,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateMaritalStatus.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("MaritalStatus", "Edit")
+           // .RequirePermission("MaritalStatus", "Edit")
             .WithName("UpdateMaritalStatus");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -69,7 +69,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new DeleteMaritalStatus.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .RequirePermission("MaritalStatus", "Delete")
+           // .RequirePermission("MaritalStatus", "Delete")
             .WithName("DeleteMaritalStatus");
 
             group.MapDelete("/{id:int}/soft", async (
@@ -81,7 +81,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteMaritalStatus.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("MaritalStatus", "Delete")
+           // .RequirePermission("MaritalStatus", "Delete")
             .WithName("SoftDeleteMaritalStatus");
 
             return routes;

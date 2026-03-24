@@ -14,10 +14,10 @@ namespace Domain.System.MasterData
         public string? EmpSecondName { get; private set; }
         public string? EmpThirdName { get; private set; }
         public string? EmpFourthName { get; private set; }
-        public char? EmpNameSeparator { get; private set; }
+        public string? EmpNameSeparator { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
         public int? PrepareDay { get; private set; }
         public string? DefaultTheme { get; private set; }
@@ -55,10 +55,10 @@ namespace Domain.System.MasterData
             string? empSecondName,
             string? empThirdName,
             string? empFourthName,
-            char? empNameSeparator,
+            string? empNameSeparator,
             string? remarks,
             int? regUserId,
-            string? regComputerId,
+            int? regComputerId,
             int? prepareDay,
             string? defaultTheme,
             bool? vacationIsAccum,
@@ -90,7 +90,7 @@ namespace Domain.System.MasterData
             EmpNameSeparator = empNameSeparator;
             Remarks = remarks;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             PrepareDay = prepareDay;
             DefaultTheme = defaultTheme;
             VacationIsAccum = vacationIsAccum;
@@ -131,13 +131,13 @@ namespace Domain.System.MasterData
             string? empSecondName,
             string? empThirdName,
             string? empFourthName,
-            char? empNameSeparator)
+            string? empNameSeparator)
         {
             if (empFirstName != null) EmpFirstName = empFirstName;
             if (empSecondName != null) EmpSecondName = empSecondName;
             if (empThirdName != null) EmpThirdName = empThirdName;
             if (empFourthName != null) EmpFourthName = empFourthName;
-            if (empNameSeparator.HasValue) EmpNameSeparator = empNameSeparator;
+            if (empNameSeparator != null) EmpNameSeparator = empNameSeparator;
         }
 
         public void UpdateVacationSettings(

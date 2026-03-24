@@ -13,7 +13,7 @@ namespace Domain.System.MasterData
         public int? TravelClass { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
         public double? TicketAmount { get; private set; }
 
@@ -32,7 +32,7 @@ namespace Domain.System.MasterData
             int? travelClass,
             string? remarks,
             int? regUserId,
-            string? regComputerId,
+            int? regComputerId,
             double? ticketAmount)
         {
             Code = code;
@@ -44,7 +44,7 @@ namespace Domain.System.MasterData
             TravelClass = travelClass;
             Remarks = remarks;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             TicketAmount = ticketAmount;
             RegDate = DateTime.UtcNow;
         }

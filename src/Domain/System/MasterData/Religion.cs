@@ -10,7 +10,7 @@ namespace Domain.System.MasterData
         public string? ArbName4S { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
 
         private Religion() { }
@@ -22,7 +22,7 @@ namespace Domain.System.MasterData
             string? arbName4S,
             string? remarks,
             int? regUserId,
-            string? regComputerId)
+            int? regComputerId)
         {
             Code = code;
             EngName = engName;
@@ -30,7 +30,7 @@ namespace Domain.System.MasterData
             ArbName4S = arbName4S;
             Remarks = remarks;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             RegDate = DateTime.UtcNow;
         }
 

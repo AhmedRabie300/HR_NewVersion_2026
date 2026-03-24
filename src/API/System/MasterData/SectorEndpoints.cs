@@ -22,7 +22,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListSectors.Query(lang), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Sectors", "View")
+           // .RequirePermission("Sectors", "View")
             .WithName("GetAllSectors")
             .WithOpenApi();
 
@@ -41,7 +41,7 @@ namespace API.System.MasterData
                     ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Sectors", "View")
+           // .RequirePermission("Sectors", "View")
             .WithName("GetPagedSectors")
             .WithOpenApi();
 
@@ -55,7 +55,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetSectorById.Query(id, lang), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Sectors", "View")
+           // .RequirePermission("Sectors", "View")
             .WithName("GetSectorById")
             .WithOpenApi();
 
@@ -71,7 +71,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetSectorsByCompany.Query(companyId, lang), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Sectors", "View")
+           // .RequirePermission("Sectors", "View")
             .WithName("GetSectorsByCompany")
             .WithOpenApi();
 
@@ -85,7 +85,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateSector.Command(dto, lang), ct);
                 return Results.Created($"/api/hr/master-data/sectors/{id}", new { id });
             })
-            .RequirePermission("Sectors", "Add")
+           // .RequirePermission("Sectors", "Add")
             .WithName("CreateSector")
             .WithOpenApi();
 
@@ -101,7 +101,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateSector.Command(fixedDto, lang), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Sectors", "Edit")
+           // .RequirePermission("Sectors", "Edit")
             .WithName("UpdateSector")
             .WithOpenApi();
 
@@ -116,7 +116,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteSector.Command(id, regUserId, lang), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Sectors", "Delete")
+           // .RequirePermission("Sectors", "Delete")
             .WithName("SoftDeleteSector")
             .WithOpenApi();
 

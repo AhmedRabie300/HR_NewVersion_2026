@@ -14,6 +14,6 @@
         bool? AffectPeriod,
         string? Remarks,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

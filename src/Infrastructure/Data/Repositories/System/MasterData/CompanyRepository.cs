@@ -29,13 +29,32 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public async Task<List<Company>> GetAllAsync()
         {
-            return await _db.Companies
-                .Where(x => x.CancelDate == null)
-                .OrderBy(x => x.Code)
-                .AsNoTracking()
-                .ToListAsync();
-        }
+            try
+            {
+                // جيب Id فقط عشان تتأكد إن الاتصال شغال
+                var ids = await _db.Companies
+                    .Where(x => x.CancelDate == null)
+                    .Select(x => x.Id)
+                    .ToListAsync();
 
+                Console.WriteLine($"IDs count: {ids.Count}");
+
+                if (!ids.Any())
+                    return new List<Company>();
+
+                // جيب البيانات كاملة
+                return await _db.Companies
+                    .Where(x => ids.Contains(x.Id))
+                    .OrderBy(x => x.Code)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+                throw;
+            }
+        }
         public async Task<Company> AddAsync(Company company)
         {
             await _db.Companies.AddAsync(company);

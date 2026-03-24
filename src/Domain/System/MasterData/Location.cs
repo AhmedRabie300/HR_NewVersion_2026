@@ -16,7 +16,7 @@ namespace Domain.System.MasterData
         public int? CompanyId { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
         public int? DepartmentId { get; private set; }
         public string? CostCenterCode1 { get; private set; }
@@ -53,7 +53,7 @@ namespace Domain.System.MasterData
             string? costCenterCode3,
             string? costCenterCode4,
             int? regUserId,
-            string? regComputerId)
+            int? regComputerId)
         {
             Code = code;
             CompanyId = companyId;
@@ -72,7 +72,7 @@ namespace Domain.System.MasterData
             CostCenterCode3 = costCenterCode3;
             CostCenterCode4 = costCenterCode4;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             RegDate = DateTime.UtcNow;
         }
 

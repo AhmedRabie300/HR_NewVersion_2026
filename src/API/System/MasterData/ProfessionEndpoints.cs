@@ -18,7 +18,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListProfessions.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Professions", "View")
+           // .RequirePermission("Professions", "View")
             .WithName("GetAllProfessions");
 
             group.MapGet("/paged", async (
@@ -33,7 +33,7 @@ namespace API.System.MasterData
                     new GetPagedProfessions.Query(pageNumber, pageSize, searchTerm, companyId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Professions", "View")
+           // .RequirePermission("Professions", "View")
             .WithName("GetPagedProfessions");
  
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -41,7 +41,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetProfessionById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Professions", "View")
+           // .RequirePermission("Professions", "View")
             .WithName("GetProfessionById");
 
             group.MapPost("/", async (IMediator mediator, CreateProfessionDto dto, CancellationToken ct) =>
@@ -49,7 +49,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateProfession.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/professions/{id}", new { id });
             })
-            .RequirePermission("Professions", "Add")
+           // .RequirePermission("Professions", "Add")
             .WithName("CreateProfession");
 
             group.MapPut("/{id:int}", async (
@@ -62,7 +62,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateProfession.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Professions", "Edit")
+           // .RequirePermission("Professions", "Edit")
             .WithName("UpdateProfession");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -70,7 +70,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new DeleteProfession.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .RequirePermission("Professions", "Delete")
+           // .RequirePermission("Professions", "Delete")
             .WithName("DeleteProfession");
 
             group.MapDelete("/{id:int}/soft", async (
@@ -82,7 +82,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteProfession.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Professions", "Delete")
+           // .RequirePermission("Professions", "Delete")
             .WithName("SoftDeleteProfession");
 
             return routes;

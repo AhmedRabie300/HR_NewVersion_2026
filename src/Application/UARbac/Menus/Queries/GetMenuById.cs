@@ -50,7 +50,7 @@ namespace Application.UARbac.Menus.Queries
                     menu.Image,
                     menu.ViewType,
                     menu.RegUserId,
-                    menu.RegComputerId,
+                    menu.regComputerId,
                     menu.RegDate,
                     menu.CancelDate,
                     menu.Children?.Count ?? 0

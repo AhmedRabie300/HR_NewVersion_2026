@@ -19,7 +19,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListDepartments.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Departments", "View")
+           // .RequirePermission("Departments", "View")
             .WithName("GetAllDepartments");
 
             // GET /api/hr/master-data/departments/paged
@@ -36,7 +36,7 @@ namespace API.System.MasterData
                     ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Departments", "View")
+           // .RequirePermission("Departments", "View")
             .WithName("GetPagedDepartments");
 
             // GET /api/hr/master-data/departments/{id}
@@ -48,7 +48,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetDepartmentById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Departments", "View")
+           // .RequirePermission("Departments", "View")
             .WithName("GetDepartmentById");
 
             
@@ -62,7 +62,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetDepartmentsByCompany.Query(companyId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Departments", "View")
+           // .RequirePermission("Departments", "View")
             .WithName("GetDepartmentsByCompany");
 
             // POST /api/hr/master-data/departments
@@ -74,7 +74,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateDepartment.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/departments/{id}", new { id });
             })
-            .RequirePermission("Departments", "Add")
+           // .RequirePermission("Departments", "Add")
             .WithName("CreateDepartment");
 
             // PUT /api/hr/master-data/departments/{id}
@@ -88,7 +88,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateDepartment.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Departments", "Edit")
+           // .RequirePermission("Departments", "Edit")
             .WithName("UpdateDepartment");
 
             return routes;

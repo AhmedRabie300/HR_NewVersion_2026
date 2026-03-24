@@ -13,7 +13,7 @@ namespace Domain.UARbac
         public bool? AllowDelete { get; private set; }
         public bool? AllowPrint { get; private set; }
         public int? RegUserId { get; private set; }
-        public string? RegComputerId { get; private set; }
+        public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
 
         // Navigation properties
@@ -33,7 +33,7 @@ namespace Domain.UARbac
             bool? allowDelete,
             bool? allowPrint,
             int? regUserId,
-            string? regComputerId)
+            int? regComputerId)
         {
             FormId = formId;
             GroupId = groupId;
@@ -44,7 +44,7 @@ namespace Domain.UARbac
             AllowDelete = allowDelete;
             AllowPrint = allowPrint;
             RegUserId = regUserId;
-            RegComputerId = regComputerId;
+            regComputerId = regComputerId;
             RegDate = DateTime.UtcNow;
         }
 

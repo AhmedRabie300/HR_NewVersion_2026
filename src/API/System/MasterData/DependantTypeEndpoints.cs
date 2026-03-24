@@ -18,7 +18,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListDependantTypes.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("DependantTypes", "View")
+           // .RequirePermission("DependantTypes", "View")
             .WithName("GetAllDependantTypes");
 
             group.MapGet("/paged", async (
@@ -33,7 +33,7 @@ namespace API.System.MasterData
                     new GetPagedDependantTypes.Query(pageNumber, pageSize, searchTerm, companyId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("DependantTypes", "View")
+           // .RequirePermission("DependantTypes", "View")
             .WithName("GetPagedDependantTypes");
  
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -41,7 +41,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetDependantTypeById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("DependantTypes", "View")
+           // .RequirePermission("DependantTypes", "View")
             .WithName("GetDependantTypeById");
 
             group.MapPost("/", async (IMediator mediator, CreateDependantTypeDto dto, CancellationToken ct) =>
@@ -49,7 +49,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateDependantType.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/dependant-types/{id}", new { id });
             })
-            .RequirePermission("DependantTypes", "Add")
+           // .RequirePermission("DependantTypes", "Add")
             .WithName("CreateDependantType");
 
             group.MapPut("/{id:int}", async (
@@ -62,7 +62,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateDependantType.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("DependantTypes", "Edit")
+           // .RequirePermission("DependantTypes", "Edit")
             .WithName("UpdateDependantType");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -70,7 +70,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new DeleteDependantType.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .RequirePermission("DependantTypes", "Delete")
+           // .RequirePermission("DependantTypes", "Delete")
             .WithName("DeleteDependantType");
 
             group.MapDelete("/{id:int}/soft", async (
@@ -82,7 +82,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteDependantType.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("DependantTypes", "Delete")
+           // .RequirePermission("DependantTypes", "Delete")
             .WithName("SoftDeleteDependantType");
 
             return routes;

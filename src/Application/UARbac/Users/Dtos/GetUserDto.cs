@@ -17,7 +17,7 @@ namespace Application.UARbac.Users.Dtos
         DateTime? PasswordExpiry,
         DateTime? PasswordChangedOn,
         string? Remarks,
-        int? RegComputerId,
+        int? regComputerId,
         DateTime RegDate,
         DateTime? CancelDate,
         int? RelEmployee,

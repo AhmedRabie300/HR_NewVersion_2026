@@ -19,7 +19,7 @@ public static class NationalityEndpoints
             var result = await mediator.Send(new ListNationalities.Query(), ct);
             return Results.Ok(result);
         })
-        .RequirePermission("Nationalities", "View")
+       // .RequirePermission("Nationalities", "View")
         .WithName("GetAllNationalities");
 
         // GET /api/hr/master-data/nationalities/paged
@@ -35,7 +35,7 @@ public static class NationalityEndpoints
                 ct);
             return Results.Ok(result);
         })
-        .RequirePermission("Nationalities", "View")
+       // .RequirePermission("Nationalities", "View")
         .WithName("GetPagedNationalities");
 
       
@@ -47,7 +47,7 @@ public static class NationalityEndpoints
             var result = await mediator.Send(new GetNationalityById.Query(id), ct);
             return Results.Ok(result);
         })
-        .RequirePermission("Nationalities", "View")
+       // .RequirePermission("Nationalities", "View")
         .WithName("GetNationalityById");
 
          group.MapPost("/", async (
@@ -58,7 +58,7 @@ public static class NationalityEndpoints
             var id = await mediator.Send(new CreateNationality.Command(dto), ct);
             return Results.Created($"/api/hr/master-data/nationalities/{id}", new { id });
         })
-        .RequirePermission("Nationalities", "Add")
+       // .RequirePermission("Nationalities", "Add")
         .WithName("CreateNationality");
 
          group.MapPut("/{id:int}", async (
@@ -71,7 +71,7 @@ public static class NationalityEndpoints
             await mediator.Send(new UpdateNationality.Command(fixedDto), ct);
             return Results.NoContent();
         })
-        .RequirePermission("Nationalities", "Edit")
+       // .RequirePermission("Nationalities", "Edit")
         .WithName("UpdateNationality");
 
     

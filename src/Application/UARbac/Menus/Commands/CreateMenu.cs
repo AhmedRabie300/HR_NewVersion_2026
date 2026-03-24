@@ -30,8 +30,7 @@ namespace Application.UARbac.Menus.Commands
                 RuleFor(x => x.Data.Image)
                     .MaximumLength(500);
 
-                RuleFor(x => x.Data.RegComputerId)
-                    .MaximumLength(50);
+            
             }
         }
 
@@ -77,7 +76,7 @@ namespace Application.UARbac.Menus.Commands
                     request.Data.Image,
                     request.Data.ViewType,
                     request.Data.RegUserId,
-                    request.Data.RegComputerId
+                    request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(menu);

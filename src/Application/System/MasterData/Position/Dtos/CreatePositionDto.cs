@@ -15,6 +15,6 @@
         string? PositionBudget,
         int? AppraisalTypeGroupId,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

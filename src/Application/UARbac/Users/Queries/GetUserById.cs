@@ -50,7 +50,7 @@ namespace Application.UARbac.Users.Queries
                     user.PasswordExpiry,
                     user.PasswordChangedOn,
                     user.Remarks,
-                    user.RegComputerId,
+                    user.regComputerId,
                     user.RegDate,
                     user.CancelDate,
                     user.RelEmployee,

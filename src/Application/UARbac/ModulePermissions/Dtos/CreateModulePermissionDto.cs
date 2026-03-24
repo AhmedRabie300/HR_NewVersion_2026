@@ -6,6 +6,6 @@
         int? UserId,
         bool? CanView,
         int? RegUserId,
-        string? RegComputerId
+        int? regComputerId
     );
 }

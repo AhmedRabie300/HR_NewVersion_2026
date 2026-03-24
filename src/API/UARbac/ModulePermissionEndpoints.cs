@@ -22,7 +22,7 @@ namespace API.Endpoints
                 var result = await mediator.Send(new GetUserModulePermissions.Query(userId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("frmModules", "View")
+           // .RequirePermission("frmModules", "View")
             .WithName("GetUserModulePermissions");
 
              permissions.MapGet("/module/{moduleId:int}", async (
@@ -33,7 +33,7 @@ namespace API.Endpoints
                 var result = await mediator.Send(new GetModulePermissionsByModule.Query(moduleId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("frmModules", "View")
+           // .RequirePermission("frmModules", "View")
             .WithName("GetModulePermissionsByModule");
 
              permissions.MapGet("/{id:int}", async (
@@ -44,7 +44,7 @@ namespace API.Endpoints
                 var result = await mediator.Send(new GetModulePermissionById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("frmModules", "View")
+           // .RequirePermission("frmModules", "View")
             .WithName("GetModulePermissionById");
 
  
@@ -56,7 +56,7 @@ namespace API.Endpoints
                 var id = await mediator.Send(new CreateModulePermission.Command(dto), ct);
                 return Results.Created($"/module-permissions/{id}", new { id });
             })
-            .RequirePermission("frmModules", "Add")
+           // .RequirePermission("frmModules", "Add")
             .WithName("CreateModulePermission");
 
  
@@ -70,7 +70,7 @@ namespace API.Endpoints
                 await mediator.Send(new UpdateModulePermission.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("frmModules", "Edit")
+           // .RequirePermission("frmModules", "Edit")
             .WithName("UpdateModulePermission");
 
  
@@ -82,7 +82,7 @@ namespace API.Endpoints
                 var result = await mediator.Send(new DeleteModulePermission.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .RequirePermission("frmModules", "Delete")
+           // .RequirePermission("frmModules", "Delete")
             .WithName("DeleteModulePermission");
 
       

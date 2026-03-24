@@ -116,7 +116,7 @@ namespace Application.System.MasterData.Location.Commands
                     costCenterCode3: request.Data.CostCenterCode3,
                     costCenterCode4: request.Data.CostCenterCode4,
                     regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.RegComputerId
+                    regComputerId: request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(location);

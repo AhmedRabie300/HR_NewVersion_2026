@@ -9,15 +9,7 @@ namespace Application.System.MasterData.Company.Queries
     {
         public record Query(string Code) : IRequest<CompanyDto>;
 
-        public sealed class Validator : AbstractValidator<Query>
-        {
-            public Validator()
-            {
-                RuleFor(x => x.Code)
-                    .NotEmpty().WithMessage("Company code is required")
-                    .MaximumLength(50).WithMessage("Code must not exceed 50 characters");
-            }
-        }
+ 
 
         public class Handler : IRequestHandler<Query, CompanyDto>
         {

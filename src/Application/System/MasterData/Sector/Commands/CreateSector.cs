@@ -91,7 +91,7 @@ namespace Application.System.MasterData.Sector.Commands
                     parentId: request.Data.ParentId,
                     remarks: request.Data.Remarks,
                     regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.RegComputerId
+                    regComputerId: request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(sector);

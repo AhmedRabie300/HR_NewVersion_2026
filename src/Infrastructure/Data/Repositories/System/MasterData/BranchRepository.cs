@@ -43,8 +43,8 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         {
             return await _db.Branches
                 .Where(x => x.CancelDate == null)
-                .Include(x => x.Company)
-                .Include(x => x.ParentBranch)
+                //.Include(x => x.Company)
+                //.Include(x => x.ParentBranch)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();

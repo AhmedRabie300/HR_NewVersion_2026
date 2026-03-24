@@ -20,7 +20,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListBranches.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Branches", "View")
+           // .RequirePermission("Branches", "View")
             .WithName("GetAllBranches");
 
             // GET /api/hr/master-data/branches/paged
@@ -37,7 +37,7 @@ namespace API.System.MasterData
                     ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Branches", "View")
+           // .RequirePermission("Branches", "View")
             .WithName("GetPagedBranches");
 
             // GET /api/hr/master-data/branches/{id}
@@ -49,7 +49,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetBranchById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Branches", "View")
+           // .RequirePermission("Branches", "View")
             .WithName("GetBranchById");
 
            
@@ -63,7 +63,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetBranchesByCompany.Query(companyId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Branches", "View")
+           // .RequirePermission("Branches", "View")
             .WithName("GetBranchesByCompany");
 
             // POST /api/hr/master-data/branches
@@ -75,7 +75,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateBranch.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/branches/{id}", new { id });
             })
-            .RequirePermission("Branches", "Add")
+           // .RequirePermission("Branches", "Add")
             .WithName("CreateBranch");
 
             // PUT /api/hr/master-data/branches/{id}
@@ -89,7 +89,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateBranch.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Branches", "Edit")
+           // .RequirePermission("Branches", "Edit")
             .WithName("UpdateBranch");
 
             return routes;

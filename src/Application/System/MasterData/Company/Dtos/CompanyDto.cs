@@ -12,7 +12,7 @@
         string? EmpSecondName,
         string? EmpThirdName,
         string? EmpFourthName,
-        char? EmpNameSeparator,
+        string? EmpNameSeparator,
         string? Remarks,
         int? PrepareDay,
         string? DefaultTheme,

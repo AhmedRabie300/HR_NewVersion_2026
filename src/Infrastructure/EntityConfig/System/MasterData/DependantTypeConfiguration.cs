@@ -40,9 +40,9 @@ namespace Infrastructure.EntityConfig.System.MasterData
             builder.Property(x => x.RegUserId)
                 .HasColumnName("RegUserID");
 
-            builder.Property(x => x.RegComputerId)
+            builder.Property(x => x.regComputerId)
                 .HasMaxLength(50)
-                .HasColumnName("RegComputerID");
+                .HasColumnName("regComputerId");
 
             builder.Property(x => x.RegDate)
                 .IsRequired()

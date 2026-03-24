@@ -38,7 +38,7 @@ namespace Infrastructure.EntityConfig.UARbac
             builder.Property(x => x.RegDate)
                 .IsRequired();
 
-            builder.Property(x => x.RegComputerId)
+            builder.Property(x => x.regComputerId)
                 .HasMaxLength(50);
 
             // Indexes

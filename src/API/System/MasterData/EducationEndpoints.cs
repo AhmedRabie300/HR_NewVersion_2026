@@ -18,7 +18,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListEducations.Query(), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Educations", "View")
+           // .RequirePermission("Educations", "View")
             .WithName("GetAllEducations");
 
             group.MapGet("/paged", async (
@@ -33,7 +33,7 @@ namespace API.System.MasterData
                     new GetPagedEducations.Query(pageNumber, pageSize, searchTerm, companyId), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Educations", "View")
+           // .RequirePermission("Educations", "View")
             .WithName("GetPagedEducations");
 
           
@@ -42,7 +42,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetEducationById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .RequirePermission("Educations", "View")
+           // .RequirePermission("Educations", "View")
             .WithName("GetEducationById");
 
             group.MapPost("/", async (IMediator mediator, CreateEducationDto dto, CancellationToken ct) =>
@@ -50,7 +50,7 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateEducation.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/educations/{id}", new { id });
             })
-            .RequirePermission("Educations", "Add")
+           // .RequirePermission("Educations", "Add")
             .WithName("CreateEducation");
 
             group.MapPut("/{id:int}", async (
@@ -63,7 +63,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateEducation.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Educations", "Edit")
+           // .RequirePermission("Educations", "Edit")
             .WithName("UpdateEducation");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -71,7 +71,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new DeleteEducation.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .RequirePermission("Educations", "Delete")
+           // .RequirePermission("Educations", "Delete")
             .WithName("DeleteEducation");
 
             group.MapDelete("/{id:int}/soft", async (
@@ -83,7 +83,7 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteEducation.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .RequirePermission("Educations", "Delete")
+           // .RequirePermission("Educations", "Delete")
             .WithName("SoftDeleteEducation");
 
             return routes;
