@@ -25,7 +25,6 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<ModulePermission> ModulePermissions => Set<ModulePermission>();
 
     public DbSet<FormControl> FormControls => Set<FormControl>();
-    public DbSet<BloodGroups> BloodGroups => Set<BloodGroups>();
     public DbSet<Users> Users => Set<Users>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<UserGroup> UserGroup => Set<UserGroup>();
@@ -38,9 +37,17 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Sector> Sectors => Set<Sector>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<Position> Positions => Set<Position>();
-   
-    
-    
+    public DbSet<Religion> Religions => Set<Religion>();
+    public DbSet<BloodGroup> BloodGroups => Set<BloodGroup>();
+    public DbSet<DependantType> DependantTypes => Set<DependantType>();
+    public DbSet<Currency> Currencies => Set<Currency>();
+    public DbSet<Profession> Professions => Set<Profession>();
+    public DbSet<Education> Educations => Set<Education>();
+    public DbSet<MaritalStatus> MaritalStatuses => Set<MaritalStatus>();
+ 
+
+
+
     //Master Data
 
     public DbSet<Nationality> Nationalities => Set<Nationality>();

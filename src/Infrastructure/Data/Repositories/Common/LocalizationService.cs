@@ -204,7 +204,47 @@ namespace Infrastructure.Services
     { 1, "Cannot delete {0} because it has child positions" },
     { 2, "لا يمكن حذف {0} لأنه يحتوي على وظائف فرعية" }
 }
+                ,
+                // ===== BloodGroup Specific Messages =====
+                ["BloodGroup"] = new Dictionary<int, string>
+{
+    { 1, "Blood group" },
+    { 2, "فصيلة الدم" }
+},
+                ["CodeExists"] = new Dictionary<int, string>
+{
+    { 1, "{0} with code '{1}' already exists" },
+    { 2, "{0} بالكود '{1}' موجود بالفعل" }
+},
 
+                // ===== DependantType Specific Messages =====
+                ["DependantType"] = new Dictionary<int, string>
+{
+    { 1, "Dependant type" },
+    { 2, "نوع المعال" }
+},
+                ["CompanyRequired"] = new Dictionary<int, string>
+{
+    { 1, "Company is required" },
+    { 2, "الشركة مطلوبة" }
+},
+                // ===== Currency Specific Messages =====
+                ["Currency"] = new Dictionary<int, string>
+{
+    { 1, "Currency" },
+    { 2, "العملة" }
+},
+                ["DecimalFractionRequired"] = new Dictionary<int, string>
+{
+    { 1, "Decimal fraction is required" },
+    { 2, "الجزء العشري مطلوب" }
+},
+                // ===== MaritalStatus Specific Messages =====
+                ["MaritalStatus"] = new Dictionary<int, string>
+{
+    { 1, "Marital status" },
+    { 2, "الحالة الاجتماعية" }
+},
 
             };
         }

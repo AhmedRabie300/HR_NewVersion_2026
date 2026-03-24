@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="System\MasterData\BloodGroup\Validators\" />
+    <Folder Include="System\MasterData\MaritalStatus\Validators\" />
     <Folder Include="UARbac\Login\Queries\" />
   </ItemGroup>
 

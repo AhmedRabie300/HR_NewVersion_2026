@@ -7,9 +7,9 @@ using System.Text;
 
 namespace Infrastructure.EntityConfig.System.MasterData
 {
-    public class BloodGroupsConfiguration : IEntityTypeConfiguration<BloodGroups>
+    public class BloodGroupsConfiguration : IEntityTypeConfiguration<BloodGroup>
     {
-        public void Configure(EntityTypeBuilder<BloodGroups> builder)
+        public void Configure(EntityTypeBuilder<BloodGroup> builder)
         {
 
             builder.ToTable("hrs_BloodGroups");

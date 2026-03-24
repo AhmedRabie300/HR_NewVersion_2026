@@ -105,6 +105,14 @@ v1Api.MapSectorEndpoints();
 v1Api.MapDepartmentEndpoints();
 v1Api.MapLocationEndpoints();
 v1Api.MapPositionEndpoints();
-v1Api.MapNationalityEndpoints();
+v1Api.MapNationalityEndpoints();//24-03-2026
+v1Api.MapReligionEndpoints();
+v1Api.MapBloodGroupEndpoints();
+v1Api.MapDependantTypeEndpoints();
+v1Api.MapCurrencyEndpoints();
+v1Api.MapProfessionEndpoints();
+v1Api.MapEducationEndpoints();
+v1Api.MapMaritalStatusEndpoints();
+
 
 app.Run();

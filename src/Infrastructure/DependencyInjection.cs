@@ -48,6 +48,13 @@ namespace Infrastructure
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddScoped<IPositionRepository, PositionRepository>();
             services.AddScoped<INationalityRepository, NationalityRepository>();
+            services.AddScoped<IReligionRepository, ReligionRepository>();
+            services.AddScoped<IBloodGroupRepository, BloodGroupRepository>();
+            services.AddScoped<IDependantTypeRepository, DependantTypeRepository>();
+            services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+            services.AddScoped<IProfessionRepository, ProfessionRepository>();
+            services.AddScoped<IEducationRepository, EducationRepository>();
+            services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             {
