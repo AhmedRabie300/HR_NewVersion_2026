@@ -113,6 +113,10 @@ v1Api.MapCurrencyEndpoints();
 v1Api.MapProfessionEndpoints();
 v1Api.MapEducationEndpoints();
 v1Api.MapMaritalStatusEndpoints();
+v1Api.MapSponsorEndpoints();//25-03-2026
+v1Api.MapContractTypeEndpoints();
+v1Api.MapDocumentTypesGroupEndpoints();
+v1Api.MapDocumentEndpoints();
 
 
 app.Run();

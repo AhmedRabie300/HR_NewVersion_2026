@@ -55,7 +55,10 @@ namespace Infrastructure
             services.AddScoped<IProfessionRepository, ProfessionRepository>();
             services.AddScoped<IEducationRepository, EducationRepository>();
             services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
-
+            services.AddScoped<ISponsorRepository, SponsorRepository>();
+            services.AddScoped<IContractTypeRepository, ContractTypeRepository>();
+            services.AddScoped<IDocumentTypesGroupRepository, DocumentTypesGroupRepository>();
+            services.AddScoped<IDocumentRepository, DocumentRepository>();
             services.AddDbContext<ApplicationDbContext>(opt =>
             {
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));

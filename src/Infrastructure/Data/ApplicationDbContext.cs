@@ -44,6 +44,10 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Profession> Professions => Set<Profession>();
     public DbSet<Education> Educations => Set<Education>();
     public DbSet<MaritalStatus> MaritalStatuses => Set<MaritalStatus>();
+    public DbSet<Sponsor> Sponsors => Set<Sponsor>();
+    public DbSet<ContractType> ContractTypes => Set<ContractType>();
+    public DbSet<DocumentTypesGroup> DocumentTypesGroups => Set<DocumentTypesGroup>();
+    public DbSet<Document> Documents => Set<Document>();
  
 
 

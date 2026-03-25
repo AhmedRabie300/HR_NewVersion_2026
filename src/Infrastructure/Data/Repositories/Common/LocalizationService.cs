@@ -245,6 +245,45 @@ namespace Infrastructure.Services
     { 1, "Marital status" },
     { 2, "الحالة الاجتماعية" }
 },
+                // ===== Sponsor Specific Messages =====
+                ["Sponsor"] = new Dictionary<int, string>
+{
+    { 1, "Sponsor" },
+    { 2, "الكفيل" }
+},
+                ["SponsorNumberMustBePositive"] = new Dictionary<int, string>
+{
+    { 1, "Sponsor number must be greater than 0" },
+    { 2, "رقم الكفيل يجب أن يكون أكبر من 0" }
+},
+                // ===== ContractType Specific Messages =====
+                ["ContractType"] = new Dictionary<int, string>
+{
+    { 1, "Contract type" },
+    { 2, "نوع العقد" }
+},
+                ["IsSpecialRequired"] = new Dictionary<int, string>
+{
+    { 1, "Special contract flag is required" },
+    { 2, "علامة العقد الخاص مطلوبة" }
+},
+                // ===== DocumentTypesGroup Specific Messages =====
+                ["DocumentTypesGroup"] = new Dictionary<int, string>
+{
+    { 1, "Document types group" },
+    { 2, "مجموعة أنواع المستندات" }
+},
+                // ===== Document Specific Messages =====
+                ["Document"] = new Dictionary<int, string>
+{
+    { 1, "Document" },
+    { 2, "المستند" }
+},
+                ["DocumentTypesGroupRequired"] = new Dictionary<int, string>
+{
+    { 1, "Document types group is required" },
+    { 2, "مجموعة أنواع المستندات مطلوبة" }
+},
 
             };
         }

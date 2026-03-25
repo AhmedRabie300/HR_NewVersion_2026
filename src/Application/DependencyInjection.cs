@@ -2,9 +2,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
 
 namespace Application
 {
@@ -12,7 +10,9 @@ namespace Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-           services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
+            // مش هنضيف Validators تلقائياً
+            // services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
+
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             return services;
