@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
 using Application.System.MasterData.Department.Validators;
 using Domain.System.MasterData;
@@ -36,19 +37,19 @@ namespace Application.System.MasterData.Department.Commands
                 // Check if company exists
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new Exception($"Company with ID {request.Data.CompanyId} not found");
+                    throw new NotFoundException("Create Department",$"Company with ID {request.Data.CompanyId} not found");
 
                 // Check if code exists within the same company
                 var exists = await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId);
                 if (exists)
-                    throw new Exception($"Department with code '{request.Data.Code}' already exists in this company");
+                    throw new ConflictException($"Department with code '{request.Data.Code}' already exists in this company");
 
                 // Check if parent department exists if provided
                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new Exception($"Parent department with ID {request.Data.ParentId} not found");
+                        throw new NotFoundException("Create Department", $"Parent department with ID {request.Data.ParentId} not found");
                 }
 
                 var department = new Domain.System.MasterData.Department(

@@ -1,7 +1,8 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Profession.Dtos;
 using Application.System.MasterData.Profession.Validators;
-using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
@@ -12,7 +13,7 @@ namespace Application.System.MasterData.Profession.Commands
     {
         public record Command(CreateProfessionDto Data, int Lang = 1) : IRequest<int>;
 
-      
+      // No Validations
 
         public class Handler : IRequestHandler<Command, int>
         {
@@ -31,13 +32,13 @@ namespace Application.System.MasterData.Profession.Commands
             {
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Create Profession", string.Format(
                         _localizer.GetMessage("NotFound", request.Lang),
                         _localizer.GetMessage("Company", request.Lang),
                         request.Data.CompanyId));
 
                 if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("Profession", request.Lang),
                         request.Data.Code));

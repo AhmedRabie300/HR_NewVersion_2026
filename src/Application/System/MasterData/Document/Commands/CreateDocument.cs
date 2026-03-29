@@ -1,7 +1,8 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Document.Dtos;
 using Application.System.MasterData.Document.Validators;
-using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
@@ -52,14 +53,14 @@ namespace Application.System.MasterData.Document.Commands
                 {
                     var docTypeGroup = await _docTypeGroupRepo.GetByIdAsync(request.Data.DocumentTypesGroupId.Value);
                     if (docTypeGroup == null)
-                        throw new Exception(string.Format(
+                        throw new NotFoundException("Create Document", string.Format(
                             _localizer.GetMessage("NotFound", request.Lang),
                             _localizer.GetMessage("DocumentTypesGroup", request.Lang),
                             request.Data.DocumentTypesGroupId));
                 }
 
                 if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("Document", request.Lang),
                         request.Data.Code));

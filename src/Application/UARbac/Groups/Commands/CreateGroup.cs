@@ -3,6 +3,7 @@ using Application.UARbac.Abstractions;
 using Domain.UARbac;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.UARbac.Groups.Commands
 {
@@ -43,7 +44,7 @@ namespace Application.UARbac.Groups.Commands
                 // Check if code exists
                 var exists = await _repo.CodeExistsAsync(request.Data.Code);
                 if (exists)
-                    throw new Exception($"Group with code '{request.Data.Code}' already exists");
+                    throw new ConflictException($"Group with code '{request.Data.Code}' already exists");
 
                 // Create group
                 var group = new Group(

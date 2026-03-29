@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
 using Domain.System.MasterData;
@@ -36,19 +37,19 @@ namespace Application.System.MasterData.Branch.Commands
                 // Check if company exists
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new Exception($"Company with ID {request.Data.CompanyId} not found");
+                    throw new NotFoundException("Create Branch",$"Company with ID {request.Data.CompanyId} not found");
 
                 // Check if code exists within the same company
                 var exists = await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId);
                 if (exists)
-                    throw new Exception($"Branch with code '{request.Data.Code}' already exists in this company");
+                    throw new ConflictException($"Branch with code '{request.Data.Code}' already exists in this company");
 
                 // Check if parent branch exists if provided
                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new Exception($"Parent branch with ID {request.Data.ParentId} not found");
+                        throw new NotFoundException("Create Branch", $"Parent branch with ID {request.Data.ParentId} not found");
                 }
 
                 var branch = new Domain.System.MasterData.Branch(

@@ -1,7 +1,8 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sponsor.Dtos;
 using Application.System.MasterData.Sponsor.Validators;
-using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
@@ -52,14 +53,14 @@ namespace Application.System.MasterData.Sponsor.Commands
                 {
                     var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId.Value);
                     if (company == null)
-                        throw new Exception(string.Format(
+                        throw new NotFoundException("Create Sponsor", string.Format(
                             _localizer.GetMessage("NotFound", request.Lang),
                             _localizer.GetMessage("Company", request.Lang),
                             request.Data.CompanyId));
                 }
 
                 if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("Sponsor", request.Lang),
                         request.Data.Code));

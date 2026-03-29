@@ -3,6 +3,7 @@ using Application.System.MasterData.BloodGroup.Dtos;
 using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.BloodGroup.Queries
 {
@@ -32,7 +33,7 @@ namespace Application.System.MasterData.BloodGroup.Queries
             {
                 var bloodGroup = await _repo.GetByIdAsync(request.Id);
                 if (bloodGroup == null)
-                    throw new Exception($"BloodGroup with ID {request.Id} not found");
+                    throw new NotFoundException("Get Blood Group",$"BloodGroup with ID {request.Id} not found");
 
                 return new BloodGroupDto(
                     Id: bloodGroup.Id,

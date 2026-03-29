@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
 using FluentValidation;
@@ -32,7 +33,7 @@ namespace Application.System.MasterData.Branch.Commands
             {
                 var branch = await _repo.GetByIdAsync(request.Data.Id);
                 if (branch == null)
-                    throw new Exception($"Branch with ID {request.Data.Id} not found");
+                    throw new NotFoundException("Update Branch",$"Branch with ID {request.Data.Id} not found");
 
                 // Update basic info
                 if (request.Data.EngName != null ||
@@ -65,7 +66,7 @@ namespace Application.System.MasterData.Branch.Commands
                     {
                         var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                         if (parent == null)
-                            throw new Exception($"Parent branch with ID {request.Data.ParentId} not found");
+                            throw new NotFoundException("Update Branch",$"Parent branch with ID {request.Data.ParentId} not found");
 
                         branch.UpdateParent(request.Data.ParentId);
                     }

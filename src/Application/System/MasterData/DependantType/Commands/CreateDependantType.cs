@@ -1,7 +1,8 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.DependantType.Dtos;
 using Application.System.MasterData.DependantType.Validators;
-using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
@@ -13,7 +14,7 @@ namespace Application.System.MasterData.DependantType.Commands
         public record Command(CreateDependantTypeDto Data, int Lang = 1) : IRequest<int>;
 
     
-
+        // No Validations here
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IDependantTypeRepository _repo;
@@ -31,13 +32,13 @@ namespace Application.System.MasterData.DependantType.Commands
             {
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Create Department Type", string.Format(
                         _localizer.GetMessage("NotFound", request.Lang),
                         _localizer.GetMessage("Company", request.Lang),
                         request.Data.CompanyId));
 
                 if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("DependantType", request.Lang),
                         request.Data.Code));

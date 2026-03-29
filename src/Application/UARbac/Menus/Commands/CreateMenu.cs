@@ -4,6 +4,7 @@ using Domain.UARbac;
 using FluentValidation;
 using MediatR;
 using Application.UARbac.Menus.Dtos;
+using Application.Common;
 
 namespace Application.UARbac.Menus.Commands
 {
@@ -50,7 +51,7 @@ namespace Application.UARbac.Menus.Commands
                 {
                     var existing = await _repo.GetByCodeAsync(request.Data.Code);
                     if (existing != null)
-                        throw new Exception($"Menu with code '{request.Data.Code}' already exists");
+                        throw new ConflictException($"Menu with code '{request.Data.Code}' already exists");
                 }
 
                 // Check if parent exists
@@ -58,7 +59,7 @@ namespace Application.UARbac.Menus.Commands
                 {
                     var parentExists = await _repo.ExistsAsync(request.Data.ParentId.Value);
                     if (!parentExists)
-                        throw new Exception($"Parent menu with ID {request.Data.ParentId} not found");
+                        throw new NotFoundException("Create Menu", $"Parent menu with ID {request.Data.ParentId} not found");
                 }
 
                 var menu = new Menu(

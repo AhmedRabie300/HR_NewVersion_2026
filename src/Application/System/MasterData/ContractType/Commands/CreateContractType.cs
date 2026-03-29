@@ -5,6 +5,7 @@ using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.ContractType.Commands
 {
@@ -50,13 +51,13 @@ namespace Application.System.MasterData.ContractType.Commands
             {
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Create Contract Type",string.Format(
                         _localizer.GetMessage("NotFound", request.Lang),
                         _localizer.GetMessage("Company", request.Lang),
                         request.Data.CompanyId));
 
                 if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("ContractType", request.Lang),
                         request.Data.Code));

@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Nationality.Dtos;
 using Application.System.MasterData.Nationality.Validators;
 using Domain.System.MasterData;
@@ -33,7 +34,7 @@ namespace Application.System.MasterData.Nationality.Commands
             {
                 var exists = await _repo.CodeExistsAsync(request.Data.Code);
                 if (exists)
-                    throw new Exception($"Nationality with code '{request.Data.Code}' already exists");
+                    throw new ConflictException($"Nationality with code '{request.Data.Code}' already exists");
 
                 var nationality = new Domain.System.MasterData.Nationality(
                     code: request.Data.Code,

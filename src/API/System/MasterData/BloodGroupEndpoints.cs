@@ -10,7 +10,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapBloodGroupEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/blood-groups")
+            var group = routes.MapGroup("/master-data/blood-groups")
                 .WithTags("BloodGroups");
 
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>

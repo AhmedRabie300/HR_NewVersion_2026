@@ -5,6 +5,7 @@ using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.DocumentTypesGroup.Commands
 {
@@ -47,7 +48,7 @@ namespace Application.System.MasterData.DocumentTypesGroup.Commands
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("DocumentTypesGroup", request.Lang),
                         request.Data.Code));

@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
 using Application.System.MasterData.Company.Validators;
 using Domain.System.MasterData;
@@ -11,14 +12,14 @@ namespace Application.System.MasterData.Company.Commands
     {
         public record Command(CreateCompanyDto Data) : IRequest<int>;
 
-        //public sealed class Validator : AbstractValidator<Command>
-        //{
-        //    public Validator()
-        //    {
-        //        RuleFor(x => x.Data)
-        //            .SetValidator(new CreateCompanyValidator());
-        //    }
-        //}
+        public sealed class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(x => x.Data)
+                    .SetValidator(new CreateCompanyValidator());
+            }
+        }
 
         public class Handler : IRequestHandler<Command, int>
         {
@@ -33,7 +34,7 @@ namespace Application.System.MasterData.Company.Commands
             {
                 var exists = await _repo.CodeExistsAsync(request.Data.Code);
                 if (exists)
-                    throw new Exception($"Company with code '{request.Data.Code}' already exists");
+                    throw new ConflictException($"Company with code '{request.Data.Code}' already exists");
 
                 var company = new Domain.System.MasterData.Company(
                     code: request.Data.Code,

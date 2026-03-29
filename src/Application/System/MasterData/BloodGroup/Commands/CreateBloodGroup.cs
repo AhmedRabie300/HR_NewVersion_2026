@@ -5,6 +5,7 @@ using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.BloodGroup.Commands
 {
@@ -13,7 +14,7 @@ namespace Application.System.MasterData.BloodGroup.Commands
         public record Command(CreateBloodGroupDto Data, int Lang = 1) : IRequest<int>;
 
       
-
+        // validation
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IBloodGroupRepository _repo;
@@ -28,7 +29,7 @@ namespace Application.System.MasterData.BloodGroup.Commands
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("BloodGroup", request.Lang),
                         request.Data.Code));

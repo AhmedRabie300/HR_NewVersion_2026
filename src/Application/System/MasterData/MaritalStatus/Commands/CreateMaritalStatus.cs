@@ -4,6 +4,7 @@ using Application.System.MasterData.MaritalStatus.Dtos;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.MaritalStatus.Commands
 {
@@ -12,7 +13,7 @@ namespace Application.System.MasterData.MaritalStatus.Commands
         public record Command(CreateMaritalStatusDto Data, int Lang = 1) : IRequest<int>;
 
  
-
+        // No Validations Present
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IMaritalStatusRepository _repo;
@@ -27,7 +28,7 @@ namespace Application.System.MasterData.MaritalStatus.Commands
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("MaritalStatus", request.Lang),
                         request.Data.Code));

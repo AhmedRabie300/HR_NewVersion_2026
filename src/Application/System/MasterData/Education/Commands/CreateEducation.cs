@@ -1,6 +1,7 @@
-﻿using Application.System.MasterData.Abstractions;
-using Application.System.MasterData.Education.Dtos;
+﻿using Application.Common;
 using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.Education.Dtos;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
@@ -11,7 +12,7 @@ namespace Application.System.MasterData.Education.Commands
     {
         public record Command(CreateEducationDto Data, int Lang = 1) : IRequest<int>;
 
- 
+        // No Validations Present
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IEducationRepository _repo;
@@ -29,13 +30,13 @@ namespace Application.System.MasterData.Education.Commands
             {
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Create Education", string.Format(
                         _localizer.GetMessage("NotFound", request.Lang),
                         _localizer.GetMessage("Company", request.Lang),
                         request.Data.CompanyId));
 
                 if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("Education", request.Lang),
                         request.Data.Code));

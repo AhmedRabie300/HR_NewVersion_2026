@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Religion.Dtos;
 using Application.System.MasterData.Religion.Validators;
 using Domain.System.MasterData;
@@ -31,7 +32,7 @@ namespace Application.System.MasterData.Religion.Commands
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new Exception($"Religion with code '{request.Data.Code}' already exists");
+                    throw new ConflictException($"Religion with code '{request.Data.Code}' already exists");
 
                 var religion = new Domain.System.MasterData.Religion(
                     request.Data.Code,

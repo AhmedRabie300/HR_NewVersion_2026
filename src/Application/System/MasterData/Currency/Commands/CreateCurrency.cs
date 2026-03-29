@@ -5,6 +5,7 @@ using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.Currency.Commands
 {
@@ -12,7 +13,7 @@ namespace Application.System.MasterData.Currency.Commands
     {
         public record Command(CreateCurrencyDto Data, int Lang = 1) : IRequest<int>;
 
-   
+        //No Validation Present
 
         public class Handler : IRequestHandler<Command, int>
         {
@@ -33,14 +34,14 @@ namespace Application.System.MasterData.Currency.Commands
                 {
                     var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId.Value);
                     if (company == null)
-                        throw new Exception(string.Format(
+                        throw new NotFoundException("Create Currency",string.Format(
                             _localizer.GetMessage("NotFound", request.Lang),
                             _localizer.GetMessage("Company", request.Lang),
                             request.Data.CompanyId));
                 }
 
                 if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new Exception(string.Format(
+                    throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", request.Lang),
                         _localizer.GetMessage("Currency", request.Lang),
                         request.Data.Code));

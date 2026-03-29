@@ -3,6 +3,7 @@ using Application.UARbac.Abstractions;
 using Application.UARbac.Login.Dtos;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.UARbac.Login.Commands
 {
@@ -31,6 +32,12 @@ namespace Application.UARbac.Login.Commands
         public sealed class Handler : IRequestHandler<Command, LoginResponseDto>
         {
             private readonly ILoginRepository _repo;
+            //private readonly IConfiguration _configuration;
+            //private readonly IJwtService _jwtService;
+            //private readonly IEncryptionService _encryptionService;
+            //private readonly IUserGroupRepository _userGroupRepo;
+            //private readonly IMenuRepository _menuRepo;
+            //private readonly IFormPermissionRepository _permissionRepo;
 
             public Handler(ILoginRepository repo)
             {
