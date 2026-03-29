@@ -48,9 +48,9 @@ namespace API.System.MasterData
             .WithName("GetDocumentTypesGroupById");
 
             // POST create
-            group.MapPost("/", async (IMediator mediator, CreateDocumentTypesGroupDto dto, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapPost("/", async (IMediator mediator, CreateDocumentTypesGroupDto dto, CancellationToken ct = default) =>
             {
-                var id = await mediator.Send(new CreateDocumentTypesGroup.Command(dto, lang), ct);
+                var id = await mediator.Send(new CreateDocumentTypesGroup.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/document-types-groups/{id}", new { id });
             })
             //.RequirePermission("DocumentTypesGroups", "Add")
@@ -61,20 +61,19 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 UpdateDocumentTypesGroupDto dto,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateDocumentTypesGroup.Command(fixedDto, lang), ct);
+                await mediator.Send(new UpdateDocumentTypesGroup.Command(fixedDto), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("DocumentTypesGroups", "Edit")
             .WithName("UpdateDocumentTypesGroup");
 
             // DELETE hard
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new DeleteDocumentTypesGroup.Command(id, lang), ct);
+                var result = await mediator.Send(new DeleteDocumentTypesGroup.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
             //.RequirePermission("DocumentTypesGroups", "Delete")
@@ -85,10 +84,9 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
-                await mediator.Send(new SoftDeleteDocumentTypesGroup.Command(id, regUserId, lang), ct);
+                await mediator.Send(new SoftDeleteDocumentTypesGroup.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("DocumentTypesGroups", "Delete")

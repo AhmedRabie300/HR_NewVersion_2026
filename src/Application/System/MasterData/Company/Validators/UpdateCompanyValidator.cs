@@ -6,70 +6,80 @@ namespace Application.System.MasterData.Company.Validators
 {
     public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyDto>
     {
-        public UpdateCompanyValidator(ILocalizationService localizer, int lang)
+        private readonly ILocalizationService _localizer;
+        private readonly ILanguageService _languageService;
+
+        public UpdateCompanyValidator(ILocalizationService localizer, ILanguageService languageService)
         {
+            _localizer = localizer;
+            _languageService = languageService;
+
             RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage(localizer.GetMessage("IdGreaterThanZero", lang));
+                .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.EngName)
                 .MaximumLength(100).When(x => x.EngName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName)
                 .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(100).When(x => x.ArbName4S != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.EmpFirstName)
                 .MaximumLength(10).When(x => x.EmpFirstName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 10));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 10));
 
             RuleFor(x => x.EmpSecondName)
                 .MaximumLength(10).When(x => x.EmpSecondName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 10));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 10));
 
             RuleFor(x => x.EmpThirdName)
                 .MaximumLength(10).When(x => x.EmpThirdName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 10));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 10));
 
             RuleFor(x => x.EmpFourthName)
                 .MaximumLength(10).When(x => x.EmpFourthName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 10));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 10));
+
+            RuleFor(x => x.EmpNameSeparator)
+                .MaximumLength(1).When(x => x.EmpNameSeparator != null)
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 1));
 
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).When(x => x.Remarks != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 2048));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 2048));
 
             RuleFor(x => x.DefaultTheme)
                 .MaximumLength(50).When(x => x.DefaultTheme != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.SequenceLength)
                 .GreaterThan(0).When(x => x.SequenceLength.HasValue)
-                .WithMessage(localizer.GetMessage("SequenceLengthMustBePositive", lang));
+                .WithMessage(x => _localizer.GetMessage("SequenceLengthMustBePositive", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.Prefix)
                 .GreaterThan(0).When(x => x.Prefix.HasValue)
-                .WithMessage(localizer.GetMessage("PrefixMustBePositive", lang));
+                .WithMessage(x => _localizer.GetMessage("PrefixMustBePositive", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.Separator)
                 .MaximumLength(1).When(x => x.Separator != null)
-                .WithMessage(localizer.GetMessage("SeparatorMaxLength", lang));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 1));
 
             RuleFor(x => x.PrepareDay)
                 .InclusiveBetween(1, 31).When(x => x.PrepareDay.HasValue)
-                .WithMessage(localizer.GetMessage("PrepareDayRange", lang));
+                .WithMessage(x => _localizer.GetMessage("PrepareDayRange", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.ExecuseRequestHoursallowed)
                 .GreaterThan(0).When(x => x.ExecuseRequestHoursallowed.HasValue)
-                .WithMessage(localizer.GetMessage("ExecuseRequestHoursPositive", lang));
+                .WithMessage(x => _localizer.GetMessage("ExecuseRequestHoursPositive", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x)
                 .Must(HaveAtLeastOneField)
-                .WithMessage(localizer.GetMessage("AtLeastOneField", lang));
+                .WithMessage(x => _localizer.GetMessage("AtLeastOneField", _languageService.GetCurrentLanguage()));
         }
 
         private bool HaveAtLeastOneField(UpdateCompanyDto dto)

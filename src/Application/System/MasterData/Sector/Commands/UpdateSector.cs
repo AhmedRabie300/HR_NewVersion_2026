@@ -1,10 +1,8 @@
 ﻿using Application.Common;
 using Application.Common.Abstractions;
-using Application.Common.BaseHandlers;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sector.Dtos;
 using Application.System.MasterData.Sector.Validators;
-using Domain.Common.Exceptions;
 using FluentValidation;
 using MediatR;
 
@@ -12,39 +10,42 @@ namespace Application.System.MasterData.Sector.Commands
 {
     public static class UpdateSector
     {
-        public record Command(UpdateSectorDto Data, int Lang = 1) : IRequest<Unit>;
+        public record Command(UpdateSectorDto Data) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localization, int lang = 1)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateSectorValidator(localization, lang));
+                    .SetValidator(new UpdateSectorValidator(localizer, languageService));
             }
         }
 
-        public class Handler : BaseCommandHandler, IRequestHandler<Command, Unit>
+        public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ISectorRepository _repo;
+            private readonly ICompanyRepository _companyRepo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(
-                ISectorRepository repo,
-                ILocalizationService localization) : base(localization)
+            public Handler(ISectorRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _companyRepo = companyRepo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var sector = await _repo.GetByIdAsync(request.Data.Id);
-                if (sector == null)
-                {
-                    throw new NotFoundException(
-                        GetMessage("Sector", request.Lang),
-                        request.Data.Id,
-                        GetFormattedMessage("NotFound", request.Lang, GetMessage("Sector", request.Lang), request.Data.Id)
-                    );
-                }
+                var lang = _languageService.GetCurrentLanguage();
+
+                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                if (entity == null)
+                    throw new Exception(string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Sector", lang),
+                        request.Data.Id));
 
                 // Update basic info
                 if (request.Data.EngName != null ||
@@ -52,7 +53,7 @@ namespace Application.System.MasterData.Sector.Commands
                     request.Data.ArbName4S != null ||
                     request.Data.Remarks != null)
                 {
-                    sector.UpdateBasicInfo(
+                    entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
@@ -61,32 +62,22 @@ namespace Application.System.MasterData.Sector.Commands
                 }
 
                 // Update parent
-                if (request.Data.ParentId.HasValue)
+                if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
                 {
-                    // Check if parent exists and not self-reference
-                    if (request.Data.ParentId != sector.Id)
-                    {
-                        var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
-                        if (parent == null)
-                        {
-                            throw new NotFoundException(
-                                GetMessage("ParentSector", request.Lang),
-                                request.Data.ParentId.Value,
-                                GetFormattedMessage("NotFound", request.Lang, GetMessage("ParentSector", request.Lang), request.Data.ParentId.Value)
-                            );
-                        }
+                    var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
+                    if (parent == null)
+                        throw new Exception(string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("ParentSector", lang),
+                            request.Data.ParentId));
 
-                        // Verify parent belongs to same company
-                        if (parent.CompanyId != sector.CompanyId)
-                        {
-                            throw new DomainException(GetFormattedMessage("ParentMustBeSameCompany", request.Lang));
-                        }
+                    if (parent.CompanyId != entity.CompanyId)
+                        throw new Exception(_localizer.GetMessage("ParentMustBeSameCompany", lang));
 
-                        sector.UpdateParent(request.Data.ParentId);
-                    }
+                    entity.UpdateParent(request.Data.ParentId);
                 }
 
-                await _repo.UpdateAsync(sector);
+                await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

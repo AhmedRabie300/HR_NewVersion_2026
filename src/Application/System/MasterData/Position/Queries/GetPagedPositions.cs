@@ -1,25 +1,32 @@
-﻿using Application.Common.Models;
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Position.Dtos;
+using Application.Common.Models;
 using MediatR;
 
 namespace Application.System.MasterData.Position.Queries
 {
     public static class GetPagedPositions
     {
-        public record Query(int PageNumber, int PageSize, string? SearchTerm, int Lang = 1) : IRequest<PagedResult<PositionDto>>;
+        public record Query(int PageNumber, int PageSize, string? SearchTerm) : IRequest<PagedResult<PositionDto>>;
 
         public class Handler : IRequestHandler<Query, PagedResult<PositionDto>>
         {
             private readonly IPositionRepository _repo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IPositionRepository repo)
+            public Handler(IPositionRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<PagedResult<PositionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
@@ -33,10 +40,10 @@ namespace Application.System.MasterData.Position.Queries
                     ArbName: p.ArbName,
                     ArbName4S: p.ArbName4S,
                     ParentId: p.ParentId,
-                    ParentPositionName: request.Lang == 2 ? p.ParentPosition?.ArbName : p.ParentPosition?.EngName,
+                    ParentPositionName: lang == 2 ? p.ParentPosition?.ArbName : p.ParentPosition?.EngName,
                     PositionLevelId: p.PositionLevelId,
                     PositionLevelName: null,
-                    EvalEvaluationId: p.EvalEvaluationId,
+                    EvalEvaluationId: p.EvalEvaluationID,
                     EvalEvaluationName: null,
                     EvalRecruitmentId: p.EvalRecruitmentId,
                     EvalRecruitmentName: null,

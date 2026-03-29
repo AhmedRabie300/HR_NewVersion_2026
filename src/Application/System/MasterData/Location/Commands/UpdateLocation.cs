@@ -1,6 +1,5 @@
 ﻿using Application.Common;
 using Application.Common.Abstractions;
-using Application.Common.BaseHandlers;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Location.Dtos;
 using Application.System.MasterData.Location.Validators;
@@ -11,99 +10,56 @@ namespace Application.System.MasterData.Location.Commands
 {
     public static class UpdateLocation
     {
-        public record Command(UpdateLocationDto Data, int Lang = 1) : IRequest<Unit>;
+        public record Command(UpdateLocationDto Data) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localization, int lang = 1)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateLocationValidator(localization, lang));
+                    .SetValidator(new UpdateLocationValidator(localizer, languageService));
             }
         }
 
-        public class Handler : BaseCommandHandler, IRequestHandler<Command, Unit>
+        public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ILocationRepository _repo;
+            private readonly ICompanyRepository _companyRepo;
             private readonly IBranchRepository _branchRepo;
-            private readonly IDepartmentRepository _departmentRepo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(
-                ILocationRepository repo,
-                IBranchRepository branchRepo,
-                IDepartmentRepository departmentRepo,
-                ILocalizationService localization) : base(localization)
+            public Handler(ILocationRepository repo, ICompanyRepository companyRepo, IBranchRepository branchRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _companyRepo = companyRepo;
                 _branchRepo = branchRepo;
-                _departmentRepo = departmentRepo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var location = await _repo.GetByIdAsync(request.Data.Id);
-                if (location == null)
-                {
-                    throw new NotFoundException(
-                        GetMessage("Location", request.Lang),
-                        request.Data.Id,
-                        GetFormattedMessage("NotFound", request.Lang, GetMessage("Location", request.Lang), request.Data.Id)
-                    );
-                }
+                var lang = _languageService.GetCurrentLanguage();
 
-                // Check if branch exists if provided
-                if (request.Data.BranchId.HasValue)
-                {
-                    var branch = await _branchRepo.GetByIdAsync(request.Data.BranchId.Value);
-                    if (branch == null)
-                    {
-                        throw new NotFoundException(
-                            GetMessage("Branch", request.Lang),
-                            request.Data.BranchId.Value,
-                            GetFormattedMessage("NotFound", request.Lang, GetMessage("Branch", request.Lang), request.Data.BranchId.Value)
-                        );
-                    }
-                }
+                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                if (entity == null)
+                    throw new Exception(string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Location", lang),
+                        request.Data.Id));
 
-                // Check if department exists if provided
-                if (request.Data.DepartmentId.HasValue)
-                {
-                    var department = await _departmentRepo.GetByIdAsync(request.Data.DepartmentId.Value);
-                    if (department == null)
-                    {
-                        throw new NotFoundException(
-                            GetMessage("Department", request.Lang),
-                            request.Data.DepartmentId.Value,
-                            GetFormattedMessage("NotFound", request.Lang, GetMessage("Department", request.Lang), request.Data.DepartmentId.Value)
-                        );
-                    }
-                }
-
-                // Update basic info
+                // Update basic info (name, remarks)
                 if (request.Data.EngName != null ||
                     request.Data.ArbName != null ||
                     request.Data.ArbName4S != null ||
                     request.Data.Remarks != null)
                 {
-                    location.UpdateBasicInfo(
+                    entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
                         request.Data.Remarks
-                    );
-                }
-
-                // Update relations
-                if (request.Data.CityId.HasValue ||
-                    request.Data.BranchId.HasValue ||
-                    request.Data.StoreId.HasValue ||
-                    request.Data.DepartmentId.HasValue)
-                {
-                    location.UpdateRelations(
-                        request.Data.CityId,
-                        request.Data.BranchId,
-                        request.Data.StoreId,
-                        request.Data.DepartmentId
                     );
                 }
 
@@ -113,7 +69,7 @@ namespace Application.System.MasterData.Location.Commands
                     request.Data.CostCenterCode3 != null ||
                     request.Data.CostCenterCode4 != null)
                 {
-                    location.UpdateCostCenters(
+                    entity.UpdateCostCenters(
                         request.Data.CostCenterCode1,
                         request.Data.CostCenterCode2,
                         request.Data.CostCenterCode3,
@@ -121,17 +77,48 @@ namespace Application.System.MasterData.Location.Commands
                     );
                 }
 
-                // Update ledgers
-                if (request.Data.InventoryCostLedgerId.HasValue ||
-                    request.Data.InventoryAdjustmentLedgerId.HasValue)
+                // Update parent
+                if (request.Data.ParentId.HasValue)
                 {
-                    location.UpdateLedgers(
-                        request.Data.InventoryCostLedgerId,
-                        request.Data.InventoryAdjustmentLedgerId
-                    );
+                    if (request.Data.ParentId != entity.Id)
+                    {
+                        var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
+                        if (parent == null)
+                            throw new Exception(string.Format(
+                                _localizer.GetMessage("NotFound", lang),
+                                _localizer.GetMessage("ParentLocation", lang),
+                                request.Data.ParentId));
+
+                        // Assuming there's an UpdateParent method
+                        // entity.UpdateParent(request.Data.ParentId);
+                    }
                 }
 
-                await _repo.UpdateAsync(location);
+                // Update company
+                if (request.Data.CompanyId.HasValue)
+                {
+                    var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId.Value);
+                    if (company == null)
+                        throw new Exception(string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("Company", lang),
+                            request.Data.CompanyId));
+                    // entity.UpdateCompany(request.Data.CompanyId);
+                }
+
+                // Update branch
+                if (request.Data.BranchId.HasValue)
+                {
+                    var branch = await _branchRepo.GetByIdAsync(request.Data.BranchId.Value);
+                    if (branch == null)
+                        throw new Exception(string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("Branch", lang),
+                            request.Data.BranchId));
+                    // entity.UpdateBranch(request.Data.BranchId);
+                }
+
+                await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Validation;
+using Application.System.MasterData.Company.Commands;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,8 @@ namespace Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             // مش هنضيف Validators تلقائياً
-            //services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
+            services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
+            //services.AddScoped<IValidator<CreateCompany.Command>, CreateCompany.Validator>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

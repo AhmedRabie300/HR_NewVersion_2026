@@ -6,26 +6,32 @@ namespace Application.System.MasterData.DocumentTypesGroup.Validators
 {
     public class UpdateDocumentTypesGroupValidator : AbstractValidator<UpdateDocumentTypesGroupDto>
     {
-        public UpdateDocumentTypesGroupValidator(ILocalizationService localizer, int lang)
+        private readonly ILocalizationService _localizer;
+        private readonly ILanguageService _languageService;
+
+        public UpdateDocumentTypesGroupValidator(ILocalizationService localizer, ILanguageService languageService)
         {
+            _localizer = localizer;
+            _languageService = languageService;
+
             RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage(localizer.GetMessage("IdGreaterThanZero", lang));
+                .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.EngName)
                 .MaximumLength(100).When(x => x.EngName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName)
                 .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).When(x => x.Remarks != null)
-                .WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 2048));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 2048));
 
             RuleFor(x => x)
                 .Must(HaveAtLeastOneField)
-                .WithMessage(localizer.GetMessage("AtLeastOneField", lang));
+                .WithMessage(x => _localizer.GetMessage("AtLeastOneField", _languageService.GetCurrentLanguage()));
         }
 
         private bool HaveAtLeastOneField(UpdateDocumentTypesGroupDto dto)

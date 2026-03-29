@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
@@ -14,10 +15,10 @@ namespace Application.System.MasterData.Branch.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateBranchValidator());
+                    .SetValidator(new CreateBranchValidator(localizer, languageService));
             }
         }
 
@@ -25,31 +26,46 @@ namespace Application.System.MasterData.Branch.Commands
         {
             private readonly IBranchRepository _repo;
             private readonly ICompanyRepository _companyRepo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IBranchRepository repo, ICompanyRepository companyRepo)
+            public Handler(IBranchRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 // Check if company exists
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new NotFoundException("Create Branch",$"Company with ID {request.Data.CompanyId} not found");
+                    throw new NotFoundException("Create Branch", string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Company", lang),
+                        request.Data.CompanyId));
 
                 // Check if code exists within the same company
                 var exists = await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId);
                 if (exists)
-                    throw new ConflictException($"Branch with code '{request.Data.Code}' already exists in this company");
+                    throw new ConflictException(string.Format(
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("Branch", lang),
+                        request.Data.Code));
 
                 // Check if parent branch exists if provided
                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new NotFoundException("Create Branch", $"Parent branch with ID {request.Data.ParentId} not found");
+                        throw new NotFoundException("Create Branch", string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("ParentBranch", lang),
+                            request.Data.ParentId));
                 }
 
                 var branch = new Domain.System.MasterData.Branch(

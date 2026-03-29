@@ -10,8 +10,9 @@ namespace Domain.System.MasterData
         public string? ArbName4S { get; private set; }
         public int? ParentId { get; private set; }
         public int? PositionLevelId { get; private set; }
-        public int? EvalEvaluationId { get; private set; }
+
         public int? EvalRecruitmentId { get; private set; }
+        public int? EvalEvaluationID { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
         public int? regComputerId { get; private set; }
@@ -35,8 +36,6 @@ namespace Domain.System.MasterData
             string? arbName4S,
             int? parentId,
             int? positionLevelId,
-            int? evalEvaluationId,
-            int? evalRecruitmentId,
             string? remarks,
             int? employeesNo,
             bool? applyValidation,
@@ -51,9 +50,7 @@ namespace Domain.System.MasterData
             ArbName4S = arbName4S;
             ParentId = parentId;
             PositionLevelId = positionLevelId;
-            EvalEvaluationId = evalEvaluationId;
-            EvalRecruitmentId = evalRecruitmentId;
-            Remarks = remarks;
+             Remarks = remarks;
             EmployeesNo = employeesNo;
             ApplyValidation = applyValidation;
             PositionBudget = positionBudget;
@@ -79,15 +76,12 @@ namespace Domain.System.MasterData
         public void UpdateRelations(
             int? parentId,
             int? positionLevelId,
-            int? evalEvaluationId,
             int? evalRecruitmentId,
             int? appraisalTypeGroupId)
         {
             if (parentId.HasValue) ParentId = parentId;
             if (positionLevelId.HasValue) PositionLevelId = positionLevelId;
-            if (evalEvaluationId.HasValue) EvalEvaluationId = evalEvaluationId;
-            if (evalRecruitmentId.HasValue) EvalRecruitmentId = evalRecruitmentId;
-            if (appraisalTypeGroupId.HasValue) AppraisalTypeGroupId = appraisalTypeGroupId;
+             if (appraisalTypeGroupId.HasValue) AppraisalTypeGroupId = appraisalTypeGroupId;
         }
 
         public void UpdateSettings(
@@ -105,7 +99,32 @@ namespace Domain.System.MasterData
             CancelDate = DateTime.UtcNow;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
+        // Domain/System/MasterData/Position.cs
+        // أضف هذه الدوال داخل الكلاس
 
+        public void UpdateParent(int? parentId)
+        {
+            if (parentId.HasValue && parentId != Id)
+                ParentId = parentId;
+        }
+
+        public void UpdatePositionLevel(int? positionLevelId)
+        {
+            if (positionLevelId.HasValue)
+                PositionLevelId = positionLevelId;
+        }
+
+        public void UpdateEmployeesNo(int? employeesNo)
+        {
+            if (employeesNo.HasValue)
+                EmployeesNo = employeesNo;
+        }
+
+        public void UpdatePositionBudget(string? positionBudget)
+        {
+            if (positionBudget != null)
+                PositionBudget = positionBudget;
+        }
         public bool IsActive() => !CancelDate.HasValue;
     }
 }

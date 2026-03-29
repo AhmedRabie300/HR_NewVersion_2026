@@ -1,7 +1,7 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sponsor.Dtos;
 using Application.System.MasterData.Sponsor.Validators;
-using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
 
@@ -9,26 +9,21 @@ namespace Application.System.MasterData.Sponsor.Commands
 {
     public static class UpdateSponsor
     {
-        public record Command(UpdateSponsorDto Data, int Lang = 1) : IRequest<Unit>;
+        public record Command(UpdateSponsorDto Data) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localizer)
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
+                _languageService = languageService;
+                _localizer = localizer;
+
+                // ✅ استخدام SetValidator مباشرة (من غير Custom)
                 RuleFor(x => x.Data)
-                    .Custom((data, context) =>
-                    {
-                        var lang = context.InstanceToValidate.Lang;
-                        var validator = new UpdateSponsorValidator(localizer, lang);
-                        var result = validator.Validate(data);
-                        if (!result.IsValid)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                context.AddFailure(error);
-                            }
-                        }
-                    });
+                    .SetValidator(new UpdateSponsorValidator(_localizer, _languageService));
             }
         }
 
@@ -36,22 +31,26 @@ namespace Application.System.MasterData.Sponsor.Commands
         {
             private readonly ISponsorRepository _repo;
             private readonly ICompanyRepository _companyRepo;
+            private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(ISponsorRepository repo, ICompanyRepository companyRepo, ILocalizationService localizer)
+            public Handler(ISponsorRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
+                _languageService = languageService;
                 _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
                     throw new Exception(string.Format(
-                        _localizer.GetMessage("NotFound", request.Lang),
-                        _localizer.GetMessage("Sponsor", request.Lang),
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Sponsor", lang),
                         request.Data.Id));
 
                 entity.Update(
@@ -66,8 +65,8 @@ namespace Application.System.MasterData.Sponsor.Commands
                     var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId.Value);
                     if (company == null)
                         throw new Exception(string.Format(
-                            _localizer.GetMessage("NotFound", request.Lang),
-                            _localizer.GetMessage("Company", request.Lang),
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("Company", lang),
                             request.Data.CompanyId));
 
                     entity.UpdateCompany(request.Data.CompanyId);

@@ -7,8 +7,6 @@
         string? ArbName4S,
         int? ParentId,
         int? PositionLevelId,
-        int? EvalEvaluationId,
-        int? EvalRecruitmentId,
         string? Remarks,
         int? EmployeesNo,
         bool? ApplyValidation,

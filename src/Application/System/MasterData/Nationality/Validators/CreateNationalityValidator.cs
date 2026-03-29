@@ -1,39 +1,46 @@
 ﻿using Application.System.MasterData.Nationality.Dtos;
+using Application.Common.Abstractions;
 using FluentValidation;
 
 namespace Application.System.MasterData.Nationality.Validators
 {
     public class CreateNationalityValidator : AbstractValidator<CreateNationalityDto>
     {
-        public CreateNationalityValidator()
+        private readonly ILocalizationService _localizer;
+        private readonly ILanguageService _languageService;
+
+        public CreateNationalityValidator(ILocalizationService localizer, ILanguageService languageService)
         {
+            _localizer = localizer;
+            _languageService = languageService;
+
             RuleFor(x => x.Code)
-                .NotEmpty().WithMessage("Nationality code is required")
-                .MaximumLength(50).WithMessage("Code must not exceed 50 characters");
+                .NotEmpty().WithMessage(x => _localizer.GetMessage("CodeRequired", _languageService.GetCurrentLanguage()))
+                .MaximumLength(50).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage("English name must not exceed 100 characters");
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage("Arabic name must not exceed 100 characters");
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage("Arabic name (4S) must not exceed 100 characters");
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.Remarks)
-                .MaximumLength(2048).WithMessage("Remarks must not exceed 2048 characters");
+                .MaximumLength(2048).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 2048));
 
             RuleFor(x => x.TravelRoute)
                 .GreaterThan(0).When(x => x.TravelRoute.HasValue)
-                .WithMessage("Travel route must be greater than 0");
+                .WithMessage(x => _localizer.GetMessage("TravelRouteMustBePositive", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.TravelClass)
                 .GreaterThan(0).When(x => x.TravelClass.HasValue)
-                .WithMessage("Travel class must be greater than 0");
+                .WithMessage(x => _localizer.GetMessage("TravelClassMustBePositive", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.TicketAmount)
                 .GreaterThan(0).When(x => x.TicketAmount.HasValue)
-                .WithMessage("Ticket amount must be greater than 0");
+                .WithMessage(x => _localizer.GetMessage("TicketAmountMustBePositive", _languageService.GetCurrentLanguage()));
         }
     }
 }

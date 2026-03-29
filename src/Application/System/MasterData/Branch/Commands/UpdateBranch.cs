@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
@@ -13,27 +14,36 @@ namespace Application.System.MasterData.Branch.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateBranchValidator());
+                    .SetValidator(new UpdateBranchValidator(localizer, languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IBranchRepository _repo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IBranchRepository repo)
+            public Handler(IBranchRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 var branch = await _repo.GetByIdAsync(request.Data.Id);
                 if (branch == null)
-                    throw new NotFoundException("Update Branch",$"Branch with ID {request.Data.Id} not found");
+                    throw new NotFoundException("Update Branch", string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Branch", lang),
+                        request.Data.Id));
 
                 // Update basic info
                 if (request.Data.EngName != null ||
@@ -61,12 +71,14 @@ namespace Application.System.MasterData.Branch.Commands
                 // Update parent
                 if (request.Data.ParentId.HasValue)
                 {
-                    // Check if parent exists
-                    if (request.Data.ParentId != branch.Id) // Prevent self-reference
+                    if (request.Data.ParentId != branch.Id)
                     {
                         var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                         if (parent == null)
-                            throw new NotFoundException("Update Branch",$"Parent branch with ID {request.Data.ParentId} not found");
+                            throw new NotFoundException("Update Branch", string.Format(
+                                _localizer.GetMessage("NotFound", lang),
+                                _localizer.GetMessage("ParentBranch", lang),
+                                request.Data.ParentId));
 
                         branch.UpdateParent(request.Data.ParentId);
                     }

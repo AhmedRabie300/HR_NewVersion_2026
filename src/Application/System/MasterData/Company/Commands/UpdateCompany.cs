@@ -14,28 +14,10 @@ namespace Application.System.MasterData.Company.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
-            private readonly ILocalizationService _localizer;
-
             public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
-                _languageService = languageService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Data)
-                    .Custom((data, context) =>
-                    {
-                        var lang = _languageService.GetCurrentLanguage();
-                        var validator = new UpdateCompanyValidator(_localizer, lang);
-                        var result = validator.Validate(data);
-                        if (!result.IsValid)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                context.AddFailure(error);
-                            }
-                        }
-                    });
+                    .SetValidator(new UpdateCompanyValidator(localizer, languageService));
             }
         }
 

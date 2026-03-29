@@ -1,37 +1,55 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.BloodGroup.Dtos;
 using Application.System.MasterData.BloodGroup.Validators;
-using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
-using Application.Common;
 
 namespace Application.System.MasterData.BloodGroup.Commands
 {
     public static class CreateBloodGroup
     {
-        public record Command(CreateBloodGroupDto Data, int Lang = 1) : IRequest<int>;
+        public record Command(CreateBloodGroupDto Data) : IRequest<int>;
 
-      
-        // validation
+        public sealed class Validator : AbstractValidator<Command>
+        {
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            {
+                _languageService = languageService;
+                _localizer = localizer;
+
+                // ✅ استخدام SetValidator مباشرة (من غير Custom)
+                RuleFor(x => x.Data)
+                    .SetValidator(new CreateBloodGroupValidator(_localizer, _languageService));
+            }
+        }
+
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IBloodGroupRepository _repo;
+            private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IBloodGroupRepository repo, ILocalizationService localizer)
+            public Handler(IBloodGroupRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 if (await _repo.CodeExistsAsync(request.Data.Code))
                     throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", request.Lang),
-                        _localizer.GetMessage("BloodGroup", request.Lang),
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("BloodGroup", lang),
                         request.Data.Code));
 
                 var bloodGroup = new Domain.System.MasterData.BloodGroup(

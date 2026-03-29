@@ -15,22 +15,10 @@ namespace Application.System.MasterData.Document.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localizer)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .Custom((data, context) =>
-                    {
-                        var lang = context.InstanceToValidate.Lang;
-                        var validator = new CreateDocumentValidator(localizer, lang);
-                        var result = validator.Validate(data);
-                        if (!result.IsValid)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                context.AddFailure(error);
-                            }
-                        }
-                    });
+                    .SetValidator(new CreateDocumentValidator(localizer, languageService));
             }
         }
 

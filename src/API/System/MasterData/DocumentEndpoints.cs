@@ -58,9 +58,9 @@ namespace API.System.MasterData
             .WithName("GetDocumentById");
 
             // POST create
-            group.MapPost("/", async (IMediator mediator, CreateDocumentDto dto, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapPost("/", async (IMediator mediator, CreateDocumentDto dto, CancellationToken ct = default) =>
             {
-                var id = await mediator.Send(new CreateDocument.Command(dto, lang), ct);
+                var id = await mediator.Send(new CreateDocument.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/documents/{id}", new { id });
             })
             //.RequirePermission("Documents", "Add")
@@ -71,20 +71,19 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 UpdateDocumentDto dto,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateDocument.Command(fixedDto, lang), ct);
+                await mediator.Send(new UpdateDocument.Command(fixedDto), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("Documents", "Edit")
             .WithName("UpdateDocument");
 
             // DELETE hard
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new DeleteDocument.Command(id, lang), ct);
+                var result = await mediator.Send(new DeleteDocument.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
             //.RequirePermission("Documents", "Delete")
@@ -95,10 +94,9 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
-                await mediator.Send(new SoftDeleteDocument.Command(id, regUserId, lang), ct);
+                await mediator.Send(new SoftDeleteDocument.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("Documents", "Delete")

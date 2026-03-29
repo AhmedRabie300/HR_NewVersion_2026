@@ -39,8 +39,6 @@ namespace API.System.MasterData
             //.RequirePermission("Sponsors", "View")
             .WithName("GetPagedSponsors");
 
- 
-
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
@@ -51,9 +49,9 @@ namespace API.System.MasterData
             .WithName("GetSponsorById");
 
             // POST create
-            group.MapPost("/", async (IMediator mediator, CreateSponsorDto dto, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapPost("/", async (IMediator mediator, CreateSponsorDto dto, CancellationToken ct = default) =>
             {
-                var id = await mediator.Send(new CreateSponsor.Command(dto, lang), ct);
+                var id = await mediator.Send(new CreateSponsor.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/sponsors/{id}", new { id });
             })
             //.RequirePermission("Sponsors", "Add")
@@ -64,20 +62,19 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 UpdateSponsorDto dto,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateSponsor.Command(fixedDto, lang), ct);
+                await mediator.Send(new UpdateSponsor.Command(fixedDto), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("Sponsors", "Edit")
             .WithName("UpdateSponsor");
 
             // DELETE hard
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new DeleteSponsor.Command(id, lang), ct);
+                var result = await mediator.Send(new DeleteSponsor.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
             //.RequirePermission("Sponsors", "Delete")
@@ -88,10 +85,9 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
-                await mediator.Send(new SoftDeleteSponsor.Command(id, regUserId, lang), ct);
+                await mediator.Send(new SoftDeleteSponsor.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("Sponsors", "Delete")

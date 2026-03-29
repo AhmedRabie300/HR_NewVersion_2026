@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Religion.Dtos;
 using Application.System.MasterData.Religion.Validators;
 using FluentValidation;
@@ -12,35 +13,45 @@ namespace Application.System.MasterData.Religion.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateReligionValidator());
+                RuleFor(x => x.Data)
+                    .SetValidator(new UpdateReligionValidator(localizer, languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IReligionRepository _repo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IReligionRepository repo)
+            public Handler(IReligionRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var religion = await _repo.GetByIdAsync(request.Data.Id);
-                if (religion == null)
-                    throw new Exception($"Religion with ID {request.Data.Id} not found");
+                var lang = _languageService.GetCurrentLanguage();
 
-                religion.Update(
+                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                if (entity == null)
+                    throw new Exception(string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Religion", lang),
+                        request.Data.Id));
+
+                entity.Update(
                     request.Data.EngName,
                     request.Data.ArbName,
                     request.Data.ArbName4S,
                     request.Data.Remarks
                 );
 
-                await _repo.UpdateAsync(religion);
+                await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

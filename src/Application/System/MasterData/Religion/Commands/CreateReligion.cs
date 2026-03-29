@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Religion.Dtos;
 using Application.System.MasterData.Religion.Validators;
@@ -14,27 +15,37 @@ namespace Application.System.MasterData.Religion.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateReligionValidator());
+                RuleFor(x => x.Data)
+                    .SetValidator(new CreateReligionValidator(localizer, languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IReligionRepository _repo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IReligionRepository repo)
+            public Handler(IReligionRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new ConflictException($"Religion with code '{request.Data.Code}' already exists");
+                var lang = _languageService.GetCurrentLanguage();
 
-                var religion = new Domain.System.MasterData.Religion(
+                if (await _repo.CodeExistsAsync(request.Data.Code))
+                    throw new ConflictException(string.Format(
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("Religion", lang),
+                        request.Data.Code));
+
+                var entity = new Domain.System.MasterData.Religion(
                     request.Data.Code,
                     request.Data.EngName,
                     request.Data.ArbName,
@@ -44,10 +55,10 @@ namespace Application.System.MasterData.Religion.Commands
                     request.Data.regComputerId
                 );
 
-                await _repo.AddAsync(religion);
+                await _repo.AddAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return religion.Id;
+                return entity.Id;
             }
         }
     }

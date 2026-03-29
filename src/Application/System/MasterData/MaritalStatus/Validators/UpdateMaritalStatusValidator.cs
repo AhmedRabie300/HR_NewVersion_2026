@@ -1,15 +1,15 @@
-﻿using Application.Common.Abstractions;
-using Application.System.MasterData.Position.Dtos;
+﻿using Application.System.MasterData.MaritalStatus.Dtos;
+using Application.Common.Abstractions;
 using FluentValidation;
 
-namespace Application.System.MasterData.Position.Validators
+namespace Application.System.MasterData.MaritalStatus.Validators
 {
-    public class UpdatePositionValidator : AbstractValidator<UpdatePositionDto>
+    public class UpdateMaritalStatusValidator : AbstractValidator<UpdateMaritalStatusDto>
     {
         private readonly ILocalizationService _localizer;
         private readonly ILanguageService _languageService;
 
-        public UpdatePositionValidator(ILocalizationService localizer, ILanguageService languageService)
+        public UpdateMaritalStatusValidator(ILocalizationService localizer, ILanguageService languageService)
         {
             _localizer = localizer;
             _languageService = languageService;
@@ -33,37 +33,17 @@ namespace Application.System.MasterData.Position.Validators
                 .MaximumLength(2048).When(x => x.Remarks != null)
                 .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 2048));
 
-            RuleFor(x => x.ParentId)
-                .GreaterThan(0).When(x => x.ParentId.HasValue)
-                .WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _languageService.GetCurrentLanguage()));
-
-            RuleFor(x => x.PositionLevelId)
-                .GreaterThan(0).When(x => x.PositionLevelId.HasValue)
-                .WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _languageService.GetCurrentLanguage()));
-
-            RuleFor(x => x.EmployeesNo)
-                .GreaterThan(0).When(x => x.EmployeesNo.HasValue)
-                .WithMessage(x => _localizer.GetMessage("EmployeesNoMustBePositive", _languageService.GetCurrentLanguage()));
-
-            RuleFor(x => x.PositionBudget)
-                .MaximumLength(5).When(x => x.PositionBudget != null)
-                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 5));
-
             RuleFor(x => x)
                 .Must(HaveAtLeastOneField)
                 .WithMessage(x => _localizer.GetMessage("AtLeastOneField", _languageService.GetCurrentLanguage()));
         }
 
-        private bool HaveAtLeastOneField(UpdatePositionDto dto)
+        private bool HaveAtLeastOneField(UpdateMaritalStatusDto dto)
         {
             return dto.EngName != null ||
                    dto.ArbName != null ||
                    dto.ArbName4S != null ||
-                   dto.ParentId.HasValue ||
-                   dto.PositionLevelId.HasValue ||
-                   dto.EmployeesNo.HasValue ||
-                   dto.Remarks != null ||
-                   dto.PositionBudget != null;
+                   dto.Remarks != null;
         }
     }
 }

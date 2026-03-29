@@ -11,36 +11,47 @@ namespace Application.System.MasterData.Profession.Commands
 {
     public static class CreateProfession
     {
-        public record Command(CreateProfessionDto Data, int Lang = 1) : IRequest<int>;
+        public record Command(CreateProfessionDto Data) : IRequest<int>;
 
-      // No Validations
+        public sealed class Validator : AbstractValidator<Command>
+        {
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            {
+                RuleFor(x => x.Data)
+                    .SetValidator(new CreateProfessionValidator(localizer, languageService));
+            }
+        }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IProfessionRepository _repo;
             private readonly ICompanyRepository _companyRepo;
+            private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IProfessionRepository repo, ICompanyRepository companyRepo, ILocalizationService localizer)
+            public Handler(IProfessionRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
+                _languageService = languageService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
                     throw new NotFoundException("Create Profession", string.Format(
-                        _localizer.GetMessage("NotFound", request.Lang),
-                        _localizer.GetMessage("Company", request.Lang),
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Company", lang),
                         request.Data.CompanyId));
 
                 if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId))
                     throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", request.Lang),
-                        _localizer.GetMessage("Profession", request.Lang),
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("Profession", lang),
                         request.Data.Code));
 
                 var entity = new Domain.System.MasterData.Profession(

@@ -13,20 +13,17 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/api/hr/master-data/locations")
                 .WithTags("Locations");
 
-            // GET /api/hr/master-data/locations?lang=1
+            // GET /api/hr/master-data/locations
             group.MapGet("/", async (
                 IMediator mediator,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new ListLocations.Query(lang), ct);
+                var result = await mediator.Send(new ListLocations.Query(), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Locations", "View")
-            .WithName("GetAllLocations")
-            .WithOpenApi();
+            .WithName("GetAllLocations");
 
-            // GET /api/hr/master-data/locations/paged?pageNumber=1&pageSize=20&searchTerm=&companyId=&branchId=&lang=1
+            // GET /api/hr/master-data/locations/paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -34,92 +31,72 @@ namespace API.System.MasterData
                 string? searchTerm = null,
                 int? companyId = null,
                 int? branchId = null,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedLocations.Query(pageNumber, pageSize, searchTerm, companyId, branchId, lang),
+                    new GetPagedLocations.Query(pageNumber, pageSize, searchTerm, companyId, branchId),
                     ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Locations", "View")
-            .WithName("GetPagedLocations")
-            .WithOpenApi();
+            .WithName("GetPagedLocations");
 
-            // GET /api/hr/master-data/locations/{id}?lang=1
+            // GET /api/hr/master-data/locations/{id}
             group.MapGet("/{id:int}", async (
                 IMediator mediator,
                 int id,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new GetLocationById.Query(id, lang), ct);
+                var result = await mediator.Send(new GetLocationById.Query(id), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Locations", "View")
-            .WithName("GetLocationById")
-            .WithOpenApi();
+            .WithName("GetLocationById");
 
-      
-
-            // GET /api/hr/master-data/locations/by-company/{companyId}?lang=1
+            // GET /api/hr/master-data/locations/by-company/{companyId}
             group.MapGet("/by-company/{companyId:int}", async (
                 IMediator mediator,
                 int companyId,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new GetLocationsByCompany.Query(companyId, lang), ct);
+                var result = await mediator.Send(new GetLocationsByCompany.Query(companyId), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Locations", "View")
-            .WithName("GetLocationsByCompany")
-            .WithOpenApi();
+            .WithName("GetLocationsByCompany");
 
-            // POST /api/hr/master-data/locations?lang=1
+            // POST /api/hr/master-data/locations
             group.MapPost("/", async (
                 IMediator mediator,
                 CreateLocationDto dto,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                var id = await mediator.Send(new CreateLocation.Command(dto, lang), ct);
+                var id = await mediator.Send(new CreateLocation.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/locations/{id}", new { id });
             })
-           // .RequirePermission("Locations", "Add")
-            .WithName("CreateLocation")
-            .WithOpenApi();
+            .WithName("CreateLocation");
 
-            // PUT /api/hr/master-data/locations/{id}?lang=1
+            // PUT /api/hr/master-data/locations/{id}
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 UpdateLocationDto dto,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateLocation.Command(fixedDto, lang), ct);
+                await mediator.Send(new UpdateLocation.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("Locations", "Edit")
-            .WithName("UpdateLocation")
-            .WithOpenApi();
+            .WithName("UpdateLocation");
 
-            // DELETE /api/hr/master-data/locations/{id}?regUserId=&lang=1 (Soft Delete)
+            // DELETE /api/hr/master-data/locations/{id} (Soft Delete)
             group.MapDelete("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                await mediator.Send(new SoftDeleteLocation.Command(id, regUserId, lang), ct);
+                await mediator.Send(new SoftDeleteLocation.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("Locations", "Delete")
-            .WithName("SoftDeleteLocation")
-            .WithOpenApi();
+            .WithName("SoftDeleteLocation");
 
             return routes;
         }

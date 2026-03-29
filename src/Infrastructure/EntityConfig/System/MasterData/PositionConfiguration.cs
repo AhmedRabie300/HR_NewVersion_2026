@@ -36,7 +36,7 @@ namespace Infrastructure.EntityConfig.System.MasterData
             builder.Property(x => x.PositionLevelId)
                 .HasColumnName("PositionLevelID");
 
-            builder.Property(x => x.EvalEvaluationId)
+            builder.Property(x => x.EvalEvaluationID)
                 .HasColumnName("EvalEvaluationID");
 
             builder.Property(x => x.EvalRecruitmentId)

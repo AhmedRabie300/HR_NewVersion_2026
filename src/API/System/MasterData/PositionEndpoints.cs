@@ -13,97 +13,77 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/api/hr/master-data/positions")
                 .WithTags("Positions");
 
-            // GET /api/hr/master-data/positions?lang=1
+            // GET /api/hr/master-data/positions
             group.MapGet("/", async (
                 IMediator mediator,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new ListPositions.Query(lang), ct);
+                var result = await mediator.Send(new ListPositions.Query(), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Positions", "View")
-            .WithName("GetAllPositions")
-            .WithOpenApi();
+            .WithName("GetAllPositions");
 
-            // GET /api/hr/master-data/positions/paged?pageNumber=1&pageSize=20&searchTerm=&lang=1
+            // GET /api/hr/master-data/positions/paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
                 string? searchTerm = null,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedPositions.Query(pageNumber, pageSize, searchTerm, lang),
+                    new GetPagedPositions.Query(pageNumber, pageSize, searchTerm),
                     ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Positions", "View")
-            .WithName("GetPagedPositions")
-            .WithOpenApi();
+            .WithName("GetPagedPositions");
 
-            // GET /api/hr/master-data/positions/{id}?lang=1
+            // GET /api/hr/master-data/positions/{id}
             group.MapGet("/{id:int}", async (
                 IMediator mediator,
                 int id,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new GetPositionById.Query(id, lang), ct);
+                var result = await mediator.Send(new GetPositionById.Query(id), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Positions", "View")
-            .WithName("GetPositionById")
-            .WithOpenApi();
+            .WithName("GetPositionById");
 
-        
-
-            // POST /api/hr/master-data/positions?lang=1
+            // POST /api/hr/master-data/positions
             group.MapPost("/", async (
                 IMediator mediator,
                 CreatePositionDto dto,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                var id = await mediator.Send(new CreatePosition.Command(dto, lang), ct);
+                var id = await mediator.Send(new CreatePosition.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/positions/{id}", new { id });
             })
-           // .RequirePermission("Positions", "Add")
-            .WithName("CreatePosition")
-            .WithOpenApi();
+            .WithName("CreatePosition");
 
-            // PUT /api/hr/master-data/positions/{id}?lang=1
+            // PUT /api/hr/master-data/positions/{id}
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 UpdatePositionDto dto,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdatePosition.Command(fixedDto, lang), ct);
+                await mediator.Send(new UpdatePosition.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("Positions", "Edit")
-            .WithName("UpdatePosition")
-            .WithOpenApi();
+            .WithName("UpdatePosition");
 
-            // DELETE /api/hr/master-data/positions/{id}?regUserId=&lang=1 (Soft Delete)
+            // DELETE /api/hr/master-data/positions/{id} (Soft Delete)
             group.MapDelete("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
-                await mediator.Send(new SoftDeletePosition.Command(id, regUserId, lang), ct);
+                await mediator.Send(new SoftDeletePosition.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("Positions", "Delete")
-            .WithName("SoftDeletePosition")
-            .WithOpenApi();
+            .WithName("SoftDeletePosition");
 
             return routes;
         }

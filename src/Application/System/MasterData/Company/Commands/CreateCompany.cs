@@ -1,5 +1,4 @@
-﻿// Application/System/MasterData/Company/Commands/CreateCompany.cs
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
@@ -7,7 +6,6 @@ using Application.System.MasterData.Company.Validators;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Company.Commands
 {
@@ -17,31 +15,11 @@ namespace Application.System.MasterData.Company.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
-            private readonly ILocalizationService _localizer;
-
-             public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
-                _languageService = languageService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Data)
-                    .Custom((data, context) =>
-                    {
-                        var lang = _languageService.GetCurrentLanguage();
-                        var validator = new CreateCompanyValidator(_localizer, lang);
-                        var result = validator.Validate(data);
-                        if (!result.IsValid)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                context.AddFailure(error);
-                            }
-                        }
-                    });
+                    .SetValidator(new CreateCompanyValidator(localizer, languageService));
             }
-
-        
         }
 
         public class Handler : IRequestHandler<Command, int>
@@ -56,8 +34,6 @@ namespace Application.System.MasterData.Company.Commands
                 _languageService = languageService;
                 _localizer = localizer;
             }
-
-     
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {

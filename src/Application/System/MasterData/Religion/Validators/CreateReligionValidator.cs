@@ -1,27 +1,34 @@
 ﻿using Application.System.MasterData.Religion.Dtos;
+using Application.Common.Abstractions;
 using FluentValidation;
 
 namespace Application.System.MasterData.Religion.Validators
 {
     public class CreateReligionValidator : AbstractValidator<CreateReligionDto>
     {
-        public CreateReligionValidator()
+        private readonly ILocalizationService _localizer;
+        private readonly ILanguageService _languageService;
+
+        public CreateReligionValidator(ILocalizationService localizer, ILanguageService languageService)
         {
+            _localizer = localizer;
+            _languageService = languageService;
+
             RuleFor(x => x.Code)
-                .NotEmpty().WithMessage("Religion code is required")
-                .MaximumLength(50).WithMessage("Code must not exceed 50 characters");
+                .NotEmpty().WithMessage(x => _localizer.GetMessage("CodeRequired", _languageService.GetCurrentLanguage()))
+                .MaximumLength(50).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage("English name must not exceed 100 characters");
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage("Arabic name must not exceed 100 characters");
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage("Arabic name (4S) must not exceed 100 characters");
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.Remarks)
-                .MaximumLength(2048).WithMessage("Remarks must not exceed 2048 characters");
+                .MaximumLength(2048).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 2048));
         }
     }
 }

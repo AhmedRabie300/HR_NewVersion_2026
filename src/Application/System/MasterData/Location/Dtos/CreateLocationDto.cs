@@ -9,8 +9,6 @@
         int? CityId,
         int? BranchId,
         int? StoreId,
-        int? InventoryCostLedgerId,
-        int? InventoryAdjustmentLedgerId,
         int? DepartmentId,
         string? Remarks,
         string? CostCenterCode1,

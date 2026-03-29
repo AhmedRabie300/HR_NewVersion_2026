@@ -1,4 +1,6 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
 using Application.System.MasterData.Department.Validators;
 using FluentValidation;
@@ -12,29 +14,37 @@ namespace Application.System.MasterData.Department.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateDepartmentValidator());
+                    .SetValidator(new UpdateDepartmentValidator(localizer, languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IDepartmentRepository _repo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IDepartmentRepository repo)
+            public Handler(IDepartmentRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 var department = await _repo.GetByIdAsync(request.Data.Id);
                 if (department == null)
-                    throw new Exception($"Department with ID {request.Data.Id} not found");
+                    throw new NotFoundException("Update Department", string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Department", lang),
+                        request.Data.Id));
 
-                // Update basic info
                 if (request.Data.EngName != null ||
                     request.Data.ArbName != null ||
                     request.Data.ArbName4S != null ||
@@ -50,15 +60,16 @@ namespace Application.System.MasterData.Department.Commands
                     );
                 }
 
-                // Update parent
                 if (request.Data.ParentId.HasValue)
                 {
-                    // Check if parent exists and not self-reference
                     if (request.Data.ParentId != department.Id)
                     {
                         var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                         if (parent == null)
-                            throw new Exception($"Parent department with ID {request.Data.ParentId} not found");
+                            throw new NotFoundException("Update Department", string.Format(
+                                _localizer.GetMessage("NotFound", lang),
+                                _localizer.GetMessage("ParentDepartment", lang),
+                                request.Data.ParentId));
 
                         department.UpdateParent(request.Data.ParentId);
                     }

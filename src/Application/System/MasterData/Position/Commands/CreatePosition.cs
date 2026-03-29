@@ -1,6 +1,5 @@
 ﻿using Application.Common;
 using Application.Common.Abstractions;
-using Application.Common.BaseHandlers;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Position.Dtos;
 using Application.System.MasterData.Position.Validators;
@@ -12,64 +11,61 @@ namespace Application.System.MasterData.Position.Commands
 {
     public static class CreatePosition
     {
-        public record Command(CreatePositionDto Data, int Lang = 1) : IRequest<int>;
+        public record Command(CreatePositionDto Data) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localization, int lang = 1)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreatePositionValidator(localization, lang));
+                    .SetValidator(new CreatePositionValidator(localizer, languageService));
             }
         }
 
-        public class Handler : BaseCommandHandler, IRequestHandler<Command, int>
+        public class Handler : IRequestHandler<Command, int>
         {
             private readonly IPositionRepository _repo;
+            private readonly ICompanyRepository _companyRepo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(
-                IPositionRepository repo,
-                ILocalizationService localization) : base(localization)
+            public Handler(IPositionRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _companyRepo = companyRepo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                // Check if code exists
-                var exists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (exists)
-                {
-                    throw new ConflictException(
-                        GetMessage("Position", request.Lang),
-                        GetMessage("Code", request.Lang),
-                        request.Data.Code
-                    );
-                }
+                var lang = _languageService.GetCurrentLanguage();
 
-                // Check if parent position exists if provided
+                // Check if code exists
+                if (await _repo.CodeExistsAsync(request.Data.Code))
+                    throw new ConflictException(string.Format(
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("Position", lang),
+                        request.Data.Code));
+
+                // Validate parent if provided
                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                    {
-                        throw new NotFoundException(
-                            GetMessage("ParentPosition", request.Lang),
-                            request.Data.ParentId.Value,
-                            GetFormattedMessage("NotFound", request.Lang, GetMessage("ParentPosition", request.Lang), request.Data.ParentId.Value)
-                        );
-                    }
+                        throw new NotFoundException("Create Position", string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("ParentPosition", lang),
+                            request.Data.ParentId));
                 }
 
-                var position = new Domain.System.MasterData.Position(
+                var entity = new Domain.System.MasterData.Position(
                     code: request.Data.Code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
                     parentId: request.Data.ParentId,
                     positionLevelId: request.Data.PositionLevelId,
-                    evalEvaluationId: request.Data.EvalEvaluationId,
-                    evalRecruitmentId: request.Data.EvalRecruitmentId,
                     remarks: request.Data.Remarks,
                     employeesNo: request.Data.EmployeesNo,
                     applyValidation: request.Data.ApplyValidation,
@@ -79,10 +75,10 @@ namespace Application.System.MasterData.Position.Commands
                     regComputerId: request.Data.regComputerId
                 );
 
-                await _repo.AddAsync(position);
+                await _repo.AddAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return position.Id;
+                return entity.Id;
             }
         }
     }

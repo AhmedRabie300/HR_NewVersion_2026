@@ -39,7 +39,6 @@ namespace API.System.MasterData
             //.RequirePermission("ContractTypes", "View")
             .WithName("GetPagedContractTypes");
 
-      
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
@@ -50,9 +49,9 @@ namespace API.System.MasterData
             .WithName("GetContractTypeById");
 
             // POST create
-            group.MapPost("/", async (IMediator mediator, CreateContractTypeDto dto, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapPost("/", async (IMediator mediator, CreateContractTypeDto dto, CancellationToken ct = default) =>
             {
-                var id = await mediator.Send(new CreateContractType.Command(dto, lang), ct);
+                var id = await mediator.Send(new CreateContractType.Command(dto), ct);
                 return Results.Created($"/api/hr/master-data/contract-types/{id}", new { id });
             })
             //.RequirePermission("ContractTypes", "Add")
@@ -63,20 +62,19 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 UpdateContractTypeDto dto,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateContractType.Command(fixedDto, lang), ct);
+                await mediator.Send(new UpdateContractType.Command(fixedDto), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("ContractTypes", "Edit")
             .WithName("UpdateContractType");
 
             // DELETE hard
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, [FromQuery] int lang = 1, CancellationToken ct = default) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(new DeleteContractType.Command(id, lang), ct);
+                var result = await mediator.Send(new DeleteContractType.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
             //.RequirePermission("ContractTypes", "Delete")
@@ -87,10 +85,9 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                [FromQuery] int lang = 1,
                 CancellationToken ct = default) =>
             {
-                await mediator.Send(new SoftDeleteContractType.Command(id, regUserId, lang), ct);
+                await mediator.Send(new SoftDeleteContractType.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
             //.RequirePermission("ContractTypes", "Delete")

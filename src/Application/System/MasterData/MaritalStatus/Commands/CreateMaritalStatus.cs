@@ -1,36 +1,48 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.MaritalStatus.Dtos;
- using Application.Common.Abstractions;
+using Application.System.MasterData.MaritalStatus.Validators;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
-using Application.Common;
 
 namespace Application.System.MasterData.MaritalStatus.Commands
 {
     public static class CreateMaritalStatus
     {
-        public record Command(CreateMaritalStatusDto Data, int Lang = 1) : IRequest<int>;
+        public record Command(CreateMaritalStatusDto Data) : IRequest<int>;
 
- 
-        // No Validations Present
+        public sealed class Validator : AbstractValidator<Command>
+        {
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            {
+                RuleFor(x => x.Data)
+                    .SetValidator(new CreateMaritalStatusValidator(localizer, languageService));
+            }
+        }
+
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IMaritalStatusRepository _repo;
+            private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IMaritalStatusRepository repo, ILocalizationService localizer)
+            public Handler(IMaritalStatusRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 if (await _repo.CodeExistsAsync(request.Data.Code))
                     throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", request.Lang),
-                        _localizer.GetMessage("MaritalStatus", request.Lang),
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("MaritalStatus", lang),
                         request.Data.Code));
 
                 var entity = new Domain.System.MasterData.MaritalStatus(

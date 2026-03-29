@@ -116,23 +116,28 @@ namespace API.Common.Middleware
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(pd, JsonOptions));
             }
+            // في API/Common/Middleware/GlobalExceptionMiddleware.cs
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An unhandled exception occurred.");
+
                 context.Response.ContentType = "application/problem+json";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-                _logger.LogError(ex, "Unhandled exception. TraceId: {TraceId}", context.TraceIdentifier);
+                // 🔍 التعديل هنا: اعرض تفاصيل الخطأ الحقيقية
+                var errorDetails = new
+                {
+                    type = "https://httpstatuses.com/500",
+                    title = "Server error",
+                    status = 500,
+                    detail = ex.Message, // <-- رسالة الخطأ الأصلية
+                    stackTrace = ex.StackTrace, // <-- مكان الخطأ بالضبط
+                    innerException = ex.InnerException?.Message, // <-- استثناء داخلي إن وجد
+                    instance = context.Request.Path,
+                    traceId = context.TraceIdentifier
+                };
 
-                var pd = ProblemDetailsFactory.Create(
-                    statusCode: StatusCodes.Status500InternalServerError,
-                    title: "Server error",
-                    detail: "Something went wrong. Please try again later.",
-                    traceId: context.TraceIdentifier,
-                    instance: context.Request.Path,
-                    type: "https://httpstatuses.com/500"
-                );
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize(pd, JsonOptions));
+                await context.Response.WriteAsJsonAsync(errorDetails);
             }
         }
 

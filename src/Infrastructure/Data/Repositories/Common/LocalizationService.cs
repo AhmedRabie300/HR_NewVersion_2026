@@ -86,7 +86,68 @@ namespace Infrastructure.Services
                     { 1, "You do not have '{0}' permission for this page" },
                     { 2, "ليس لديك صلاحية '{0}' لهذه الصفحة" }
                 },
-
+                // ===== Company Specific Messages =====
+                ["Company"] = new Dictionary<int, string>
+{
+    { 1, "Company" },
+    { 2, "الشركة" }
+},
+                ["CodeExists"] = new Dictionary<int, string>
+{
+    { 1, "{0} with code '{1}' already exists" },
+    { 2, "{0} بالكود '{1}' موجود بالفعل" }
+},
+                ["SequenceLengthMustBePositive"] = new Dictionary<int, string>
+{
+    { 1, "Sequence length must be greater than 0" },
+    { 2, "طول التسلسل يجب أن يكون أكبر من 0" }
+},
+                ["PrefixMustBePositive"] = new Dictionary<int, string>
+{
+    { 1, "Prefix must be greater than 0" },
+    { 2, "البادئة يجب أن تكون أكبر من 0" }
+},
+                ["SeparatorMaxLength"] = new Dictionary<int, string>
+{
+    { 1, "Separator must be a single character" },
+    { 2, "العلامة الفاصلة يجب أن تكون حرف واحد" }
+},
+                ["PrepareDayRange"] = new Dictionary<int, string>
+{
+    { 1, "Prepare day must be between 1 and 31" },
+    { 2, "يوم التحضير يجب أن يكون بين 1 و 31" }
+},
+                ["ExecuseRequestHoursPositive"] = new Dictionary<int, string>
+{
+    { 1, "Execuse request hours allowed must be greater than 0" },
+    { 2, "ساعات الإذن المسموحة يجب أن تكون أكبر من 0" }
+},
+                // ===== Branch Specific Messages (موجودة لكن نكمل) =====
+                ["Branch"] = new Dictionary<int, string>
+{
+    { 1, "Branch" },
+    { 2, "الفرع" }
+},
+                ["ParentBranch"] = new Dictionary<int, string>
+{
+    { 1, "Parent branch" },
+    { 2, "الفرع الأب" }
+},
+                ["ParentBranchRequired"] = new Dictionary<int, string>
+{
+    { 1, "Parent branch ID must be greater than 0" },
+    { 2, "معرف الفرع الأب يجب أن يكون أكبر من 0" }
+},
+                ["CountryRequired"] = new Dictionary<int, string>
+{
+    { 1, "Country ID must be greater than 0" },
+    { 2, "معرف الدولة يجب أن يكون أكبر من 0" }
+},
+                ["CityRequired"] = new Dictionary<int, string>
+{
+    { 1, "City ID must be greater than 0" },
+    { 2, "معرف المدينة يجب أن يكون أكبر من 0" }
+},
                 // ===== Login Messages =====
                 ["LoginSuccess"] = new Dictionary<int, string>
                 {
@@ -283,6 +344,27 @@ namespace Infrastructure.Services
 {
     { 1, "Document types group is required" },
     { 2, "مجموعة أنواع المستندات مطلوبة" }
+},
+                // ===== Nationality Specific Messages =====
+                ["Nationality"] = new Dictionary<int, string>
+{
+    { 1, "Nationality" },
+    { 2, "الجنسية" }
+},
+                ["TravelRouteMustBePositive"] = new Dictionary<int, string>
+{
+    { 1, "Travel route must be greater than 0" },
+    { 2, "مسار السفر يجب أن يكون أكبر من 0" }
+},
+                ["TravelClassMustBePositive"] = new Dictionary<int, string>
+{
+    { 1, "Travel class must be greater than 0" },
+    { 2, "درجة السفر يجب أن تكون أكبر من 0" }
+},
+                ["TicketAmountMustBePositive"] = new Dictionary<int, string>
+{
+    { 1, "Ticket amount must be greater than 0" },
+    { 2, "قيمة التذكرة يجب أن تكون أكبر من 0" }
 },
 
             };

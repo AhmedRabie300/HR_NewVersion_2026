@@ -6,28 +6,34 @@ namespace Application.System.MasterData.Sponsor.Validators
 {
     public class CreateSponsorValidator : AbstractValidator<CreateSponsorDto>
     {
-        public CreateSponsorValidator(ILocalizationService localizer, int lang)
+        private readonly ILocalizationService _localizer;
+        private readonly ILanguageService _languageService;
+
+        public CreateSponsorValidator(ILocalizationService localizer, ILanguageService languageService)
         {
+            _localizer = localizer;
+            _languageService = languageService;
+
             RuleFor(x => x.Code)
-                .NotEmpty().WithMessage(localizer.GetMessage("CodeRequired", lang))
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .NotEmpty().WithMessage(x => _localizer.GetMessage("CodeRequired", _languageService.GetCurrentLanguage()))
+                .MaximumLength(50).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.SponsorNumber)
                 .GreaterThan(0).When(x => x.SponsorNumber.HasValue)
-                .WithMessage(localizer.GetMessage("SponsorNumberMustBePositive", lang));
+                .WithMessage(x => _localizer.GetMessage("SponsorNumberMustBePositive", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.CompanyId)
                 .GreaterThan(0).When(x => x.CompanyId.HasValue)
-                .WithMessage(localizer.GetMessage("CompanyRequired", lang));
+                .WithMessage(x => _localizer.GetMessage("CompanyRequired", _languageService.GetCurrentLanguage()));
         }
     }
 }

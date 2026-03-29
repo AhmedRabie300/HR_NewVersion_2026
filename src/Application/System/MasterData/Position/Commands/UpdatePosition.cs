@@ -1,6 +1,5 @@
 ﻿using Application.Common;
 using Application.Common.Abstractions;
-using Application.Common.BaseHandlers;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Position.Dtos;
 using Application.System.MasterData.Position.Validators;
@@ -11,53 +10,42 @@ namespace Application.System.MasterData.Position.Commands
 {
     public static class UpdatePosition
     {
-        public record Command(UpdatePositionDto Data, int Lang = 1) : IRequest<Unit>;
+        public record Command(UpdatePositionDto Data) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localization, int lang = 1)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdatePositionValidator(localization, lang));
+                    .SetValidator(new UpdatePositionValidator(localizer, languageService));
             }
         }
 
-        public class Handler : BaseCommandHandler, IRequestHandler<Command, Unit>
+        public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IPositionRepository _repo;
+            private readonly ICompanyRepository _companyRepo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(
-                IPositionRepository repo,
-                ILocalizationService localization) : base(localization)
+            public Handler(IPositionRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _companyRepo = companyRepo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var position = await _repo.GetByIdAsync(request.Data.Id);
-                if (position == null)
-                {
-                    throw new NotFoundException(
-                        GetMessage("Position", request.Lang),
-                        request.Data.Id,
-                        GetFormattedMessage("NotFound", request.Lang, GetMessage("Position", request.Lang), request.Data.Id)
-                    );
-                }
+                var lang = _languageService.GetCurrentLanguage();
 
-                // Check if parent position exists if provided
-                if (request.Data.ParentId.HasValue && request.Data.ParentId != position.Id)
-                {
-                    var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
-                    if (parent == null)
-                    {
-                        throw new NotFoundException(
-                            GetMessage("ParentPosition", request.Lang),
-                            request.Data.ParentId.Value,
-                            GetFormattedMessage("NotFound", request.Lang, GetMessage("ParentPosition", request.Lang), request.Data.ParentId.Value)
-                        );
-                    }
-                }
+                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                if (entity == null)
+                    throw new Exception(string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Position", lang),
+                        request.Data.Id));
 
                 // Update basic info
                 if (request.Data.EngName != null ||
@@ -65,7 +53,7 @@ namespace Application.System.MasterData.Position.Commands
                     request.Data.ArbName4S != null ||
                     request.Data.Remarks != null)
                 {
-                    position.UpdateBasicInfo(
+                    entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
@@ -73,35 +61,37 @@ namespace Application.System.MasterData.Position.Commands
                     );
                 }
 
-                // Update relations
-                if (request.Data.ParentId.HasValue ||
-                    request.Data.PositionLevelId.HasValue ||
-                    request.Data.EvalEvaluationId.HasValue ||
-                    request.Data.EvalRecruitmentId.HasValue ||
-                    request.Data.AppraisalTypeGroupId.HasValue)
+                // Update parent
+                if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
                 {
-                    position.UpdateRelations(
-                        request.Data.ParentId,
-                        request.Data.PositionLevelId,
-                        request.Data.EvalEvaluationId,
-                        request.Data.EvalRecruitmentId,
-                        request.Data.AppraisalTypeGroupId
-                    );
+                    var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
+                    if (parent == null)
+                        throw new Exception(string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("ParentPosition", lang),
+                            request.Data.ParentId));
+                    entity.UpdateParent(request.Data.ParentId);
                 }
 
-                // Update settings
-                if (request.Data.EmployeesNo.HasValue ||
-                    request.Data.ApplyValidation.HasValue ||
-                    request.Data.PositionBudget != null)
+                // Update position level
+                if (request.Data.PositionLevelId.HasValue)
                 {
-                    position.UpdateSettings(
-                        request.Data.EmployeesNo,
-                        request.Data.ApplyValidation,
-                        request.Data.PositionBudget
-                    );
+                    entity.UpdatePositionLevel(request.Data.PositionLevelId);
                 }
 
-                await _repo.UpdateAsync(position);
+                // Update employees no
+                if (request.Data.EmployeesNo.HasValue)
+                {
+                    entity.UpdateEmployeesNo(request.Data.EmployeesNo);
+                }
+
+                // Update position budget
+                if (request.Data.PositionBudget != null)
+                {
+                    entity.UpdatePositionBudget(request.Data.PositionBudget);
+                }
+
+                await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

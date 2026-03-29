@@ -1,15 +1,15 @@
-﻿using Application.System.MasterData.Document.Dtos;
+﻿using Application.System.MasterData.MaritalStatus.Dtos;
 using Application.Common.Abstractions;
 using FluentValidation;
 
-namespace Application.System.MasterData.Document.Validators
+namespace Application.System.MasterData.MaritalStatus.Validators
 {
-    public class CreateDocumentValidator : AbstractValidator<CreateDocumentDto>
+    public class CreateMaritalStatusValidator : AbstractValidator<CreateMaritalStatusDto>
     {
         private readonly ILocalizationService _localizer;
         private readonly ILanguageService _languageService;
 
-        public CreateDocumentValidator(ILocalizationService localizer, ILanguageService languageService)
+        public CreateMaritalStatusValidator(ILocalizationService localizer, ILanguageService languageService)
         {
             _localizer = localizer;
             _languageService = languageService;
@@ -29,10 +29,6 @@ namespace Application.System.MasterData.Document.Validators
 
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 2048));
-
-            RuleFor(x => x.DocumentTypesGroupId)
-                .GreaterThan(0).When(x => x.DocumentTypesGroupId.HasValue)
-                .WithMessage(x => _localizer.GetMessage("DocumentTypesGroupRequired", _languageService.GetCurrentLanguage()));
         }
     }
 }

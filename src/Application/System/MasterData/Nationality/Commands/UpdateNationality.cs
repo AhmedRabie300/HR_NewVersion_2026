@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Nationality.Dtos;
 using Application.System.MasterData.Nationality.Validators;
 using FluentValidation;
@@ -12,27 +13,36 @@ namespace Application.System.MasterData.Nationality.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateNationalityValidator());  // استخدام الـ Validator المنفصل
+                    .SetValidator(new UpdateNationalityValidator(localizer, languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly INationalityRepository _repo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(INationalityRepository repo)
+            public Handler(INationalityRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var nationality = await _repo.GetByIdAsync(request.Data.Id);
-                if (nationality == null)
-                    throw new Exception($"Nationality with ID {request.Data.Id} not found");
+                var lang = _languageService.GetCurrentLanguage();
+
+                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                if (entity == null)
+                    throw new Exception(string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Nationality", lang),
+                        request.Data.Id));
 
                 // Update basic info
                 if (request.Data.EngName != null ||
@@ -40,7 +50,7 @@ namespace Application.System.MasterData.Nationality.Commands
                     request.Data.ArbName4S != null ||
                     request.Data.Remarks != null)
                 {
-                    nationality.UpdateBasicInfo(
+                    entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
@@ -53,7 +63,7 @@ namespace Application.System.MasterData.Nationality.Commands
                     request.Data.TravelClass.HasValue ||
                     request.Data.TicketAmount.HasValue)
                 {
-                    nationality.UpdateTravelInfo(
+                    entity.UpdateTravelInfo(
                         request.Data.TravelRoute,
                         request.Data.TravelClass,
                         request.Data.TicketAmount
@@ -63,10 +73,10 @@ namespace Application.System.MasterData.Nationality.Commands
                 // Update main nationality status
                 if (request.Data.IsMainNationality.HasValue)
                 {
-                    nationality.UpdateNationalityStatus(request.Data.IsMainNationality);
+                    entity.UpdateNationalityStatus(request.Data.IsMainNationality);
                 }
 
-                await _repo.UpdateAsync(nationality);
+                await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

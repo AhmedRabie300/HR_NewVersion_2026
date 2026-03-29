@@ -44,8 +44,6 @@ namespace Domain.System.MasterData
             int? cityId,
             int? branchId,
             int? storeId,
-            int? inventoryCostLedgerId,
-            int? inventoryAdjustmentLedgerId,
             int? departmentId,
             string? remarks,
             string? costCenterCode1,
@@ -63,8 +61,6 @@ namespace Domain.System.MasterData
             CityId = cityId;
             BranchId = branchId;
             StoreId = storeId;
-            InventoryCostLedgerId = inventoryCostLedgerId;
-            InventoryAdjustmentLedgerId = inventoryAdjustmentLedgerId;
             DepartmentId = departmentId;
             Remarks = remarks;
             CostCenterCode1 = costCenterCode1;
@@ -87,6 +83,15 @@ namespace Domain.System.MasterData
             if (arbName != null) ArbName = arbName;
             if (arbName4S != null) ArbName4S = arbName4S;
             if (remarks != null) Remarks = remarks;
+            if (CostCenterCode1 != null) CostCenterCode1 = CostCenterCode1;
+            if (CostCenterCode2 != null) CostCenterCode2 = CostCenterCode2;
+            if (CostCenterCode3 != null) CostCenterCode3 = CostCenterCode3;
+            if (CostCenterCode4 != null) CostCenterCode4 = CostCenterCode4;
+      
+      
+
+
+                    
         }
 
         public void UpdateRelations(

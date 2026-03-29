@@ -1,5 +1,4 @@
-﻿// Application/System/MasterData/Location/Validators/UpdateLocationValidator.cs
-using Application.Common.Abstractions;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.Location.Dtos;
 using FluentValidation;
 
@@ -7,52 +6,52 @@ namespace Application.System.MasterData.Location.Validators
 {
     public class UpdateLocationValidator : AbstractValidator<UpdateLocationDto>
     {
-        private readonly ILocalizationService _localization;
-        private readonly int _lang;
+        private readonly ILocalizationService _localizer;
+        private readonly ILanguageService _languageService;
 
-        public UpdateLocationValidator(ILocalizationService localization, int lang = 1)
+        public UpdateLocationValidator(ILocalizationService localizer, ILanguageService languageService)
         {
-            _localization = localization;
-            _lang = lang;
+            _localizer = localizer;
+            _languageService = languageService;
 
             RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage(_localization.GetMessage("IdGreaterThanZero", _lang));
+                .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _languageService.GetCurrentLanguage()));
 
             RuleFor(x => x.EngName)
                 .MaximumLength(100).When(x => x.EngName != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName)
                 .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(100).When(x => x.ArbName4S != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 100));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).When(x => x.Remarks != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 2048));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 2048));
 
             RuleFor(x => x.CostCenterCode1)
                 .MaximumLength(50).When(x => x.CostCenterCode1 != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 50));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.CostCenterCode2)
                 .MaximumLength(50).When(x => x.CostCenterCode2 != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 50));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.CostCenterCode3)
                 .MaximumLength(50).When(x => x.CostCenterCode3 != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 50));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.CostCenterCode4)
                 .MaximumLength(50).When(x => x.CostCenterCode4 != null)
-                .WithMessage(string.Format(_localization.GetMessage("MaxLength", _lang), 50));
+                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _languageService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x)
                 .Must(HaveAtLeastOneField)
-                .WithMessage(_localization.GetMessage("AtLeastOneField", _lang));
+                .WithMessage(x => _localizer.GetMessage("AtLeastOneField", _languageService.GetCurrentLanguage()));
         }
 
         private bool HaveAtLeastOneField(UpdateLocationDto dto)
@@ -60,13 +59,8 @@ namespace Application.System.MasterData.Location.Validators
             return dto.EngName != null ||
                    dto.ArbName != null ||
                    dto.ArbName4S != null ||
-                   dto.CityId.HasValue ||
-                   dto.BranchId.HasValue ||
-                   dto.StoreId.HasValue ||
-                   dto.InventoryCostLedgerId.HasValue ||
-                   dto.InventoryAdjustmentLedgerId.HasValue ||
-                   dto.DepartmentId.HasValue ||
-                   dto.Remarks != null ||
+                    dto.BranchId.HasValue ||
+                    dto.Remarks != null ||
                    dto.CostCenterCode1 != null ||
                    dto.CostCenterCode2 != null ||
                    dto.CostCenterCode3 != null ||

@@ -1,36 +1,24 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.ContractType.Dtos;
 using Application.System.MasterData.ContractType.Validators;
-using Application.Common.Abstractions;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
-using Application.Common;
 
 namespace Application.System.MasterData.ContractType.Commands
 {
     public static class CreateContractType
     {
-        public record Command(CreateContractTypeDto Data, int Lang = 1) : IRequest<int>;
+        public record Command(CreateContractTypeDto Data) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localizer)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .Custom((data, context) =>
-                    {
-                        var lang = context.InstanceToValidate.Lang;
-                        var validator = new CreateContractTypeValidator(localizer, lang);
-                        var result = validator.Validate(data);
-                        if (!result.IsValid)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                context.AddFailure(error);
-                            }
-                        }
-                    });
+                    .SetValidator(new CreateContractTypeValidator(localizer, languageService));
             }
         }
 
@@ -38,28 +26,32 @@ namespace Application.System.MasterData.ContractType.Commands
         {
             private readonly IContractTypeRepository _repo;
             private readonly ICompanyRepository _companyRepo;
+            private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IContractTypeRepository repo, ICompanyRepository companyRepo, ILocalizationService localizer)
+            public Handler(IContractTypeRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
+                _languageService = languageService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _languageService.GetCurrentLanguage();
+
                 var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
                 if (company == null)
-                    throw new NotFoundException("Create Contract Type",string.Format(
-                        _localizer.GetMessage("NotFound", request.Lang),
-                        _localizer.GetMessage("Company", request.Lang),
+                    throw new NotFoundException("Create Contract Type", string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Company", lang),
                         request.Data.CompanyId));
 
                 if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId))
                     throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", request.Lang),
-                        _localizer.GetMessage("ContractType", request.Lang),
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("ContractType", lang),
                         request.Data.Code));
 
                 var entity = new Domain.System.MasterData.ContractType(

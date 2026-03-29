@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Nationality.Dtos;
 using Application.System.MasterData.Nationality.Validators;
@@ -12,48 +13,56 @@ namespace Application.System.MasterData.Nationality.Commands
     {
         public record Command(CreateNationalityDto Data) : IRequest<int>;
 
-         public sealed class Validator : AbstractValidator<Command>
+        public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateNationalityValidator());  
+                    .SetValidator(new CreateNationalityValidator(localizer, languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly INationalityRepository _repo;
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(INationalityRepository repo)
+            public Handler(INationalityRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _languageService = languageService;
+                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var exists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (exists)
-                    throw new ConflictException($"Nationality with code '{request.Data.Code}' already exists");
+                var lang = _languageService.GetCurrentLanguage();
 
-                var nationality = new Domain.System.MasterData.Nationality(
-                    code: request.Data.Code,
-                    engName: request.Data.EngName,
-                    arbName: request.Data.ArbName,
-                    arbName4S: request.Data.ArbName4S,
-                    isMainNationality: request.Data.IsMainNationality,
-                    travelRoute: request.Data.TravelRoute,
-                    travelClass: request.Data.TravelClass,
-                    remarks: request.Data.Remarks,
-                    regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.regComputerId,
-                    ticketAmount: request.Data.TicketAmount
+                if (await _repo.CodeExistsAsync(request.Data.Code))
+                    throw new ConflictException(string.Format(
+                        _localizer.GetMessage("CodeExists", lang),
+                        _localizer.GetMessage("Nationality", lang),
+                        request.Data.Code));
+
+                var entity = new Domain.System.MasterData.Nationality(
+                    request.Data.Code,
+                    request.Data.EngName,
+                    request.Data.ArbName,
+                    request.Data.ArbName4S,
+                    request.Data.IsMainNationality,
+                    request.Data.TravelRoute,
+                    request.Data.TravelClass,
+                    request.Data.Remarks,
+                    request.Data.RegUserId,
+                    request.Data.regComputerId,
+                    request.Data.TicketAmount
                 );
 
-                await _repo.AddAsync(nationality);
+                await _repo.AddAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return nationality.Id;
+                return entity.Id;
             }
         }
     }

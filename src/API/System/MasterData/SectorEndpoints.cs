@@ -10,115 +10,81 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapSectorEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/sectors")
+            var group = routes.MapGroup("/master-data/sectors")
                 .WithTags("Sectors");
 
-            // GET /api/hr/master-data/sectors?lang=1
-            group.MapGet("/", async (
-                IMediator mediator,
-                int lang = 1,
-                CancellationToken ct = default) =>
+            // GET all
+            group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new ListSectors.Query(lang), ct);
+                var result = await mediator.Send(new ListSectors.Query(), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Sectors", "View")
-            .WithName("GetAllSectors")
-            .WithOpenApi();
+            .WithName("GetAllSectors");
 
-            // GET /api/hr/master-data/sectors/paged?pageNumber=1&pageSize=20&searchTerm=&companyId=&lang=1
+            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
                 string? searchTerm = null,
                 int? companyId = null,
-                int lang = 1,
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedSectors.Query(pageNumber, pageSize, searchTerm, companyId, lang),
-                    ct);
+                    new GetPagedSectors.Query(pageNumber, pageSize, searchTerm, companyId), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Sectors", "View")
-            .WithName("GetPagedSectors")
-            .WithOpenApi();
+            .WithName("GetPagedSectors");
 
-            // GET /api/hr/master-data/sectors/{id}?lang=1
-            group.MapGet("/{id:int}", async (
-                IMediator mediator,
-                int id,
-                int lang = 1,
-                CancellationToken ct = default) =>
+            // GET by company
+            group.MapGet("/by-company/{companyId:int}", async (IMediator mediator, int companyId, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new GetSectorById.Query(id, lang), ct);
+                var result = await mediator.Send(new GetSectorsByCompany.Query(companyId), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Sectors", "View")
-            .WithName("GetSectorById")
-            .WithOpenApi();
+            .WithName("GetSectorsByCompany");
 
-    
-
-            // GET /api/hr/master-data/sectors/by-company/{companyId}?lang=1
-            group.MapGet("/by-company/{companyId:int}", async (
-                IMediator mediator,
-                int companyId,
-                int lang = 1,
-                CancellationToken ct = default) =>
+       
+            // GET by id
+            group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new GetSectorsByCompany.Query(companyId, lang), ct);
+                var result = await mediator.Send(new GetSectorById.Query(id), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Sectors", "View")
-            .WithName("GetSectorsByCompany")
-            .WithOpenApi();
+            .WithName("GetSectorById");
 
-            // POST /api/hr/master-data/sectors?lang=1
-            group.MapPost("/", async (
-                IMediator mediator,
-                CreateSectorDto dto,
-                int lang = 1,
-                CancellationToken ct = default) =>
+            // POST create
+            group.MapPost("/", async (IMediator mediator, CreateSectorDto dto, CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateSector.Command(dto, lang), ct);
-                return Results.Created($"/api/hr/master-data/sectors/{id}", new { id });
+                var id = await mediator.Send(new CreateSector.Command(dto), ct);
+                return Results.Created($"/master-data/sectors/{id}", new { id });
             })
-           // .RequirePermission("Sectors", "Add")
-            .WithName("CreateSector")
-            .WithOpenApi();
+            .WithName("CreateSector");
 
-            // PUT /api/hr/master-data/sectors/{id}?lang=1
+            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 UpdateSectorDto dto,
-                int lang = 1,
-                CancellationToken ct = default) =>
+                CancellationToken ct) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateSector.Command(fixedDto, lang), ct);
+                await mediator.Send(new UpdateSector.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("Sectors", "Edit")
-            .WithName("UpdateSector")
-            .WithOpenApi();
+            .WithName("UpdateSector");
 
-            // DELETE /api/hr/master-data/sectors/{id}?regUserId=&lang=1 (Soft Delete)
-            group.MapDelete("/{id:int}", async (
+            // DELETE soft
+            group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                int lang = 1,
-                CancellationToken ct = default) =>
+                CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteSector.Command(id, regUserId, lang), ct);
+                await mediator.Send(new SoftDeleteSector.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("Sectors", "Delete")
-            .WithName("SoftDeleteSector")
-            .WithOpenApi();
+            .WithName("SoftDeleteSector");
 
             return routes;
         }
