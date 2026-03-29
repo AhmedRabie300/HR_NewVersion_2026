@@ -1,10 +1,10 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
 using Application.System.MasterData.Company.Validators;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Application.Common.Abstractions;
 
 namespace Application.System.MasterData.Company.Commands
 {
@@ -14,18 +14,18 @@ namespace Application.System.MasterData.Company.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(IHttpContextAccessor httpContextAccessor, ILocalizationService localizer)
+            public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
-                _httpContextAccessor = httpContextAccessor;
+                _languageService = languageService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
                     .Custom((data, context) =>
                     {
-                        var lang = GetLanguage();
+                        var lang = _languageService.GetCurrentLanguage();
                         var validator = new UpdateCompanyValidator(_localizer, lang);
                         var result = validator.Validate(data);
                         if (!result.IsValid)
@@ -37,44 +37,24 @@ namespace Application.System.MasterData.Company.Commands
                         }
                     });
             }
-
-            private int GetLanguage()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                if (context != null && context.Items.ContainsKey("Language"))
-                {
-                    return (int)context.Items["Language"]!;
-                }
-                return 1;
-            }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ICompanyRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(ICompanyRepository repo, IHttpContextAccessor httpContextAccessor, ILocalizationService localizer)
+            public Handler(ICompanyRepository repo, ILanguageService languageService, ILocalizationService localizer)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
+                _languageService = languageService;
                 _localizer = localizer;
-            }
-
-            private int GetLanguage()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                if (context != null && context.Items.ContainsKey("Language"))
-                {
-                    return (int)context.Items["Language"]!;
-                }
-                return 1;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = GetLanguage();
+                var lang = _languageService.GetCurrentLanguage();
 
                 var company = await _repo.GetByIdAsync(request.Data.Id);
                 if (company == null)

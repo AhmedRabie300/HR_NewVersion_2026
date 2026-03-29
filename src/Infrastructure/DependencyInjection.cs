@@ -59,6 +59,8 @@ namespace Infrastructure
             services.AddScoped<IContractTypeRepository, ContractTypeRepository>();
             services.AddScoped<IDocumentTypesGroupRepository, DocumentTypesGroupRepository>();
             services.AddScoped<IDocumentRepository, DocumentRepository>();
+            services.AddScoped<ILanguageService, LanguageService>();
+
             services.AddDbContext<ApplicationDbContext>(opt =>
             {
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
