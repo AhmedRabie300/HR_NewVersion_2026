@@ -2,6 +2,7 @@ using API.Common.Middleware;
 using API.Common.Versioning;
 using API.Endpoints;
 using API.Helpers;
+using API.Middleware;
 using API.system.MasterData;
 using API.System.MasterData;
 using API.UARbac;
@@ -77,7 +78,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-
+app.UseLanguageMiddleware();
 app.UseAuthentication();  
 app.UseAuthorization();   
 app.UsePermissionMiddleware();  
