@@ -2,12 +2,13 @@
 using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.BloodGroup.Commands
 {
     public static class DeleteBloodGroup
     {
-        public record Command(int Id, int Lang = 1) : IRequest<bool>;
+        public record Command(int Id, int Lang = 1) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
@@ -18,7 +19,7 @@ namespace Application.System.MasterData.BloodGroup.Commands
             }
         }
 
-        public class Handler : IRequestHandler<Command, bool>
+        public class Handler : IRequestHandler<Command, int>
         {
             private readonly IBloodGroupRepository _repo;
 
@@ -27,15 +28,15 @@ namespace Application.System.MasterData.BloodGroup.Commands
                 _repo = repo;
             }
 
-            public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 if (!await _repo.ExistsAsync(request.Id))
-                    return false;
+                     throw new NotFoundException("Delete Blood Group",$"BloodGroup with Id {request.Id} not found.");
 
                 await _repo.DeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return true;
+                return request.Id;
             }
         }
     }

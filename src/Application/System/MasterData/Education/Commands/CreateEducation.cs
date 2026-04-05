@@ -2,8 +2,6 @@
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Education.Dtos;
-using Domain.System.MasterData;
-using FluentValidation;
 using MediatR;
 
 namespace Application.System.MasterData.Education.Commands

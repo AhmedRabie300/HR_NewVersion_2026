@@ -10,7 +10,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapEducationEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/educations")
+            var group = routes.MapGroup("/master-data/educations")
                 .WithTags("Educations");
 
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>

@@ -1,9 +1,7 @@
-﻿using API.Helpers;
-using Application.System.MasterData.ContractType.Commands;
+﻿using Application.System.MasterData.ContractType.Commands;
 using Application.System.MasterData.ContractType.Dtos;
 using Application.System.MasterData.ContractType.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -11,7 +9,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapContractTypeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/contract-types")
+            var group = routes.MapGroup("/master-data/contract-types")
                 .WithTags("ContractTypes");
 
             // GET all
@@ -52,7 +50,7 @@ namespace API.System.MasterData
             group.MapPost("/", async (IMediator mediator, CreateContractTypeDto dto, CancellationToken ct = default) =>
             {
                 var id = await mediator.Send(new CreateContractType.Command(dto), ct);
-                return Results.Created($"/api/hr/master-data/contract-types/{id}", new { id });
+                return Results.Created($"/master-data/contract-types/{id}", new { id });
             })
             //.RequirePermission("ContractTypes", "Add")
             .WithName("CreateContractType");

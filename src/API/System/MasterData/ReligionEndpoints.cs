@@ -1,5 +1,4 @@
-﻿using API.Helpers;
-using Application.System.MasterData.Religion.Commands;
+﻿using Application.System.MasterData.Religion.Commands;
 using Application.System.MasterData.Religion.Dtos;
 using Application.System.MasterData.Religion.Queries;
 using MediatR;

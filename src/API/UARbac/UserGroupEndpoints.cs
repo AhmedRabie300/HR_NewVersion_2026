@@ -2,7 +2,6 @@
 using Application.UARbac.UserGroups.Dtos;
 using Application.UARbac.UserGroups.Queries;
 using MediatR;
-using API.Helpers; 
 
 namespace API.Endpoints
 {

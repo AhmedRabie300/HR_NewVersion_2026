@@ -1,4 +1,5 @@
-﻿using Application.Common.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.BloodGroup.Dtos;
 using Application.System.MasterData.BloodGroup.Validators;
@@ -46,7 +47,7 @@ namespace Application.System.MasterData.BloodGroup.Commands
 
                 var bloodGroup = await _repo.GetByIdAsync(request.Data.Id);
                 if (bloodGroup == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Update Blood Group",string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("BloodGroup", lang),
                         request.Data.Id));

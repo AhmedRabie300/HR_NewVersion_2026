@@ -3,7 +3,6 @@ using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.BloodGroup.Dtos;
 using Application.System.MasterData.BloodGroup.Validators;
-using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
 

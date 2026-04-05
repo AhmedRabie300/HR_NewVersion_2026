@@ -3,6 +3,7 @@ using Application.System.MasterData.ContractType.Dtos;
 using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.ContractType.Queries
 {
@@ -31,7 +32,7 @@ namespace Application.System.MasterData.ContractType.Queries
             {
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new Exception($"ContractType with ID {request.Id} not found");
+                    throw new NotFoundException("",$"ContractType with ID {request.Id} not found");
 
                 return new ContractTypeDto(
                     entity.Id,

@@ -10,7 +10,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapLocationEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/locations")
+            var group = routes.MapGroup("/master-data/locations")
                 .WithTags("Locations");
 
             // GET /api/hr/master-data/locations

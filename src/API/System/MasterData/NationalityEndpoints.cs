@@ -10,7 +10,7 @@ public static class NationalityEndpoints
 {
     public static IEndpointRouteBuilder MapNationalityEndpoints(this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/hr/master-data/nationalities")
+        var group = routes.MapGroup("/master-data/nationalities")
             .WithTags("Nationalities");
 
         // GET /api/hr/master-data/nationalities

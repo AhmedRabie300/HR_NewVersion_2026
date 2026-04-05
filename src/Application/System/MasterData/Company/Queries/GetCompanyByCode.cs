@@ -1,6 +1,6 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
-using FluentValidation;
 using MediatR;
 
 namespace Application.System.MasterData.Company.Queries
@@ -24,7 +24,7 @@ namespace Application.System.MasterData.Company.Queries
             {
                 var company = await _repo.GetByCodeAsync(request.Code);
                 if (company == null)
-                    throw new Exception($"Company with code '{request.Code}' not found");
+                    throw new NotFoundException("Get Company Details",$"Company with code '{request.Code}' not found");
 
                 return new CompanyDto(
                     Id: company.Id,

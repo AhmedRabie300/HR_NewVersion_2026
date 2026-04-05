@@ -3,7 +3,6 @@ using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
-using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
 

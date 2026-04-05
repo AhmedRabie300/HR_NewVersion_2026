@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using FluentValidation;
 using MediatR;
@@ -33,7 +34,7 @@ namespace Application.System.MasterData.Branch.Queries
             {
                 var company = await _companyRepo.GetByIdAsync(request.CompanyId);
                 if (company == null)
-                    throw new Exception($"Company with ID {request.CompanyId} not found");
+                    throw new NotFoundException("Get Branch For Company",$"Company with ID {request.CompanyId} not found");
 
                 var branches = await _repo.GetByCompanyIdAsync(request.CompanyId);
 

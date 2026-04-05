@@ -36,7 +36,7 @@ public static class Update
                  throw new NotFoundException("FormControl", dto.Id);
             }
             // Only updates these fields, nothing else
-            entity.UpdateUiSettings(dto.EngCaption, dto.ArbCaption, dto.IsDisabled, dto.IsHide);
+            entity.UpdateUiSettings(dto.EngCaption, dto.ArbCaption, dto.IsDisabled, dto.IsHide, dto.IsCompulory);
 
             await _repo.SaveChangesAsync(ct);
             return Unit.Value;

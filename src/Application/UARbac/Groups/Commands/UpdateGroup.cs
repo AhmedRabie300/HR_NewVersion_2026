@@ -3,6 +3,7 @@ using Application.UARbac.Groups.Dtos;
 using Application.UARbac.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.UARbac.Groups.Commands
 {
@@ -46,7 +47,7 @@ namespace Application.UARbac.Groups.Commands
             {
                 var group = await _repo.GetByIdAsync(request.Data.Id);
                 if (group == null)
-                    throw new Exception($"Group with ID {request.Data.Id} not found");
+                    throw new NotFoundException("Update Group",$"Group with ID {request.Data.Id} not found");
 
                 group.Update(request.Data.EngName, request.Data.ArbName);
 

@@ -1,5 +1,4 @@
-﻿using API.Helpers;
-using Application.System.MasterData.BloodGroup.Commands;
+﻿using Application.System.MasterData.BloodGroup.Commands;
 using Application.System.MasterData.BloodGroup.Dtos;
 using Application.System.MasterData.BloodGroup.Queries;
 using MediatR;
@@ -46,7 +45,7 @@ namespace API.System.MasterData
             group.MapPost("/", async (IMediator mediator, CreateBloodGroupDto dto, CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateBloodGroup.Command(dto), ct);
-                return Results.Created($"/api/hr/master-data/blood-groups/{id}", new { id });
+                return Results.Created($"/master-data/blood-groups/{id}", new { id });
             })
            // .RequirePermission("BloodGroups", "Add")
             .WithName("CreateBloodGroup");
@@ -67,7 +66,7 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new DeleteBloodGroup.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+                return Results.Accepted("/master-data/blood-groups/{id}",result);
             })
            // .RequirePermission("BloodGroups", "Delete")
             .WithName("DeleteBloodGroup");

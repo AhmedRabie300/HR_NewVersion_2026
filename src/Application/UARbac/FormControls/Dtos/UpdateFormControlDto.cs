@@ -8,6 +8,7 @@ namespace Application.UARbac.FormControls.Dtos
      int Id,
      string? EngCaption,
      string? ArbCaption,
+     bool? IsCompulory,
      bool? IsHide,
      bool? IsDisabled
  );

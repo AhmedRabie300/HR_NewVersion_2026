@@ -40,7 +40,7 @@ namespace Application.System.MasterData.Company.Commands
 
                 var company = await _repo.GetByIdAsync(request.Data.Id);
                 if (company == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Update Company",string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Company", lang),
                         request.Data.Id));

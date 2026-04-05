@@ -10,7 +10,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapCurrencyEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/currencies")
+            var group = routes.MapGroup("/master-data/currencies")
                 .WithTags("Currencies");
 
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>

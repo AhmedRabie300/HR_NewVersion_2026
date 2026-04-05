@@ -10,7 +10,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapDepartmentEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/departments")
+            var group = routes.MapGroup("/master-data/departments")
                 .WithTags("Departments");
 
             // GET /api/hr/master-data/departments

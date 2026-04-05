@@ -3,7 +3,6 @@ using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Currency.Dtos;
 using Application.System.MasterData.Currency.Validators;
-using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
 
@@ -45,7 +44,7 @@ namespace Application.System.MasterData.Currency.Commands
                 {
                     var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId.Value);
                     if (company == null)
-                        throw new Exception(string.Format(
+                        throw new NotFoundException("Create Currency",string.Format(
                             _localizer.GetMessage("NotFound", lang),
                             _localizer.GetMessage("Company", lang),
                             request.Data.CompanyId));

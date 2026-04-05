@@ -11,7 +11,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapDocumentEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/documents")
+            var group = routes.MapGroup("/master-data/documents")
                 .WithTags("Documents");
 
             // GET all

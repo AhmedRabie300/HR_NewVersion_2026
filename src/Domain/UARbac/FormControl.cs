@@ -30,13 +30,14 @@ public sealed class FormControl : LegacyEntity
         RegDate = DateTime.UtcNow;
     }
 
-    public void UpdateUiSettings(string? engCaption, string? arbCaption, bool? isDisabled, bool? isHide)
+    public void UpdateUiSettings(string? engCaption, string? arbCaption, bool? isDisabled, bool? isHide, bool? isCompulsory)
     {
         EngCaption = Normalize(engCaption);
         ArbCaption = Normalize(arbCaption);
 
         if (isDisabled.HasValue) IsDisabled = isDisabled.Value;
         if (isHide.HasValue) IsHide = isHide.Value;
+        if (isCompulsory.HasValue) Compulsory = isCompulsory.Value;
     }
 
     private void SetRequired(int formId, string name, string fieldName, int section)

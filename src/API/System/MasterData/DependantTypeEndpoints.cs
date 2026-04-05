@@ -10,7 +10,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapDependantTypeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/dependant-types")
+            var group = routes.MapGroup("/master-data/dependant-types")
                 .WithTags("DependantTypes");
 
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>

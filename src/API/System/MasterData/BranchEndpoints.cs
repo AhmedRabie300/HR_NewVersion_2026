@@ -1,5 +1,4 @@
 ﻿// API/System/MasterData/BranchEndpoints.cs
-using API.Helpers;
 using Application.System.MasterData.Branch.Commands;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Queries;
@@ -11,7 +10,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapBranchEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/branches")
+            var group = routes.MapGroup("/master-data/branches")
                 .WithTags("Branches");
 
             // GET /api/hr/master-data/branches
@@ -73,7 +72,7 @@ namespace API.System.MasterData
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateBranch.Command(dto), ct);
-                return Results.Created($"/api/hr/master-data/branches/{id}", new { id });
+                return Results.Created($"/master-data/branches/{id}", new { id });
             })
            // .RequirePermission("Branches", "Add")
             .WithName("CreateBranch");

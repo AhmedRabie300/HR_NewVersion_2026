@@ -2,7 +2,6 @@
 using Application.UARbac.ModulePermissions.Dtos;
 using Application.UARbac.ModulePermissions.Queries;
 using MediatR;
-using API.Helpers;
 
 namespace API.Endpoints
 {

@@ -1,4 +1,5 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using FluentValidation;
 using MediatR;
@@ -31,7 +32,7 @@ namespace Application.System.MasterData.Branch.Queries
             {
                 var branch = await _repo.GetByIdAsync(request.Id);
                 if (branch == null)
-                    throw new Exception($"Branch with ID {request.Id} not found");
+                    throw new NotFoundException("Get Branch Details",$"Branch with ID {request.Id} not found");
 
                 return new BranchDto(
                     Id: branch.Id,

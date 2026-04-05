@@ -1,9 +1,7 @@
-﻿using API.Helpers;
-using Application.System.MasterData.Sponsor.Commands;
+﻿using Application.System.MasterData.Sponsor.Commands;
 using Application.System.MasterData.Sponsor.Dtos;
 using Application.System.MasterData.Sponsor.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -11,7 +9,7 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapSponsorEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/hr/master-data/sponsors")
+            var group = routes.MapGroup("/master-data/sponsors")
                 .WithTags("Sponsors");
 
             // GET all

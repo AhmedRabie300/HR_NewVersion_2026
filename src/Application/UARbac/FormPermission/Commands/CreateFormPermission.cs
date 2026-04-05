@@ -1,4 +1,5 @@
-﻿using Application.UARbac.Abstractions;
+﻿using Application.Common;
+using Application.UARbac.Abstractions;
 using Application.UARbac.FormPermission.Dtos;
 using Domain.UARbac;   
 using FluentValidation;
@@ -86,7 +87,7 @@ namespace Application.UARbac.FormPermissions.Commands
                         request.Data.UserId.Value);
 
                     if (existing != null)
-                        throw new Exception($"Permission already exists for this form and user");
+                        throw new NotFoundException("Create Form Permission",$"Permission already exists for this form and user");
                 }
 
                  var permission = new Domain.UARbac.FormPermission(  
