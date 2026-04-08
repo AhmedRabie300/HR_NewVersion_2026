@@ -3,6 +3,7 @@ using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 
 namespace Infrastructure.Data.Repositories.System.MasterData
 {
@@ -20,12 +21,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.Company)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<Sponsor?> GetByCodeAsync(string code)
-            => await _db.Sponsors.FirstOrDefaultAsync(x => x.Code == code);
+        public async Task<Sponsor?> GetByCodeAsync(string code, int companyId)
+            => await _db.Sponsors.FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
 
-        public async Task<List<Sponsor>> GetAllAsync()
+        public async Task<List<Sponsor>> GetAllAsync(int companyId)
             => await _db.Sponsors
-                .Where(x => x.CancelDate == null)
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
@@ -59,11 +60,11 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> ExistsAsync(int id)
             => await _db.Sponsors.AnyAsync(x => x.Id == id);
 
-        public async Task<bool> CodeExistsAsync(string code)
-            => await _db.Sponsors.AnyAsync(x => x.Code == code);
+        public async Task<bool> CodeExistsAsync(string code, int companyId)
+            => await _db.Sponsors.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
 
-        public async Task<bool> CodeExistsAsync(string code, int excludeId)
-            => await _db.Sponsors.AnyAsync(x => x.Code == code && x.Id != excludeId);
+        public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
+            => await _db.Sponsors.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
 
         public async Task<PagedResult<Sponsor>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
         {
@@ -71,12 +72,11 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             pageSize = pageSize <= 0 ? 20 : pageSize;
 
             IQueryable<Sponsor> query = _db.Sponsors
-                .Where(x => x.CancelDate == null)
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .AsNoTracking();
 
-            if (companyId.HasValue)
-                query = query.Where(x => x.CompanyId == companyId.Value);
+       
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {

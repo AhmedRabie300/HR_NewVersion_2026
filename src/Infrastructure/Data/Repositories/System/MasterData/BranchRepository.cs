@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿// Infrastructure/Data/Repositories/System/MasterData/BranchRepository.cs
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -16,58 +17,39 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         }
 
         public async Task<Branch?> GetByIdAsync(int id)
-        {
-            return await _db.Branches
+            => await _db.Branches
                 .Include(x => x.Company)
                 .Include(x => x.ParentBranch)
                 .FirstOrDefaultAsync(x => x.Id == id);
-        }
 
         public async Task<Branch?> GetByCodeAsync(string code)
-        {
-            return await _db.Branches
-                .Include(x => x.Company)
-                .Include(x => x.ParentBranch)
-                .FirstOrDefaultAsync(x => x.Code == code);
-        }
+            => await _db.Branches.FirstOrDefaultAsync(x => x.Code == code);
 
         public async Task<Branch?> GetByCodeAsync(string code, int companyId)
-        {
-            return await _db.Branches
+            => await _db.Branches.FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
+
+        public async Task<List<Branch>> GetAllAsync(int companyId)
+            => await _db.Branches
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .Include(x => x.ParentBranch)
-                .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
-        }
-
-        public async Task<List<Branch>> GetAllAsync()
-        {
-            return await _db.Branches
-                .Where(x => x.CancelDate == null)
-                //.Include(x => x.Company)
-                //.Include(x => x.ParentBranch)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<List<Branch>> GetByCompanyIdAsync(int companyId)
-        {
-            return await _db.Branches
+            => await _db.Branches
                 .Where(x => x.CancelDate == null && x.CompanyId == companyId)
-                .Include(x => x.ParentBranch)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<List<Branch>> GetByParentIdAsync(int parentId)
-        {
-            return await _db.Branches
+            => await _db.Branches
                 .Where(x => x.CancelDate == null && x.ParentId == parentId)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<Branch> AddAsync(Branch branch)
         {
@@ -83,38 +65,25 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public async Task DeleteAsync(int id)
         {
-            var branch = await _db.Branches.FindAsync(id);
-            if (branch != null)
-            {
-                _db.Branches.Remove(branch);
-            }
+            var item = await _db.Branches.FindAsync(id);
+            if (item != null) _db.Branches.Remove(item);
         }
 
         public async Task<bool> ExistsAsync(int id)
-        {
-            return await _db.Branches.AnyAsync(x => x.Id == id);
-        }
+            => await _db.Branches.AnyAsync(x => x.Id == id);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId)
-        {
-            return await _db.Branches.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
-        }
+            => await _db.Branches.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
-        {
-            return await _db.Branches
-                .AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
-        }
+            => await _db.Branches.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
 
         public async Task<List<Branch>> GetActiveBranchesAsync()
-        {
-            return await _db.Branches
+            => await _db.Branches
                 .Where(x => x.CancelDate == null)
-                .Include(x => x.Company)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<PagedResult<Branch>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
         {
@@ -128,9 +97,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .AsNoTracking();
 
             if (companyId.HasValue)
-            {
                 query = query.Where(x => x.CompanyId == companyId.Value);
-            }
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -142,7 +109,6 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             }
 
             var totalCount = await query.CountAsync();
-
             var items = await query
                 .OrderBy(x => x.Code)
                 .Skip((pageNumber - 1) * pageSize)
@@ -154,17 +120,15 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public async Task SoftDeleteAsync(int id, int? regUserId = null)
         {
-            var branch = await _db.Branches.FindAsync(id);
-            if (branch != null)
+            var item = await _db.Branches.FindAsync(id);
+            if (item != null)
             {
-                branch.Cancel(regUserId);
-                _db.Branches.Update(branch);
+                item.Cancel(regUserId);
+                _db.Branches.Update(item);
             }
         }
 
         public Task SaveChangesAsync(CancellationToken ct)
-        {
-            return _db.SaveChangesAsync(ct);
-        }
+            => _db.SaveChangesAsync(ct);
     }
 }

@@ -1,4 +1,5 @@
-﻿ using Application.Common.Models;
+﻿// Infrastructure/Data/Repositories/System/MasterData/DepartmentRepository.cs
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -16,105 +17,71 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         }
 
         public async Task<Department?> GetByIdAsync(int id)
-        {
-            return await _db.Departments
+            => await _db.Departments
                 .Include(x => x.Company)
                 .Include(x => x.ParentDepartment)
                 .FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public async Task<Department?> GetByCodeAsync(string code)
-        {
-            return await _db.Departments
-                .Include(x => x.Company)
-                .Include(x => x.ParentDepartment)
-                .FirstOrDefaultAsync(x => x.Code == code);
-        }
 
         public async Task<Department?> GetByCodeAsync(string code, int companyId)
-        {
-            return await _db.Departments
-                .Include(x => x.Company)
-                .Include(x => x.ParentDepartment)
+            => await _db.Departments
                 .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
-        }
 
-        public async Task<List<Department>> GetAllAsync()
-        {
-            return await _db.Departments
-                .Where(x => x.CancelDate == null)
+        public async Task<List<Department>> GetAllAsync(int companyId)
+            => await _db.Departments
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .Include(x => x.ParentDepartment)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<List<Department>> GetByCompanyIdAsync(int companyId)
-        {
-            return await _db.Departments
+            => await _db.Departments
                 .Where(x => x.CancelDate == null && x.CompanyId == companyId)
-                .Include(x => x.ParentDepartment)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<List<Department>> GetByParentIdAsync(int parentId)
-        {
-            return await _db.Departments
+            => await _db.Departments
                 .Where(x => x.CancelDate == null && x.ParentId == parentId)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
+
+        public async Task<Department> AddAsync(Department entity)
+        {
+            await _db.Departments.AddAsync(entity);
+            return entity;
         }
 
-        public async Task<Department> AddAsync(Department department)
+        public Task UpdateAsync(Department entity)
         {
-            await _db.Departments.AddAsync(department);
-            return department;
-        }
-
-        public Task UpdateAsync(Department department)
-        {
-            _db.Departments.Update(department);
+            _db.Departments.Update(entity);
             return Task.CompletedTask;
         }
 
         public async Task DeleteAsync(int id)
         {
-            var department = await _db.Departments.FindAsync(id);
-            if (department != null)
-            {
-                _db.Departments.Remove(department);
-            }
+            var item = await _db.Departments.FindAsync(id);
+            if (item != null) _db.Departments.Remove(item);
         }
 
         public async Task<bool> ExistsAsync(int id)
-        {
-            return await _db.Departments.AnyAsync(x => x.Id == id);
-        }
+            => await _db.Departments.AnyAsync(x => x.Id == id);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId)
-        {
-            return await _db.Departments.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
-        }
+            => await _db.Departments.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
-        {
-            return await _db.Departments
-                .AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
-        }
+            => await _db.Departments.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
 
         public async Task<List<Department>> GetActiveDepartmentsAsync()
-        {
-            return await _db.Departments
+            => await _db.Departments
                 .Where(x => x.CancelDate == null)
-                .Include(x => x.Company)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
         public async Task<PagedResult<Department>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
         {
@@ -128,9 +95,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .AsNoTracking();
 
             if (companyId.HasValue)
-            {
                 query = query.Where(x => x.CompanyId == companyId.Value);
-            }
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -143,7 +108,6 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             }
 
             var totalCount = await query.CountAsync();
-
             var items = await query
                 .OrderBy(x => x.Code)
                 .Skip((pageNumber - 1) * pageSize)
@@ -155,17 +119,15 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public async Task SoftDeleteAsync(int id, int? regUserId = null)
         {
-            var department = await _db.Departments.FindAsync(id);
-            if (department != null)
+            var item = await _db.Departments.FindAsync(id);
+            if (item != null)
             {
-                department.Cancel(regUserId);
-                _db.Departments.Update(department);
+                item.Cancel(regUserId);
+                _db.Departments.Update(item);
             }
         }
 
         public Task SaveChangesAsync(CancellationToken ct)
-        {
-            return _db.SaveChangesAsync(ct);
-        }
+            => _db.SaveChangesAsync(ct);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿// Infrastructure/Data/Repositories/System/MasterData/ContractTypeRepository.cs
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -24,9 +25,9 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             => await _db.ContractTypes
                 .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
 
-        public async Task<List<ContractType>> GetAllAsync()
+        public async Task<List<ContractType>> GetAllAsync(int companyId)
             => await _db.ContractTypes
-                .Where(x => x.CancelDate == null)
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
@@ -65,6 +66,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
             => await _db.ContractTypes.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
+
+        public async Task<List<ContractType>> GetActiveContractTypesAsync()
+            => await _db.ContractTypes
+                .Where(x => x.CancelDate == null)
+                .OrderBy(x => x.Code)
+                .AsNoTracking()
+                .ToListAsync();
 
         public async Task<PagedResult<ContractType>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
         {

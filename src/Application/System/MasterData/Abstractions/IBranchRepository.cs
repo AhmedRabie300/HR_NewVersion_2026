@@ -8,7 +8,7 @@ namespace Application.System.MasterData.Abstractions
         Task<Domain.System.MasterData.Branch?> GetByIdAsync(int id);
         Task<Domain.System.MasterData.Branch?> GetByCodeAsync(string code);
         Task<Domain.System.MasterData.Branch?> GetByCodeAsync(string code, int companyId);
-        Task<List<Domain.System.MasterData.Branch>> GetAllAsync();
+        Task<List<Domain.System.MasterData.Branch>> GetAllAsync( int companyId);
         Task<List<Domain.System.MasterData.Branch>> GetByCompanyIdAsync(int companyId);
         Task<List<Domain.System.MasterData.Branch>> GetByParentIdAsync(int parentId);
         Task<Domain.System.MasterData.Branch> AddAsync(Domain.System.MasterData.Branch branch);

@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿// Infrastructure/Data/Repositories/System/MasterData/EducationRepository.cs
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -24,9 +25,9 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             => await _db.Educations
                 .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
 
-        public async Task<List<Education>> GetAllAsync()
+        public async Task<List<Education>> GetAllAsync(int companyId)
             => await _db.Educations
-                .Where(x => x.CancelDate == null)
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
@@ -66,18 +67,15 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
             => await _db.Educations.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
 
-        public async Task<PagedResult<Education>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
+        public async Task<PagedResult<Education>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
 
             IQueryable<Education> query = _db.Educations
-                .Where(x => x.CancelDate == null)
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .AsNoTracking();
-
-            if (companyId.HasValue)
-                query = query.Where(x => x.CompanyId == companyId.Value);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {

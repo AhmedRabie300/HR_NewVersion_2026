@@ -2,6 +2,7 @@
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Department.Queries
 {
@@ -12,31 +13,44 @@ namespace Application.System.MasterData.Department.Queries
         public class Handler : IRequestHandler<Query, List<DepartmentDto>>
         {
             private readonly IDepartmentRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
 
-            public Handler(IDepartmentRepository repo)
+            public Handler(IDepartmentRepository repo, IHttpContextAccessor httpContextAccessor)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
+            }
+
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
+                return companyId.Value;
             }
 
             public async Task<List<DepartmentDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var departments = await _repo.GetAllAsync();
+                var companyId = GetRequiredCompanyId();
 
-                return departments.Select(d => new DepartmentDto(
-                    Id: d.Id,
-                    Code: d.Code,
-                    CompanyId: d.CompanyId,
-                    CompanyName: d.Company?.EngName ?? d.Company?.ArbName,
-                    EngName: d.EngName,
-                    ArbName: d.ArbName,
-                    ArbName4S: d.ArbName4S,
-                    ParentId: d.ParentId,
-                    ParentDepartmentName: d.ParentDepartment?.EngName ?? d.ParentDepartment?.ArbName,
-                    Remarks: d.Remarks,
-                    CostCenterCode: d.CostCenterCode,
-                    RegDate: d.RegDate,
-                    CancelDate: d.CancelDate,
-                    IsActive: d.IsActive()
+                var items = await _repo.GetAllAsync(companyId);
+
+                return items.Select(x => new DepartmentDto(
+                    Id: x.Id,
+                    Code: x.Code,
+                    CompanyId: x.CompanyId,
+                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
+                    EngName: x.EngName,
+                    ArbName: x.ArbName,
+                    ArbName4S: x.ArbName4S,
+                    ParentId: x.ParentId,
+                    ParentDepartmentName: x.ParentDepartment?.EngName ?? x.ParentDepartment?.ArbName,
+                    Remarks: x.Remarks,
+                    CostCenterCode: x.CostCenterCode,
+                    RegDate: x.RegDate,
+                    CancelDate: x.CancelDate,
+                    IsActive: x.IsActive()
                 )).ToList();
             }
         }

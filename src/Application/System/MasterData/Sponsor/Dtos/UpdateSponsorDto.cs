@@ -5,7 +5,7 @@
         string? EngName,
         string? ArbName,
         string? ArbName4S,
-        int? SponsorNumber,
-        int? CompanyId
+        int? SponsorNumber
+     
     );
 }

@@ -45,18 +45,14 @@ namespace Application.System.MasterData.Nationality.Commands
                         request.Data.Id));
 
                 // Update basic info
-                if (request.Data.EngName != null ||
-                    request.Data.ArbName != null ||
-                    request.Data.ArbName4S != null ||
-                    request.Data.Remarks != null)
-                {
+               
                     entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
                         request.Data.Remarks
                     );
-                }
+                
 
                 // Update travel info
                 if (request.Data.TravelRoute.HasValue ||

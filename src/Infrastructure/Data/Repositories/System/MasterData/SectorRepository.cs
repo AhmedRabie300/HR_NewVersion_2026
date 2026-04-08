@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿// Infrastructure/Data/Repositories/System/MasterData/SectorRepository.cs
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -16,121 +17,82 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         }
 
         public async Task<Sector?> GetByIdAsync(int id)
-        {
-            return await _db.Sectors
+            => await _db.Sectors
                 .Include(x => x.Company)
                 .Include(x => x.ParentSector)
                 .FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public async Task<Sector?> GetByCodeAsync(string code)
-        {
-            return await _db.Sectors
-                .Include(x => x.Company)
-                .Include(x => x.ParentSector)
-                .FirstOrDefaultAsync(x => x.Code == code);
-        }
 
         public async Task<Sector?> GetByCodeAsync(string code, int companyId)
-        {
-            return await _db.Sectors
-                .Include(x => x.Company)
-                .Include(x => x.ParentSector)
+            => await _db.Sectors
                 .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
-        }
 
-        public async Task<List<Sector>> GetAllAsync()
-        {
-            return await _db.Sectors
-                .Where(x => x.CancelDate == null)
+        public async Task<List<Sector>> GetAllAsync(int companyId)
+            => await _db.Sectors
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .Include(x => x.ParentSector)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
+
+        public async Task<Sector> AddAsync(Sector entity)
+        {
+            await _db.Sectors.AddAsync(entity);
+            return entity;
         }
 
-        public async Task<List<Sector>> GetByCompanyIdAsync(int companyId)
+        public Task UpdateAsync(Sector entity)
         {
-            return await _db.Sectors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
-                .Include(x => x.ParentSector)
-                .OrderBy(x => x.Code)
-                .AsNoTracking()
-                .ToListAsync();
-        }
-
-        public async Task<List<Sector>> GetByParentIdAsync(int parentId)
-        {
-            return await _db.Sectors
-                .Where(x => x.CancelDate == null && x.ParentId == parentId)
-                .OrderBy(x => x.Code)
-                .AsNoTracking()
-                .ToListAsync();
-        }
-
-        public async Task<Sector> AddAsync(Sector sector)
-        {
-            await _db.Sectors.AddAsync(sector);
-            return sector;
-        }
-
-        public Task UpdateAsync(Sector sector)
-        {
-            _db.Sectors.Update(sector);
+            _db.Sectors.Update(entity);
             return Task.CompletedTask;
         }
 
         public async Task DeleteAsync(int id)
         {
-            var sector = await _db.Sectors.FindAsync(id);
-            if (sector != null)
-            {
-                _db.Sectors.Remove(sector);
-            }
+            var item = await _db.Sectors.FindAsync(id);
+            if (item != null) _db.Sectors.Remove(item);
         }
 
         public async Task<bool> ExistsAsync(int id)
-        {
-            return await _db.Sectors.AnyAsync(x => x.Id == id);
-        }
+            => await _db.Sectors.AnyAsync(x => x.Id == id);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId)
-        {
-            return await _db.Sectors.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
-        }
+            => await _db.Sectors.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
-        {
-            return await _db.Sectors
-                .AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
-        }
+            => await _db.Sectors.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
 
-        public async Task<List<Sector>> GetActiveSectorsAsync()
-        {
-            return await _db.Sectors
-                .Where(x => x.CancelDate == null)
-                .Include(x => x.Company)
+        public async Task<List<Sector>> GetByCompanyIdAsync(int companyId)
+            => await _db.Sectors
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
-        }
 
-        public async Task<PagedResult<Sector>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
+        public async Task<List<Sector>> GetByParentIdAsync(int parentId)
+            => await _db.Sectors
+                .Where(x => x.CancelDate == null && x.ParentId == parentId)
+                .OrderBy(x => x.Code)
+                .AsNoTracking()
+                .ToListAsync();
+
+        public async Task<List<Sector>> GetActiveSectorsAsync(int companyId)
+            => await _db.Sectors
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .OrderBy(x => x.Code)
+                .AsNoTracking()
+                .ToListAsync();
+
+        public async Task<PagedResult<Sector>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
 
             IQueryable<Sector> query = _db.Sectors
-                .Where(x => x.CancelDate == null)
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .Include(x => x.ParentSector)
                 .AsNoTracking();
-
-            if (companyId.HasValue)
-            {
-                query = query.Where(x => x.CompanyId == companyId.Value);
-            }
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -142,7 +104,6 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             }
 
             var totalCount = await query.CountAsync();
-
             var items = await query
                 .OrderBy(x => x.Code)
                 .Skip((pageNumber - 1) * pageSize)
@@ -154,17 +115,15 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public async Task SoftDeleteAsync(int id, int? regUserId = null)
         {
-            var sector = await _db.Sectors.FindAsync(id);
-            if (sector != null)
+            var item = await _db.Sectors.FindAsync(id);
+            if (item != null)
             {
-                sector.Cancel(regUserId);
-                _db.Sectors.Update(sector);
+                item.Cancel(regUserId);
+                _db.Sectors.Update(item);
             }
         }
 
         public Task SaveChangesAsync(CancellationToken ct)
-        {
-            return _db.SaveChangesAsync(ct);
-        }
+            => _db.SaveChangesAsync(ct);
     }
 }

@@ -31,9 +31,7 @@ namespace Application.System.MasterData.Sponsor.Validators
                 .GreaterThan(0).When(x => x.SponsorNumber.HasValue)
                 .WithMessage(x => _localizer.GetMessage("SponsorNumberMustBePositive", _languageService.GetCurrentLanguage()));
 
-            RuleFor(x => x.CompanyId)
-                .GreaterThan(0).When(x => x.CompanyId.HasValue)
-                .WithMessage(x => _localizer.GetMessage("CompanyRequired", _languageService.GetCurrentLanguage()));
+           
         }
     }
 }

@@ -1,54 +1,73 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿// Application/System/MasterData/Location/Queries/ListLocations.cs
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Location.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Location.Queries
 {
     public static class ListLocations
     {
-        public record Query(int Lang = 1) : IRequest<List<LocationDto>>;
+        public record Query : IRequest<List<LocationDto>>;
 
         public class Handler : IRequestHandler<Query, List<LocationDto>>
         {
             private readonly ILocationRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly ILanguageService _languageService;
 
-            public Handler(ILocationRepository repo)
+            public Handler(ILocationRepository repo, IHttpContextAccessor httpContextAccessor, ILanguageService languageService)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
+                _languageService = languageService;
+            }
+
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
+                return companyId.Value;
             }
 
             public async Task<List<LocationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var locations = await _repo.GetAllAsync();
+                var companyId = GetRequiredCompanyId();
+                var lang = _languageService.GetCurrentLanguage();
 
-                return locations.Select(l => new LocationDto(
-                    Id: l.Id,
-                    Code: l.Code,
-                    CompanyId: l.CompanyId,
-                    CompanyName: request.Lang == 2 ? l.Company?.ArbName : l.Company?.EngName,
-                    EngName: l.EngName,
-                    ArbName: l.ArbName,
-                    ArbName4S: l.ArbName4S,
-                    CityId: l.CityId,
-                    CityName: null,
-                    BranchId: l.BranchId,
-                    BranchName: request.Lang == 2 ? l.Branch?.ArbName : l.Branch?.EngName,
-                    StoreId: l.StoreId,
-                    StoreName: null,
-                    InventoryCostLedgerId: l.InventoryCostLedgerId,
-                    InventoryCostLedgerName: null,
-                    InventoryAdjustmentLedgerId: l.InventoryAdjustmentLedgerId,
-                    InventoryAdjustmentLedgerName: null,
-                    DepartmentId: l.DepartmentId,
-                    DepartmentName: request.Lang == 2 ? l.Department?.ArbName : l.Department?.EngName,
-                    Remarks: l.Remarks,
-                    CostCenterCode1: l.CostCenterCode1,
-                    CostCenterCode2: l.CostCenterCode2,
-                    CostCenterCode3: l.CostCenterCode3,
-                    CostCenterCode4: l.CostCenterCode4,
-                    RegDate: l.RegDate,
-                    CancelDate: l.CancelDate,
-                    IsActive: l.IsActive()
+                var items = await _repo.GetAllAsync(companyId);
+
+                return items.Select(x => new LocationDto(
+                    Id: x.Id,
+                    Code: x.Code,
+                    CompanyId: x.CompanyId,
+                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
+                    EngName: x.EngName,
+                    ArbName: x.ArbName,
+                    ArbName4S: x.ArbName4S,
+                    CityId: x.CityId,
+                    CityName: null,  // CityName - سيتم لاحقاً
+                    BranchId: x.BranchId,
+                    BranchName: x.Branch?.EngName ?? x.Branch?.ArbName,
+                    StoreId: x.StoreId,
+                    StoreName: null,  // StoreName - سيتم لاحقاً
+                    InventoryCostLedgerId: x.InventoryCostLedgerId,
+                    InventoryCostLedgerName: null,  // سيتم لاحقاً
+                    InventoryAdjustmentLedgerId: x.InventoryAdjustmentLedgerId,
+                    InventoryAdjustmentLedgerName: null,  // سيتم لاحقاً
+                    DepartmentId: x.DepartmentId,
+                    DepartmentName: x.Department?.EngName ?? x.Department?.ArbName,
+                    Remarks: x.Remarks,
+                    CostCenterCode1: x.CostCenterCode1,
+                    CostCenterCode2: x.CostCenterCode2,
+                    CostCenterCode3: x.CostCenterCode3,
+                    CostCenterCode4: x.CostCenterCode4,
+                    RegDate: x.RegDate,
+                    CancelDate: x.CancelDate,
+                    IsActive: x.IsActive()
                 )).ToList();
             }
         }

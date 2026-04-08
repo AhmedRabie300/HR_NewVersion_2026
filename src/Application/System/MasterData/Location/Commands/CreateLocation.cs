@@ -1,4 +1,5 @@
-﻿using Application.Common;
+﻿// Application/System/MasterData/Location/Commands/CreateLocation.cs
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Location.Dtos;
@@ -6,6 +7,7 @@ using Application.System.MasterData.Location.Validators;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Location.Commands
 {
@@ -15,10 +17,16 @@ namespace Application.System.MasterData.Location.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
+
             public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
+                _languageService = languageService;
+                _localizer = localizer;
+
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateLocationValidator(localizer, languageService));
+                    .SetValidator(new CreateLocationValidator(_localizer, _languageService));
             }
         }
 
@@ -27,38 +35,52 @@ namespace Application.System.MasterData.Location.Commands
             private readonly ILocationRepository _repo;
             private readonly ICompanyRepository _companyRepo;
             private readonly IBranchRepository _branchRepo;
+            private readonly IDepartmentRepository _departmentRepo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(ILocationRepository repo, ICompanyRepository companyRepo, IBranchRepository branchRepo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(
+                ILocationRepository repo,
+                ICompanyRepository companyRepo,
+                IBranchRepository branchRepo,
+                IDepartmentRepository departmentRepo,
+                IHttpContextAccessor httpContextAccessor,
+                ILanguageService languageService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
                 _branchRepo = branchRepo;
+                _departmentRepo = departmentRepo;
+                _httpContextAccessor = httpContextAccessor;
                 _languageService = languageService;
                 _localizer = localizer;
             }
 
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
+                return companyId.Value;
+            }
+
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
                 var lang = _languageService.GetCurrentLanguage();
 
-                // At least one identifier (Company or Branch) must be provided
-                if (!request.Data.CompanyId.HasValue && !request.Data.BranchId.HasValue)
-                    throw new Exception(_localizer.GetMessage("AtLeastOneIdentifier", lang));
+                // التحقق من وجود الشركة
+                var company = await _companyRepo.GetByIdAsync(companyId);
+                if (company == null)
+                    throw new NotFoundException("Create Location", string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Company", lang),
+                        companyId));
 
-                // Validate Company if provided
-                if (request.Data.CompanyId.HasValue)
-                {
-                    var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId.Value);
-                    if (company == null)
-                        throw new NotFoundException("Create Location", string.Format(
-                            _localizer.GetMessage("NotFound", lang),
-                            _localizer.GetMessage("Company", lang),
-                            request.Data.CompanyId));
-                }
-
-                // Validate Branch if provided
+                // التحقق من وجود الفرع إذا وجد
                 if (request.Data.BranchId.HasValue)
                 {
                     var branch = await _branchRepo.GetByIdAsync(request.Data.BranchId.Value);
@@ -69,10 +91,19 @@ namespace Application.System.MasterData.Location.Commands
                             request.Data.BranchId));
                 }
 
-            
+                // التحقق من وجود القسم إذا وجد
+                if (request.Data.DepartmentId.HasValue)
+                {
+                    var department = await _departmentRepo.GetByIdAsync(request.Data.DepartmentId.Value);
+                    if (department == null)
+                        throw new NotFoundException("Create Location", string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("Department", lang),
+                            request.Data.DepartmentId));
+                }
 
-                // Check if code exists within the same company/branch context
-                if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId))
+                // التحقق من عدم تكرار الكود
+                if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
                     throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", lang),
                         _localizer.GetMessage("Location", lang),
@@ -80,21 +111,21 @@ namespace Application.System.MasterData.Location.Commands
 
                 var entity = new Domain.System.MasterData.Location(
                     code: request.Data.Code,
+                    companyId: companyId,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
-                    companyId: request.Data.CompanyId,
-                    branchId: request.Data.BranchId,
-                    departmentId: request.Data.DepartmentId,
                     cityId: request.Data.CityId,
+                    branchId: request.Data.BranchId,
                     storeId: request.Data.StoreId,
+                    departmentId: request.Data.DepartmentId,
                     remarks: request.Data.Remarks,
-                    regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.regComputerId,
                     costCenterCode1: request.Data.CostCenterCode1,
                     costCenterCode2: request.Data.CostCenterCode2,
                     costCenterCode3: request.Data.CostCenterCode3,
-                    costCenterCode4: request.Data.CostCenterCode4
+                    costCenterCode4: request.Data.CostCenterCode4,
+                    regUserId: request.Data.RegUserId,
+                    regComputerId: request.Data.regComputerId
                 );
 
                 await _repo.AddAsync(entity);

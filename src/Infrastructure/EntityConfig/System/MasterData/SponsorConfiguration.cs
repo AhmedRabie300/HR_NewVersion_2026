@@ -40,6 +40,7 @@ namespace Infrastructure.EntityConfig.System.MasterData
                 .HasColumnName("RegComputerID");
 
             builder.Property(x => x.CompanyId)
+                .IsRequired()
                 .HasColumnName("CompanyID");
 
             builder.Property(x => x.RegDate)

@@ -1,10 +1,12 @@
-﻿using Application.Common;
+﻿// Application/System/MasterData/Department/Commands/UpdateDepartment.cs
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
 using Application.System.MasterData.Department.Validators;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Department.Commands
 {
@@ -14,44 +16,68 @@ namespace Application.System.MasterData.Department.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
+
             public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateDepartmentValidator(localizer, languageService));
+                    .SetValidator(new UpdateDepartmentValidator(_localizer, _languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IDepartmentRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IDepartmentRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(
+                IDepartmentRepository repo,
+                IHttpContextAccessor httpContextAccessor,
+                ILanguageService languageService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
                 _languageService = languageService;
                 _localizer = localizer;
             }
 
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header");
+                return companyId.Value;
+            }
+
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
                 var lang = _languageService.GetCurrentLanguage();
 
-                var department = await _repo.GetByIdAsync(request.Data.Id);
-                if (department == null)
-                    throw new NotFoundException("Update Department", string.Format(
+                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                if (entity == null)
+                    throw new Exception(string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Department", lang),
                         request.Data.Id));
 
+                // التأكد أن القسم يتبع الشركة الحالية
+                if (entity.CompanyId != companyId)
+                    throw new UnauthorizedAccessException("Access denied: Department does not belong to your company");
+
+                // Update basic info
                 if (request.Data.EngName != null ||
                     request.Data.ArbName != null ||
                     request.Data.ArbName4S != null ||
                     request.Data.Remarks != null ||
                     request.Data.CostCenterCode != null)
                 {
-                    department.UpdateBasicInfo(
+                    entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
@@ -60,22 +86,20 @@ namespace Application.System.MasterData.Department.Commands
                     );
                 }
 
-                if (request.Data.ParentId.HasValue)
+                // Update parent
+                if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
                 {
-                    if (request.Data.ParentId != department.Id)
-                    {
-                        var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
-                        if (parent == null)
-                            throw new NotFoundException("Update Department", string.Format(
-                                _localizer.GetMessage("NotFound", lang),
-                                _localizer.GetMessage("ParentDepartment", lang),
-                                request.Data.ParentId));
+                    var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
+                    if (parent == null)
+                        throw new NotFoundException("Update Department", string.Format(
+                            _localizer.GetMessage("NotFound", lang),
+                            _localizer.GetMessage("ParentDepartment", lang),
+                            request.Data.ParentId));
 
-                        department.UpdateParent(request.Data.ParentId);
-                    }
+                    entity.UpdateParent(request.Data.ParentId);
                 }
 
-                await _repo.UpdateAsync(department);
+                await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

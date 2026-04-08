@@ -1,52 +1,67 @@
-﻿using Application.Common.Models;
+﻿// Application/System/MasterData/Currency/Queries/GetPagedCurrencies.cs
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Currency.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Currency.Queries
 {
     public static class GetPagedCurrencies
     {
-        public record Query(int PageNumber, int PageSize, string? SearchTerm, int? CompanyId)
+        public record Query(int PageNumber, int PageSize, string? SearchTerm)
             : IRequest<PagedResult<CurrencyDto>>;
 
         public class Handler : IRequestHandler<Query, PagedResult<CurrencyDto>>
         {
             private readonly ICurrencyRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
 
-            public Handler(ICurrencyRepository repo)
+            public Handler(ICurrencyRepository repo, IHttpContextAccessor httpContextAccessor)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
+            }
+
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header");
+                return companyId.Value;
             }
 
             public async Task<PagedResult<CurrencyDto>> Handle(Query request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
+
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
                     request.SearchTerm,
-                    request.CompanyId
+                    companyId
                 );
 
                 var items = pagedResult.Items.Select(x => new CurrencyDto(
-                    x.Id,
-                    x.Code,
-                    x.EngName,
-                    x.ArbName,
-                    x.ArbName4S,
-                    x.EngSymbol,
-                    x.ArbSymbol,
-                    x.DecimalFraction,
-                    x.DecimalEngName,
-                    x.DecimalArbName,
-                    x.Amount,
-                    x.NoDecimalPlaces,
-                    x.CompanyId,
-                    x.Company?.EngName ?? x.Company?.ArbName,
-                    x.Remarks,
-                    x.RegDate,
-                    x.CancelDate,
-                    x.IsActive()
+                    Id: x.Id,
+                    Code: x.Code,
+                    CompanyId: x.CompanyId,
+                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
+                    EngName: x.EngName,
+                    ArbName: x.ArbName,
+                    ArbName4S: x.ArbName4S,
+                    EngSymbol: x.EngSymbol,
+                    ArbSymbol: x.ArbSymbol,
+                    DecimalFraction: x.DecimalFraction,
+                    DecimalEngName: x.DecimalEngName,
+                    DecimalArbName: x.DecimalArbName,
+                    Amount: x.Amount,
+                    NoDecimalPlaces: x.NoDecimalPlaces,
+                    Remarks: x.Remarks,
+                    RegDate: x.RegDate,
+                    CancelDate: x.CancelDate,
+                    IsActive: x.IsActive()
                 )).ToList();
 
                 return new PagedResult<CurrencyDto>(

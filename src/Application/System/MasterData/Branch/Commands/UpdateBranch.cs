@@ -5,6 +5,7 @@ using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Branch.Commands
 {
@@ -24,18 +25,34 @@ namespace Application.System.MasterData.Branch.Commands
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IBranchRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IBranchRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(
+                IBranchRepository repo,
+                IHttpContextAccessor httpContextAccessor,
+                ILanguageService languageService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
                 _languageService = languageService;
                 _localizer = localizer;
             }
 
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header");
+                return companyId.Value;
+            }
+
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
                 var lang = _languageService.GetCurrentLanguage();
 
                 var branch = await _repo.GetByIdAsync(request.Data.Id);
@@ -44,6 +61,10 @@ namespace Application.System.MasterData.Branch.Commands
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Branch", lang),
                         request.Data.Id));
+
+                // ✅ التأكد أن الفرع يتبع الشركة الحالية
+                if (branch.CompanyId != companyId)
+                    throw new UnauthorizedAccessException("Access denied: Branch does not belong to your company");
 
                 // Update basic info
                 if (request.Data.EngName != null ||

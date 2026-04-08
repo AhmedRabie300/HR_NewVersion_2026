@@ -1,4 +1,5 @@
-﻿using API.Helpers;
+﻿// API/System/MasterData/ProfessionEndpoints.cs
+using API.Helpers;
 using Application.System.MasterData.Profession.Commands;
 using Application.System.MasterData.Profession.Dtos;
 using Application.System.MasterData.Profession.Queries;
@@ -27,15 +28,13 @@ namespace API.System.MasterData
                 int pageNumber = 1,
                 int pageSize = 20,
                 string? searchTerm = null,
-                int? companyId = null,
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedProfessions.Query(pageNumber, pageSize, searchTerm, companyId), ct);
+                    new GetPagedProfessions.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
             .WithName("GetPagedProfessions");
-
 
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>

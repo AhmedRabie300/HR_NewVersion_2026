@@ -11,7 +11,7 @@ namespace Domain.System.MasterData
         public int? SponsorNumber { get; private set; }
         public int? RegUserId { get; private set; }
         public int? RegComputerId { get; private set; }
-        public int? CompanyId { get; private set; }
+        public int CompanyId { get; private set; }
         public DateTime? CancelDate { get; private set; }
 
         // Navigation properties
@@ -27,7 +27,7 @@ namespace Domain.System.MasterData
             int? sponsorNumber,
             int? regUserId,
             int? regComputerId,
-            int? companyId)
+            int companyId)
         {
             Code = code;
             EngName = engName;
@@ -52,9 +52,9 @@ namespace Domain.System.MasterData
             if (sponsorNumber.HasValue) SponsorNumber = sponsorNumber;
         }
 
-        public void UpdateCompany(int? companyId)
+        public void UpdateCompany(int companyId)
         {
-            if (companyId.HasValue) CompanyId = companyId;
+             CompanyId = companyId;
         }
 
         public void Cancel(int? regUserId = null)

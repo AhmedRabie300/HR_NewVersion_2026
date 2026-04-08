@@ -7,7 +7,6 @@
         string? ArbName4S,
         int? SponsorNumber,
         int? RegUserId,
-        int? RegComputerId,
-        int? CompanyId
-    );
+        int? RegComputerId
+     );
 }

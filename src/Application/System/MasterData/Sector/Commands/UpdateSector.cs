@@ -1,10 +1,12 @@
-﻿using Application.Common;
+﻿// Application/System/MasterData/Sector/Commands/UpdateSector.cs
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sector.Dtos;
 using Application.System.MasterData.Sector.Validators;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Sector.Commands
 {
@@ -14,30 +16,47 @@ namespace Application.System.MasterData.Sector.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
+
             public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateSectorValidator(localizer, languageService));
+                    .SetValidator(new UpdateSectorValidator(_localizer, _languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ISectorRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(ISectorRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(
+                ISectorRepository repo,
+                IHttpContextAccessor httpContextAccessor,
+                ILanguageService languageService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
-                _companyRepo = companyRepo;
+                _httpContextAccessor = httpContextAccessor;
                 _languageService = languageService;
                 _localizer = localizer;
             }
 
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header");
+                return companyId.Value;
+            }
+
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
                 var lang = _languageService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
@@ -46,6 +65,10 @@ namespace Application.System.MasterData.Sector.Commands
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Sector", lang),
                         request.Data.Id));
+
+                // التأكد أن القطاع يتبع الشركة الحالية
+                if (entity.CompanyId != companyId)
+                    throw new UnauthorizedAccessException("Access denied: Sector does not belong to your company");
 
                 // Update basic info
                 if (request.Data.EngName != null ||
@@ -70,10 +93,6 @@ namespace Application.System.MasterData.Sector.Commands
                             _localizer.GetMessage("NotFound", lang),
                             _localizer.GetMessage("ParentSector", lang),
                             request.Data.ParentId));
-
-                    if (parent.CompanyId != entity.CompanyId)
-                        throw new Exception(_localizer.GetMessage("ParentMustBeSameCompany", lang));
-
                     entity.UpdateParent(request.Data.ParentId);
                 }
 

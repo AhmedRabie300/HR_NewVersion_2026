@@ -21,25 +21,29 @@ namespace Application.System.MasterData.Sponsor.Queries
 
             public async Task<PagedResult<SponsorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
+                // ✅ تحويل CompanyId من int? إلى int
+                // لو CompanyId = null، نستخدم 0 أو قيمة افتراضية
+                var companyId = request.CompanyId ?? 0;
+
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
                     request.SearchTerm,
-                    request.CompanyId
+                    request.CompanyId 
                 );
 
                 var items = pagedResult.Items.Select(x => new SponsorDto(
-                    x.Id,
-                    x.Code,
-                    x.EngName,
-                    x.ArbName,
-                    x.ArbName4S,
-                    x.SponsorNumber,
-                    x.CompanyId,
-                    x.Company?.EngName ?? x.Company?.ArbName,
-                    x.RegDate,
-                    x.CancelDate,
-                    x.IsActive()
+                    Id: x.Id,
+                    Code: x.Code,
+                    CompanyId: x.CompanyId,
+                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
+                    EngName: x.EngName,
+                    ArbName: x.ArbName,
+                    ArbName4S: x.ArbName4S,
+                    SponsorNumber: x.SponsorNumber,
+                    RegDate: x.RegDate,
+                    CancelDate: x.CancelDate,
+                    IsActive: x.IsActive()
                 )).ToList();
 
                 return new PagedResult<SponsorDto>(

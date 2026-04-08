@@ -2,29 +2,44 @@
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Branch.Queries
 {
     public static class GetPagedBranches
     {
-        public record Query(int PageNumber, int PageSize, string? SearchTerm, int? CompanyId) : IRequest<PagedResult<BranchDto>>;
+        public record Query(int PageNumber, int PageSize, string? SearchTerm)
+            : IRequest<PagedResult<BranchDto>>;
 
         public class Handler : IRequestHandler<Query, PagedResult<BranchDto>>
         {
             private readonly IBranchRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
 
-            public Handler(IBranchRepository repo)
+            public Handler(IBranchRepository repo, IHttpContextAccessor httpContextAccessor)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
+            }
+
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
+                return companyId.Value;
             }
 
             public async Task<PagedResult<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
+
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
                     request.SearchTerm,
-                    request.CompanyId
+                    companyId
                 );
 
                 var items = pagedResult.Items.Select(b => new BranchDto(

@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿// Infrastructure/Data/Repositories/System/MasterData/CurrencyRepository.cs
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -20,12 +21,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.Company)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<Currency?> GetByCodeAsync(string code)
-            => await _db.Currencies.FirstOrDefaultAsync(x => x.Code == code);
-
-        public async Task<List<Currency>> GetAllAsync()
+        public async Task<Currency?> GetByCodeAsync(string code, int companyId)
             => await _db.Currencies
-                .Where(x => x.CancelDate == null)
+                .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
+
+        public async Task<List<Currency>> GetAllAsync(int companyId)
+            => await _db.Currencies
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
@@ -59,24 +61,21 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> ExistsAsync(int id)
             => await _db.Currencies.AnyAsync(x => x.Id == id);
 
-        public async Task<bool> CodeExistsAsync(string code)
-            => await _db.Currencies.AnyAsync(x => x.Code == code);
+        public async Task<bool> CodeExistsAsync(string code, int companyId)
+            => await _db.Currencies.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
 
-        public async Task<bool> CodeExistsAsync(string code, int excludeId)
-            => await _db.Currencies.AnyAsync(x => x.Code == code && x.Id != excludeId);
+        public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
+            => await _db.Currencies.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
 
-        public async Task<PagedResult<Currency>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
+        public async Task<PagedResult<Currency>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
 
             IQueryable<Currency> query = _db.Currencies
-                .Where(x => x.CancelDate == null)
+                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
                 .Include(x => x.Company)
                 .AsNoTracking();
-
-            if (companyId.HasValue)
-                query = query.Where(x => x.CompanyId == companyId.Value);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {

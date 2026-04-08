@@ -1,6 +1,7 @@
 ﻿using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Branch.Queries
 {
@@ -11,15 +12,28 @@ namespace Application.System.MasterData.Branch.Queries
         public class Handler : IRequestHandler<Query, List<BranchDto>>
         {
             private readonly IBranchRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
 
-            public Handler(IBranchRepository repo)
+            public Handler(IBranchRepository repo, IHttpContextAccessor httpContextAccessor)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
+            }
+
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
+                return companyId.Value;
             }
 
             public async Task<List<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var branches = await _repo.GetAllAsync();
+                var companyId = GetRequiredCompanyId();
+
+                var branches = await _repo.GetAllAsync(companyId);
 
                 return branches.Select(b => new BranchDto(
                     Id: b.Id,

@@ -34,12 +34,7 @@ namespace Application.UARbac.Modules.Commands
                 if (module == null)
                     throw new Exception($"Module with ID {request.Data.Id} not found");
 
-                if (request.Data.EngName != null ||
-                    request.Data.ArbName != null ||
-                    request.Data.ArbName4S != null ||
-                    request.Data.Rank.HasValue ||
-                    request.Data.Remarks != null)
-                {
+             
                     module.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -47,7 +42,7 @@ namespace Application.UARbac.Modules.Commands
                         request.Data.Rank,
                         request.Data.Remarks
                     );
-                }
+                
 
                 if (request.Data.IsAR.HasValue ||
                     request.Data.IsAP.HasValue ||

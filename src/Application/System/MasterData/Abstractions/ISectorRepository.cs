@@ -7,9 +7,8 @@ namespace Application.System.MasterData.Abstractions
     {
         // Basic CRUD
         Task<Domain.System.MasterData.Sector?> GetByIdAsync(int id);
-        Task<Domain.System.MasterData.Sector?> GetByCodeAsync(string code);
-        Task<Domain.System.MasterData.Sector?> GetByCodeAsync(string code, int companyId);
-        Task<List<Domain.System.MasterData.Sector>> GetAllAsync();
+        Task<Domain.System.MasterData.Sector?> GetByCodeAsync(string code, int companyId);  
+        Task<List<Domain.System.MasterData.Sector>> GetAllAsync(int companyId);  
         Task<Domain.System.MasterData.Sector> AddAsync(Domain.System.MasterData.Sector sector);
         Task UpdateAsync(Domain.System.MasterData.Sector sector);
         Task DeleteAsync(int id);
@@ -20,8 +19,8 @@ namespace Application.System.MasterData.Abstractions
         // Specific queries
         Task<List<Domain.System.MasterData.Sector>> GetByCompanyIdAsync(int companyId);
         Task<List<Domain.System.MasterData.Sector>> GetByParentIdAsync(int parentId);
-        Task<List<Domain.System.MasterData.Sector>> GetActiveSectorsAsync();
-        Task<PagedResult<Domain.System.MasterData.Sector>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId);
+        Task<List<Domain.System.MasterData.Sector>> GetActiveSectorsAsync(int companyId);  
+        Task<PagedResult<Domain.System.MasterData.Sector>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId);  // ← companyId إجباري
 
         // Soft delete
         Task SoftDeleteAsync(int id, int? regUserId = null);

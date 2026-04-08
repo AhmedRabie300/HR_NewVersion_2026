@@ -7,7 +7,7 @@ namespace Application.System.MasterData.Abstractions
     {
         Task<Domain.System.MasterData.ContractType?> GetByIdAsync(int id);
         Task<Domain.System.MasterData.ContractType?> GetByCodeAsync(string code, int companyId);
-        Task<List<Domain.System.MasterData.ContractType>> GetAllAsync();
+        Task<List<Domain.System.MasterData.ContractType>> GetAllAsync(int companyId);
         Task<List<Domain.System.MasterData.ContractType>> GetByCompanyIdAsync(int companyId);
         Task<Domain.System.MasterData.ContractType> AddAsync(Domain.System.MasterData.ContractType contractType);
         Task UpdateAsync(Domain.System.MasterData.ContractType contractType);

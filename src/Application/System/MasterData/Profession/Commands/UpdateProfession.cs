@@ -1,9 +1,12 @@
-﻿using Application.Common.Abstractions;
+﻿// Application/System/MasterData/Profession/Commands/UpdateProfession.cs
+using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Profession.Dtos;
 using Application.System.MasterData.Profession.Validators;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Profession.Commands
 {
@@ -13,28 +16,47 @@ namespace Application.System.MasterData.Profession.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
+
             public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateProfessionValidator(localizer, languageService));
+                    .SetValidator(new UpdateProfessionValidator(_localizer, _languageService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IProfessionRepository _repo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IProfessionRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(
+                IProfessionRepository repo,
+                IHttpContextAccessor httpContextAccessor,
+                ILanguageService languageService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
+                _httpContextAccessor = httpContextAccessor;
                 _languageService = languageService;
                 _localizer = localizer;
             }
 
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header");
+                return companyId.Value;
+            }
+
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
                 var lang = _languageService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
@@ -43,6 +65,10 @@ namespace Application.System.MasterData.Profession.Commands
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Profession", lang),
                         request.Data.Id));
+
+                // التأكد أن المهنة تتبع الشركة الحالية
+                if (entity.CompanyId != companyId)
+                    throw new UnauthorizedAccessException("Access denied: Profession does not belong to your company");
 
                 entity.Update(
                     request.Data.EngName,

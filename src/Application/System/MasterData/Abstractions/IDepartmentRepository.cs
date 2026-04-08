@@ -6,9 +6,8 @@ namespace Application.System.MasterData.Abstractions
     public interface IDepartmentRepository
     {
         Task<Domain.System.MasterData.Department?> GetByIdAsync(int id);
-        Task<Domain.System.MasterData.Department?> GetByCodeAsync(string code);
         Task<Domain.System.MasterData.Department?> GetByCodeAsync(string code, int companyId);
-        Task<List<Domain.System.MasterData.Department>> GetAllAsync();
+        Task<List<Domain.System.MasterData.Department>> GetAllAsync(int companyId);
         Task<List<Domain.System.MasterData.Department>> GetByCompanyIdAsync(int companyId);
         Task<List<Domain.System.MasterData.Department>> GetByParentIdAsync(int parentId);
         Task<Domain.System.MasterData.Department> AddAsync(Domain.System.MasterData.Department department);

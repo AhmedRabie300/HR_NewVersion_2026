@@ -1,5 +1,4 @@
-﻿// API/System/MasterData/BranchEndpoints.cs
-using Application.System.MasterData.Branch.Commands;
+﻿using Application.System.MasterData.Branch.Commands;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Queries;
 using MediatR;
@@ -19,28 +18,23 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListBranches.Query(), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Branches", "View")
             .WithName("GetAllBranches");
 
-            // GET /api/hr/master-data/branches/paged
-            group.MapGet("/paged", async (
+             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
                 string? searchTerm = null,
-                int? companyId = null,
                 CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(
-                    new GetPagedBranches.Query(pageNumber, pageSize, searchTerm, companyId),
+                 var result = await mediator.Send(
+                    new GetPagedBranches.Query(pageNumber, pageSize, searchTerm),
                     ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Branches", "View")
             .WithName("GetPagedBranches");
 
-            // GET /api/hr/master-data/branches/{id}
-            group.MapGet("/{id:int}", async (
+             group.MapGet("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 CancellationToken ct) =>
@@ -48,10 +42,7 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetBranchById.Query(id), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Branches", "View")
             .WithName("GetBranchById");
-
-           
 
             // GET /api/hr/master-data/branches/by-company/{companyId}
             group.MapGet("/by-company/{companyId:int}", async (
@@ -62,7 +53,6 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetBranchesByCompany.Query(companyId), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("Branches", "View")
             .WithName("GetBranchesByCompany");
 
             // POST /api/hr/master-data/branches
@@ -74,7 +64,6 @@ namespace API.System.MasterData
                 var id = await mediator.Send(new CreateBranch.Command(dto), ct);
                 return Results.Created($"/master-data/branches/{id}", new { id });
             })
-           // .RequirePermission("Branches", "Add")
             .WithName("CreateBranch");
 
             // PUT /api/hr/master-data/branches/{id}
@@ -88,8 +77,9 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateBranch.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("Branches", "Edit")
             .WithName("UpdateBranch");
+
+           
 
             return routes;
         }

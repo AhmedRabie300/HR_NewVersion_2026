@@ -46,12 +46,7 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.Id));
 
                 // Update basic info
-                if (request.Data.EngName != null ||
-                    request.Data.ArbName != null ||
-                    request.Data.ArbName4S != null ||
-                    request.Data.Remarks != null ||
-                    request.Data.DefaultTheme != null)
-                {
+               
                     company.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -59,7 +54,7 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.Remarks,
                         request.Data.DefaultTheme
                     );
-                }
+                
 
                 // Update employee naming
                 if (request.Data.EmpFirstName != null ||

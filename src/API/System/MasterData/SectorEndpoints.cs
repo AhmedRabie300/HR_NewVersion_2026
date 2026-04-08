@@ -1,4 +1,6 @@
-﻿using Application.System.MasterData.Sector.Commands;
+﻿// API/System/MasterData/SectorEndpoints.cs
+using API.Helpers;
+using Application.System.MasterData.Sector.Commands;
 using Application.System.MasterData.Sector.Dtos;
 using Application.System.MasterData.Sector.Queries;
 using MediatR;
@@ -26,24 +28,14 @@ namespace API.System.MasterData
                 int pageNumber = 1,
                 int pageSize = 20,
                 string? searchTerm = null,
-                int? companyId = null,
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedSectors.Query(pageNumber, pageSize, searchTerm, companyId), ct);
+                    new GetPagedSectors.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
             .WithName("GetPagedSectors");
 
-            // GET by company
-            group.MapGet("/by-company/{companyId:int}", async (IMediator mediator, int companyId, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new GetSectorsByCompany.Query(companyId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetSectorsByCompany");
-
-       
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
@@ -51,6 +43,8 @@ namespace API.System.MasterData
                 return Results.Ok(result);
             })
             .WithName("GetSectorById");
+
+  
 
             // POST create
             group.MapPost("/", async (IMediator mediator, CreateSectorDto dto, CancellationToken ct) =>

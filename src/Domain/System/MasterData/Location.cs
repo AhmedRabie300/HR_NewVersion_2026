@@ -77,7 +77,11 @@ namespace Domain.System.MasterData
             string? engName,
             string? arbName,
             string? arbName4S,
-            string? remarks)
+            string? remarks,
+            string? costCenterCode1,
+            string? costCenterCode2,
+            string? costCenterCode3,
+            string? costCenterCode4)
         {
             if (engName != null) EngName = engName;
             if (arbName != null) ArbName = arbName;

@@ -1,10 +1,13 @@
-﻿using Application.Common;
+﻿// Application/System/MasterData/Branch/Commands/CreateBranch.cs
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
+using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Branch.Commands
 {
@@ -14,10 +17,16 @@ namespace Application.System.MasterData.Branch.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
+            private readonly ILanguageService _languageService;
+            private readonly ILocalizationService _localizer;
+
             public Validator(ILanguageService languageService, ILocalizationService localizer)
             {
+                _languageService = languageService;
+                _localizer = localizer;
+
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateBranchValidator(localizer, languageService));
+                    .SetValidator(new CreateBranchValidator(_localizer, _languageService));
             }
         }
 
@@ -25,38 +34,54 @@ namespace Application.System.MasterData.Branch.Commands
         {
             private readonly IBranchRepository _repo;
             private readonly ICompanyRepository _companyRepo;
+            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly ILanguageService _languageService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IBranchRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(
+                IBranchRepository repo,
+                ICompanyRepository companyRepo,
+                IHttpContextAccessor httpContextAccessor,
+                ILanguageService languageService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
+                _httpContextAccessor = httpContextAccessor;
                 _languageService = languageService;
                 _localizer = localizer;
             }
 
+            private int GetRequiredCompanyId()
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var companyId = context?.Items["CompanyId"] as int?;
+                if (!companyId.HasValue)
+                    throw new UnauthorizedAccessException("Company ID is required in request header");
+                return companyId.Value;
+            }
+
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var companyId = GetRequiredCompanyId();
                 var lang = _languageService.GetCurrentLanguage();
 
-                // Check if company exists
-                var company = await _companyRepo.GetByIdAsync(request.Data.CompanyId);
+                // التحقق من وجود الشركة
+                var company = await _companyRepo.GetByIdAsync(companyId);
                 if (company == null)
                     throw new NotFoundException("Create Branch", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Company", lang),
-                        request.Data.CompanyId));
+                        companyId));
 
-                // Check if code exists within the same company
-                var exists = await _repo.CodeExistsAsync(request.Data.Code, request.Data.CompanyId);
-                if (exists)
+                // التحقق من عدم تكرار الكود
+                if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
                     throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", lang),
                         _localizer.GetMessage("Branch", lang),
                         request.Data.Code));
 
-                // Check if parent branch exists if provided
+                // التحقق من وجود الفرع الأب إذا وجد
                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
@@ -67,9 +92,9 @@ namespace Application.System.MasterData.Branch.Commands
                             request.Data.ParentId));
                 }
 
-                var branch = new Domain.System.MasterData.Branch(
+                var entity = new Domain.System.MasterData.Branch(
                     code: request.Data.Code,
-                    companyId: request.Data.CompanyId,
+                    companyId: companyId,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
@@ -84,10 +109,10 @@ namespace Application.System.MasterData.Branch.Commands
                     regComputerId: request.Data.regComputerId
                 );
 
-                await _repo.AddAsync(branch);
+                await _repo.AddAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return branch.Id;
+                return entity.Id;
             }
         }
     }
