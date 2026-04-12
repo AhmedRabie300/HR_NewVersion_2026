@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿using Application.Common.Abstractions;
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using MediatR;
@@ -15,6 +16,7 @@ namespace Application.System.MasterData.Branch.Queries
         {
             private readonly IBranchRepository _repo;
             private readonly IHttpContextAccessor _httpContextAccessor;
+            
 
             public Handler(IBranchRepository repo, IHttpContextAccessor httpContextAccessor)
             {

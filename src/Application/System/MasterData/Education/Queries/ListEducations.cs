@@ -1,4 +1,5 @@
 ﻿// Application/System/MasterData/Education/Queries/ListEducations.cs
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Education.Dtos;
 using MediatR;
@@ -13,26 +14,17 @@ namespace Application.System.MasterData.Education.Queries
         public class Handler : IRequestHandler<Query, List<EducationDto>>
         {
             private readonly IEducationRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _ContextService;
 
-            public Handler(IEducationRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(IEducationRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
+                _ContextService = ContextService;
             }
-
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
-            }
-
+ 
             public async Task<List<EducationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
+                var companyId = _ContextService.GetCurrentCompanyId();
 
                 var items = await _repo.GetAllAsync(companyId);
 

@@ -1,9 +1,12 @@
 ﻿namespace Application.Common.Abstractions
 {
-    public interface ILanguageService
+    public interface IContextService
     {
         int GetCurrentLanguage();
         bool IsArabic();
         bool IsEnglish();
+        int GetCurrentCompanyId();
+        bool HasCompanyId();
+
     }
 }

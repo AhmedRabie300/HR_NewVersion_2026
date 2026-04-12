@@ -13,29 +13,29 @@ namespace Application.System.MasterData.Nationality.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateNationalityValidator(localizer, languageService));
+                    .SetValidator(new UpdateNationalityValidator(localizer, ContextService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly INationalityRepository _repo;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(INationalityRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(INationalityRepository repo, IContextService ContextService, ILocalizationService localizer)
             {
                 _repo = repo;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _languageService.GetCurrentLanguage();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)

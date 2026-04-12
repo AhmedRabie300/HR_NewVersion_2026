@@ -1,5 +1,4 @@
-﻿// Application/System/MasterData/Branch/Commands/CreateBranch.cs
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
@@ -17,16 +16,16 @@ namespace Application.System.MasterData.Branch.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateBranchValidator(_localizer, _languageService));
+                    .SetValidator(new CreateBranchValidator(_localizer, _ContextService));
             }
         }
 
@@ -35,20 +34,20 @@ namespace Application.System.MasterData.Branch.Commands
             private readonly IBranchRepository _repo;
             private readonly ICompanyRepository _companyRepo;
             private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 IBranchRepository repo,
                 ICompanyRepository companyRepo,
                 IHttpContextAccessor httpContextAccessor,
-                ILanguageService languageService,
+                IContextService ContextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
                 _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
@@ -63,8 +62,8 @@ namespace Application.System.MasterData.Branch.Commands
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId =_ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 // التحقق من وجود الشركة
                 var company = await _companyRepo.GetByIdAsync(companyId);

@@ -15,10 +15,10 @@ namespace Application.System.MasterData.Position.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreatePositionValidator(localizer, languageService));
+                    .SetValidator(new CreatePositionValidator(localizer, ContextService));
             }
         }
 
@@ -26,20 +26,20 @@ namespace Application.System.MasterData.Position.Commands
         {
             private readonly IPositionRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IPositionRepository repo, ICompanyRepository companyRepo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(IPositionRepository repo, ICompanyRepository companyRepo, IContextService ContextService, ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _languageService.GetCurrentLanguage();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 // Check if code exists
                 if (await _repo.CodeExistsAsync(request.Data.Code))

@@ -1,7 +1,7 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Branch.Queries
 {
@@ -12,26 +12,20 @@ namespace Application.System.MasterData.Branch.Queries
         public class Handler : IRequestHandler<Query, List<BranchDto>>
         {
             private readonly IBranchRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _contextService;
 
-            public Handler(IBranchRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(IBranchRepository repo, IContextService contextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-            }
-
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
+                _contextService = contextService;
             }
 
             public async Task<List<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
+                var companyId = _contextService.GetCurrentCompanyId();
+
+                if (companyId == 0)
+                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
 
                 var branches = await _repo.GetAllAsync(companyId);
 

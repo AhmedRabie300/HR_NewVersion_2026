@@ -14,36 +14,36 @@ namespace Application.System.MasterData.BloodGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
 
                 // ✅ استخدام SetValidator مباشرة (من غير Custom)
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateBloodGroupValidator(_localizer, _languageService));
+                    .SetValidator(new CreateBloodGroupValidator(_localizer, _ContextService));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IBloodGroupRepository _repo;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IBloodGroupRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(IBloodGroupRepository repo, IContextService ContextService, ILocalizationService localizer)
             {
                 _repo = repo;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _languageService.GetCurrentLanguage();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 if (await _repo.CodeExistsAsync(request.Data.Code))
                     throw new ConflictException(string.Format(

@@ -16,13 +16,13 @@ namespace Application.System.MasterData.ContractType.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateContractTypeValidator(_localizer, _languageService));
+                    .SetValidator(new UpdateContractTypeValidator(_localizer, _ContextService));
             }
         }
 
@@ -30,37 +30,27 @@ namespace Application.System.MasterData.ContractType.Commands
         {
             private readonly IContractTypeRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 IContractTypeRepository repo,
                 ICompanyRepository companyRepo,
                 IHttpContextAccessor httpContextAccessor,
-                ILanguageService languageService,
+                IContextService ContextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
-
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header");
-                return companyId.Value;
-            }
+ 
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)

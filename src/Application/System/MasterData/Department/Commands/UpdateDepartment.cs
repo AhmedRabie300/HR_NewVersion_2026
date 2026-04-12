@@ -16,48 +16,40 @@ namespace Application.System.MasterData.Department.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateDepartmentValidator(_localizer, _languageService));
+                    .SetValidator(new UpdateDepartmentValidator(_localizer, _ContextService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IDepartmentRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 IDepartmentRepository repo,
                 IHttpContextAccessor httpContextAccessor,
-                ILanguageService languageService,
+                IContextService ContextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header");
-                return companyId.Value;
-            }
+ 
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)

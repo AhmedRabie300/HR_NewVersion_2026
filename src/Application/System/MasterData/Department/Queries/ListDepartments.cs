@@ -1,4 +1,5 @@
 ﻿// Application/System/MasterData/Department/Queries/ListDepartments.cs
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
 using MediatR;
@@ -13,26 +14,17 @@ namespace Application.System.MasterData.Department.Queries
         public class Handler : IRequestHandler<Query, List<DepartmentDto>>
         {
             private readonly IDepartmentRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService    _ContextService;
 
-            public Handler(IDepartmentRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(IDepartmentRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-            }
-
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
+                _ContextService = ContextService;
             }
 
             public async Task<List<DepartmentDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
+                var companyId = _ContextService.GetCurrentCompanyId();
 
                 var items = await _repo.GetAllAsync(companyId);
 

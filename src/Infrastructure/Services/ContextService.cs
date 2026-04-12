@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Services
 {
-    public class LanguageService : ILanguageService
+    public class ContextService : IContextService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LanguageService(IHttpContextAccessor httpContextAccessor)
+        public ContextService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -30,6 +30,17 @@ namespace Infrastructure.Services
         public bool IsEnglish()
         {
             return GetCurrentLanguage() == 1;
+        }
+        public int GetCurrentCompanyId()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            var companyId = context?.Items["CompanyId"] as int?;
+            return companyId ?? 0;
+        }
+        public bool HasCompanyId()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            return context?.Items.ContainsKey("CompanyId") == true && context.Items["CompanyId"] != null;
         }
     }
 }

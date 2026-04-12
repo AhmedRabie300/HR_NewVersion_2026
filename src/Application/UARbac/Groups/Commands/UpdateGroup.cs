@@ -38,10 +38,10 @@ namespace Application.UARbac.Groups.Commands
         //}
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateGroupValidator(localizer, languageService));
+                    .SetValidator(new UpdateGroupValidator(localizer, ContextService));
             }
         }
         public class Handler : IRequestHandler<Command, Unit>

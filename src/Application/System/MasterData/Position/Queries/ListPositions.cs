@@ -13,19 +13,19 @@ namespace Application.System.MasterData.Position.Queries
         public class Handler : IRequestHandler<Query, List<PositionDto>>
         {
             private readonly IPositionRepository _repo;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IPositionRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(IPositionRepository repo, IContextService ContextService, ILocalizationService localizer)
             {
                 _repo = repo;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
             public async Task<List<PositionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _languageService.GetCurrentLanguage();
+                var lang = _ContextService.GetCurrentLanguage();
                 var positions = await _repo.GetAllAsync();
 
                 return positions.Select(p => new PositionDto(

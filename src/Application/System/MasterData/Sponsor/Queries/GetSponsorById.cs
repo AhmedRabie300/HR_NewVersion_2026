@@ -14,59 +14,39 @@ namespace Application.System.MasterData.Sponsor.Queries
         public sealed class Validator : AbstractValidator<Query>
         {
             private readonly ILocalizationService _localizer;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
 
-            public Validator(ILocalizationService localizer, ILanguageService languageService)
+            public Validator(ILocalizationService localizer, IContextService ContextService)
             {
                 _localizer = localizer;
-                _languageService = languageService;
+                _ContextService = ContextService;
 
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _languageService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _ContextService.GetCurrentLanguage()));
             }
         }
 
         public class Handler : IRequestHandler<Query, SponsorDto>
         {
             private readonly ISponsorRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
-            private readonly ILocalizationService _localizer;  // ← أضف هذا
+            private readonly IContextService _ContextService;
+            private readonly ILocalizationService _localizer;  
 
             public Handler(
                 ISponsorRepository repo,
-                IHttpContextAccessor httpContextAccessor,
-                ILanguageService languageService,
-                ILocalizationService localizer)  // ← أضف في الـ Constructor
+                IContextService ContextService,
+                ILocalizationService localizer)  
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
-            private int? GetCompanyIdFromContext()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                if (context != null && context.Items.TryGetValue("CompanyId", out var companyId))
-                {
-                    return companyId as int?;
-                }
-                return null;
-            }
-
-            private int GetRequiredCompanyId()
-            {
-                var companyId = GetCompanyIdFromContext();
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header");
-                return companyId.Value;
-            }
 
             public async Task<SponsorDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)

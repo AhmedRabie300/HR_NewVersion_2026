@@ -15,29 +15,29 @@ namespace Application.System.MasterData.Nationality.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateNationalityValidator(localizer, languageService));
+                    .SetValidator(new CreateNationalityValidator(localizer, ContextService));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly INationalityRepository _repo;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(INationalityRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(INationalityRepository repo, IContextService ContextService, ILocalizationService localizer)
             {
                 _repo = repo;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _languageService.GetCurrentLanguage();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 if (await _repo.CodeExistsAsync(request.Data.Code))
                     throw new ConflictException(string.Format(

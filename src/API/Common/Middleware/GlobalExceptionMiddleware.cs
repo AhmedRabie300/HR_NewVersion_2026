@@ -124,8 +124,7 @@ namespace API.Common.Middleware
                 context.Response.ContentType = "application/problem+json";
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-                // 🔍 التعديل هنا: اعرض تفاصيل الخطأ الحقيقية
-                var errorDetails = new
+                 var errorDetails = new
                 {
                     type = "https://httpstatuses.com/500",
                     title = "Server error",

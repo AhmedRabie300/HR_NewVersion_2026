@@ -2,6 +2,7 @@
 using Application.UARbac.FormPermission.Dtos;
 using Domain.Common;
 using Domain.System.MasterData;
+using Domain.System.Search;
 using Domain.UARbac;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -48,7 +49,10 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<ContractType> ContractTypes => Set<ContractType>();
     public DbSet<DocumentTypesGroup> DocumentTypesGroups => Set<DocumentTypesGroup>();
     public DbSet<Document> Documents => Set<Document>();
- 
+    public DbSet<Sys_Objects> Sys_Objects => Set<Sys_Objects>();
+    public DbSet<Sys_Fields> Sys_Fields => Set<Sys_Fields>();
+    public DbSet<Sys_Searchs> Sys_Searchs => Set<Sys_Searchs>();
+    public DbSet<Sys_SearchsColumns> Sys_SearchsColumns => Set<Sys_SearchsColumns>();
 
 
 

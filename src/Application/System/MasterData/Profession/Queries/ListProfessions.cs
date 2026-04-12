@@ -14,29 +14,20 @@ namespace Application.System.MasterData.Profession.Queries
         public class Handler : IRequestHandler<Query, List<ProfessionDto>>
         {
             private readonly IProfessionRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
 
-            public Handler(IProfessionRepository repo, IHttpContextAccessor httpContextAccessor, ILanguageService languageService)
+            public Handler(IProfessionRepository repo,  IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
+                _ContextService = ContextService;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
-            }
+     
 
             public async Task<List<ProfessionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var items = await _repo.GetAllAsync(companyId);
 

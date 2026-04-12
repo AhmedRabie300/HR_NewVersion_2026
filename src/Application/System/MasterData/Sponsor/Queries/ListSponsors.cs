@@ -1,5 +1,4 @@
-﻿// Application/System/MasterData/Sponsor/Queries/ListSponsors.cs
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sponsor.Dtos;
@@ -15,41 +14,23 @@ namespace Application.System.MasterData.Sponsor.Queries
         public class Handler : IRequestHandler<Query, List<SponsorDto>>
         {
             private readonly ISponsorRepository _repo;
-            private readonly ILanguageService _languageService;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _ContextService;
 
             public Handler(
                 ISponsorRepository repo,
-                ILanguageService languageService,
-                IHttpContextAccessor httpContextAccessor)
+                IContextService ContextService
+                )
             {
                 _repo = repo;
-                _languageService = languageService;
-                _httpContextAccessor = httpContextAccessor;
+                _ContextService = ContextService;
             }
 
-            private int? GetCompanyIdFromContext()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                if (context != null && context.Items.TryGetValue("CompanyId", out var companyId))
-                {
-                    return companyId as int?;
-                }
-                return null;
-            }
-
-            private int GetRequiredCompanyId()
-            {
-                var companyId = GetCompanyIdFromContext();
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header");
-                return companyId.Value;
-            }
-
+         
+          
             public async Task<List<SponsorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var items = await _repo.GetAllAsync(companyId);
 

@@ -14,29 +14,19 @@ namespace Application.System.MasterData.Location.Queries
         public class Handler : IRequestHandler<Query, List<LocationDto>>
         {
             private readonly ILocationRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
 
-            public Handler(ILocationRepository repo, IHttpContextAccessor httpContextAccessor, ILanguageService languageService)
+            public Handler(ILocationRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
+                _ContextService = ContextService;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
-            }
 
             public async Task<List<LocationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var items = await _repo.GetAllAsync(companyId);
 

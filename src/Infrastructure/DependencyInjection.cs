@@ -1,11 +1,13 @@
 ﻿using Application.Abstractions;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
+using Application.System.Search.Abstractions;
 using Application.UARbac.Abstractions;
 using Infrastructure.Common.CurrentUser;
 using Infrastructure.Data;
 using Infrastructure.Data.Repositories.System;
 using Infrastructure.Data.Repositories.System.MasterData;
+using Infrastructure.Data.Repositories.System.Search;
 using Infrastructure.Data.Repositories.UARbac;
 using Infrastructure.Repositories.UARbac;
 using Infrastructure.Services;
@@ -59,7 +61,8 @@ namespace Infrastructure
             services.AddScoped<IContractTypeRepository, ContractTypeRepository>();
             services.AddScoped<IDocumentTypesGroupRepository, DocumentTypesGroupRepository>();
             services.AddScoped<IDocumentRepository, DocumentRepository>();
-            services.AddScoped<ILanguageService, LanguageService>();
+            services.AddScoped<IContextService, ContextService>();
+            services.AddScoped<IGeneralSearchRepository, GeneralSearchRepository>();
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             {

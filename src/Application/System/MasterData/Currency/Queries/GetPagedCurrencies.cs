@@ -1,4 +1,5 @@
 ﻿// Application/System/MasterData/Currency/Queries/GetPagedCurrencies.cs
+using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Currency.Dtos;
@@ -15,26 +16,19 @@ namespace Application.System.MasterData.Currency.Queries
         public class Handler : IRequestHandler<Query, PagedResult<CurrencyDto>>
         {
             private readonly ICurrencyRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _ContextService;
 
-            public Handler(ICurrencyRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(ICurrencyRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
+                _ContextService = ContextService;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header");
-                return companyId.Value;
-            }
+     
 
             public async Task<PagedResult<CurrencyDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
+                var companyId = _ContextService.GetCurrentCompanyId();
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,

@@ -1,4 +1,5 @@
 ﻿// Application/System/MasterData/ContractType/Queries/ListContractTypes.cs
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.ContractType.Dtos;
 using MediatR;
@@ -13,26 +14,19 @@ namespace Application.System.MasterData.ContractType.Queries
         public class Handler : IRequestHandler<Query, List<ContractTypeDto>>
         {
             private readonly IContractTypeRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _ContextService;
 
-            public Handler(IContractTypeRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(IContractTypeRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
+                _ContextService = ContextService;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
-            }
+         
 
             public async Task<List<ContractTypeDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
+                var companyId = _ContextService.GetCurrentCompanyId();
 
                 var items = await _repo.GetAllAsync(companyId);
 

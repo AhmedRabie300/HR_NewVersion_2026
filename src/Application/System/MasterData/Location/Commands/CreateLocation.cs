@@ -17,16 +17,16 @@ namespace Application.System.MasterData.Location.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateLocationValidator(_localizer, _languageService));
+                    .SetValidator(new CreateLocationValidator(_localizer, _ContextService));
             }
         }
 
@@ -36,8 +36,7 @@ namespace Application.System.MasterData.Location.Commands
             private readonly ICompanyRepository _companyRepo;
             private readonly IBranchRepository _branchRepo;
             private readonly IDepartmentRepository _departmentRepo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
@@ -45,32 +44,22 @@ namespace Application.System.MasterData.Location.Commands
                 ICompanyRepository companyRepo,
                 IBranchRepository branchRepo,
                 IDepartmentRepository departmentRepo,
-                IHttpContextAccessor httpContextAccessor,
-                ILanguageService languageService,
+                IContextService ContextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
                 _branchRepo = branchRepo;
                 _departmentRepo = departmentRepo;
-                _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
-                _localizer = localizer;
+                _ContextService = ContextService;                
+_localizer = localizer;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
-            }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 // التحقق من وجود الشركة
                 var company = await _companyRepo.GetByIdAsync(companyId);

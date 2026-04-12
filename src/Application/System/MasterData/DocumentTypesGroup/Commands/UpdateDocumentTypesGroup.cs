@@ -13,10 +13,10 @@ namespace Application.System.MasterData.DocumentTypesGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateDocumentTypesGroupValidator(localizer, languageService));
+                    .SetValidator(new UpdateDocumentTypesGroupValidator(localizer, ContextService));
             }
         }
         public class Handler : IRequestHandler<Command, Unit>

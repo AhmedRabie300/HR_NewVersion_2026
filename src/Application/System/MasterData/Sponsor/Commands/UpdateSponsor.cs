@@ -15,16 +15,16 @@ namespace Application.System.MasterData.Sponsor.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateSponsorValidator(_localizer, _languageService));
+                    .SetValidator(new UpdateSponsorValidator(_localizer, _ContextService));
             }
         }
 
@@ -32,46 +32,30 @@ namespace Application.System.MasterData.Sponsor.Commands
         {
             private readonly ISponsorRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
-            private readonly IHttpContextAccessor _httpContextAccessor;
 
             public Handler(
                 ISponsorRepository repo,
                 ICompanyRepository companyRepo,
-                ILanguageService languageService,
-                ILocalizationService localizer,
-                IHttpContextAccessor httpContextAccessor)
+                IContextService ContextService,
+                ILocalizationService localizer
+              )
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
-                _httpContextAccessor = httpContextAccessor;
             }
 
-            private int? GetCompanyIdFromContext()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                if (context != null && context.Items.TryGetValue("CompanyId", out var companyId))
-                {
-                    return companyId as int?;
-                }
-                return null;
-            }
+     
 
-            private int GetRequiredCompanyId()
-            {
-                var companyId = GetCompanyIdFromContext();
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header");
-                return companyId.Value;
-            }
+        
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)

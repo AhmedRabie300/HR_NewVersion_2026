@@ -14,29 +14,29 @@ namespace Application.System.MasterData.Company.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateCompanyValidator(localizer, languageService));
+                    .SetValidator(new CreateCompanyValidator(localizer, ContextService));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly ICompanyRepository _repo;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(ICompanyRepository repo, ILanguageService languageService, ILocalizationService localizer)
+            public Handler(ICompanyRepository repo, IContextService ContextService, ILocalizationService localizer)
             {
                 _repo = repo;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _languageService.GetCurrentLanguage();
+                var lang = _ContextService.GetCurrentLanguage();
 
                 var exists = await _repo.CodeExistsAsync(request.Data.Code);
                 if (exists)

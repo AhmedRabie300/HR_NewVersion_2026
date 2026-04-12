@@ -17,16 +17,16 @@ namespace Application.System.MasterData.Currency.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(ILanguageService languageService, ILocalizationService localizer)
+            public Validator(IContextService ContextService, ILocalizationService localizer)
             {
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateCurrencyValidator(_localizer, _languageService));
+                    .SetValidator(new CreateCurrencyValidator(_localizer, _ContextService));
             }
         }
 
@@ -34,40 +34,29 @@ namespace Application.System.MasterData.Currency.Commands
         {
             private readonly ICurrencyRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly ILanguageService _languageService;
+            private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 ICurrencyRepository repo,
                 ICompanyRepository companyRepo,
                 IHttpContextAccessor httpContextAccessor,
-                ILanguageService languageService,
+                IContextService ContextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _httpContextAccessor = httpContextAccessor;
-                _languageService = languageService;
+                _ContextService = ContextService;
                 _localizer = localizer;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
-            }
-
+            
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
-                var lang = _languageService.GetCurrentLanguage();
+                var companyId = _ContextService.GetCurrentCompanyId();
+                var lang = _ContextService.GetCurrentLanguage();
 
-                // التحقق من وجود الشركة
-                var company = await _companyRepo.GetByIdAsync(companyId);
+                 var company = await _companyRepo.GetByIdAsync(companyId);
                 if (company == null)
                     throw new NotFoundException("Create Currency", string.Format(
                         _localizer.GetMessage("NotFound", lang),
