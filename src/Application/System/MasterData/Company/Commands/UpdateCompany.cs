@@ -45,8 +45,7 @@ namespace Application.System.MasterData.Company.Commands
                         _localizer.GetMessage("Company", lang),
                         request.Data.Id));
 
-                // Update basic info
-               
+                
                     company.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -56,13 +55,7 @@ namespace Application.System.MasterData.Company.Commands
                     );
                 
 
-                // Update employee naming
-                if (request.Data.EmpFirstName != null ||
-                    request.Data.EmpSecondName != null ||
-                    request.Data.EmpThirdName != null ||
-                    request.Data.EmpFourthName != null ||
-                    request.Data.EmpNameSeparator != null)
-                {
+                
                     company.UpdateEmployeeNaming(
                         request.Data.EmpFirstName,
                         request.Data.EmpSecondName,
@@ -70,16 +63,8 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.EmpFourthName,
                         request.Data.EmpNameSeparator
                     );
-                }
-
-                // Update vacation settings
-                if (request.Data.VacationIsAccum.HasValue ||
-                    request.Data.ZeroBalAfterVac.HasValue ||
-                    request.Data.VacSettlement.HasValue ||
-                    request.Data.AllowOverVacation.HasValue ||
-                    request.Data.VacationFromPrepareDay.HasValue ||
-                    request.Data.ExecuseRequestHoursallowed.HasValue)
-                {
+               
+              
                     company.UpdateVacationSettings(
                         request.Data.VacationIsAccum,
                         request.Data.ZeroBalAfterVac,
@@ -88,30 +73,18 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.VacationFromPrepareDay,
                         request.Data.ExecuseRequestHoursallowed
                     );
-                }
+                 
 
-                // Update sequence settings
-                if (request.Data.HasSequence.HasValue ||
-                    request.Data.SequenceLength.HasValue ||
-                    request.Data.Prefix.HasValue ||
-                    request.Data.Separator != null)
-                {
+                
                     company.UpdateSequenceSettings(
                         request.Data.HasSequence,
                         request.Data.SequenceLength,
                         request.Data.Prefix,
                         request.Data.Separator
                     );
-                }
+                
 
-                // Update flags
-                if (request.Data.IsHigry.HasValue ||
-                    request.Data.IncludeAbsencDays.HasValue ||
-                    request.Data.DefaultAttend.HasValue ||
-                    request.Data.CountEmployeeVacationDaysTotal.HasValue ||
-                    request.Data.EmployeeDocumentsAutoSerial.HasValue ||
-                    request.Data.UserDepartmentsPermissions.HasValue)
-                {
+                
                     company.UpdateFlags(
                         request.Data.IsHigry,
                         request.Data.IncludeAbsencDays,
@@ -120,16 +93,14 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.EmployeeDocumentsAutoSerial,
                         request.Data.UserDepartmentsPermissions
                     );
-                }
+                 
 
-                // Update salary calculation
-                if (request.Data.SalaryCalculation.HasValue)
+                 if (request.Data.SalaryCalculation.HasValue)
                 {
                     company.UpdateSalaryCalculation(request.Data.SalaryCalculation);
                 }
 
-                // Update prepare day
-                if (request.Data.PrepareDay.HasValue)
+                 if (request.Data.PrepareDay.HasValue)
                 {
                     company.UpdatePrepareDay(request.Data.PrepareDay);
                 }
