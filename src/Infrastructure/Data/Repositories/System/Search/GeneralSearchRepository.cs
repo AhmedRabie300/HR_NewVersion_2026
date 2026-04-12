@@ -1,6 +1,6 @@
-﻿// Infrastructure/Data/Repositories/System/Search/GeneralSearchRepository.cs
-using Application.System.Search.Abstractions;
+﻿using Application.System.Search.Abstractions;
 using Application.System.Search.Dtos;
+using Application.Common.Abstractions;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,10 +10,12 @@ namespace Infrastructure.Data.Repositories.System.Search
     public sealed class GeneralSearchRepository : IGeneralSearchRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly IContextService _contextService;
 
-        public GeneralSearchRepository(ApplicationDbContext db)
+        public GeneralSearchRepository(ApplicationDbContext db, IContextService contextService)
         {
             _db = db;
+            _contextService = contextService;
         }
 
         public async Task<List<SearchColumnResponseDto>> GetSearchColumnsAsync(int searchID, int lang, CancellationToken ct)
@@ -42,8 +44,7 @@ namespace Infrastructure.Data.Repositories.System.Search
         {
             try
             {
-                // 1. جلب معلومات البحث
-                var search = await _db.Sys_Searchs
+                 var search = await _db.Sys_Searchs
                     .Include(x => x.Object)
                     .FirstOrDefaultAsync(x => x.Id == request.SearchID && x.CancelDate == null, ct);
 
@@ -52,28 +53,33 @@ namespace Infrastructure.Data.Repositories.System.Search
                     return new SearchExecuteResultDto(request.SearchID, "", 0, request.PageNumber, request.PageSize, new List<Dictionary<string, object>>());
                 }
 
-                 var columns = await GetSearchColumnsAsync(request.SearchID, lang, ct);
-                var viewColumns = columns.Where(x => x.IsView).ToList();
+                 var allColumns = await GetSearchColumnsAsync(request.SearchID, lang, ct);
+                var viewColumns = allColumns.Where(x => x.IsView).ToList();
+                var criteriaColumns = allColumns.Where(x => x.IsCriteria).ToList();
 
-                // 3. اسم الجدول
-                var tableName = search.Object.Code ;
+                 var tableName =  search.Object.Code;
 
-                // 4. بناء الاستعلام
-                var (sqlQuery, parameters) = BuildDynamicSqlQuery(
+                 var (sqlQuery, parameters) = BuildDynamicSqlQuery(
                     tableName,
                     search.Object?.Code ?? "",
-                    request,
+                    request.SearchTerm,
+                    criteriaColumns,
                     viewColumns,
-                    companyId
+                    companyId,
+                    request.UserId,
+                    request.AnotherCriteria
                 );
 
-                // 5. تنفيذ الاستعلام
-                var totalCount = await GetTotalCountAsync(sqlQuery, parameters, ct);
+                 if (string.IsNullOrEmpty(sqlQuery))
+                {
+                    return new SearchExecuteResultDto(request.SearchID, "", 0, request.PageNumber, request.PageSize, new List<Dictionary<string, object>>());
+                }
+
+                 var totalCount = await GetTotalCountAsync(sqlQuery, parameters, ct);
                 var pagedSqlQuery = BuildPagedSqlQuery(sqlQuery, request, parameters);
                 var items = await ExecuteQueryAsync(pagedSqlQuery, parameters, ct);
 
-                // 6. ترجمة الأسماء حسب اللغة للـ Items
-                var translatedItems = items.Select(item =>
+                 var translatedItems = items.Select(item =>
                 {
                     var translatedItem = new Dictionary<string, object>();
                     foreach (var kv in item)
@@ -109,19 +115,20 @@ namespace Infrastructure.Data.Repositories.System.Search
 
         #region Helper Methods
 
-
-
+        
         private (string SqlQuery, Dictionary<string, object> Parameters) BuildDynamicSqlQuery(
-        string tableName,
-        string objectCode,
-        SearchExecuteRequestDto request,
-        List<SearchColumnResponseDto> viewColumns,
-        int companyId)
+            string tableName,
+            string objectCode,
+            string searchTerm,
+            List<SearchColumnResponseDto> criteriaColumns,
+            List<SearchColumnResponseDto> viewColumns,
+            int companyId,
+            int? userId,
+            string? anotherCriteria)
         {
             var parameters = new Dictionary<string, object>();
             var whereConditions = new List<string>();
-            var searchConditions = new List<string>();
-            var selectFields = new List<string> { "Id", "Code", "EngName", "ArbName", "CancelDate" };
+            var selectFields = new List<string>();
 
              foreach (var col in viewColumns)
             {
@@ -131,25 +138,32 @@ namespace Infrastructure.Data.Repositories.System.Search
 
              whereConditions.Add("CancelDate IS NULL");
 
-             if (companyId > 0 && objectCode.ToLower() != "company" && TableHasCompanyId(tableName))
+             if (companyId > 0 && objectCode.ToLower() != "company")
             {
                 whereConditions.Add("CompanyID = @CompanyId");
                 parameters["@CompanyId"] = companyId;
             }
 
-             foreach (var criterion in request.Criteria)
+             // if (userId.HasValue && userId.Value > 0)
+            // {
+            //     whereConditions.Add("UserID = @UserId");
+            //     parameters["@UserId"] = userId.Value;
+            // }
+
+             if (!string.IsNullOrWhiteSpace(anotherCriteria))
             {
-                if (!string.IsNullOrWhiteSpace(criterion.Value))
-                {
-                    var paramName = $"@Criteria_{criterion.Key}";
-                    searchConditions.Add($"{criterion.Key} LIKE {paramName}");
-                    parameters[paramName] = $"%{EscapeSqlString(criterion.Value)}%";
-                }
+                whereConditions.Add(anotherCriteria);
             }
 
-             if (searchConditions.Any())
+             if (!string.IsNullOrWhiteSpace(searchTerm) && criteriaColumns.Any())
             {
+                var searchConditions = new List<string>();
+                foreach (var col in criteriaColumns)
+                {
+                    searchConditions.Add($"{col.FieldName} LIKE @SearchTerm");
+                }
                 whereConditions.Add($"({string.Join(" OR ", searchConditions)})");
+                parameters["@SearchTerm"] = $"%{EscapeSqlString(searchTerm)}%";
             }
 
             var selectClause = string.Join(", ", selectFields);
@@ -158,6 +172,8 @@ namespace Infrastructure.Data.Repositories.System.Search
 
             return (sqlQuery, parameters);
         }
+
+       
         private string BuildPagedSqlQuery(string baseSqlQuery, SearchExecuteRequestDto request, Dictionary<string, object> parameters)
         {
             var sortBy = string.IsNullOrEmpty(request.SortBy) ? "Code" : request.SortBy;
@@ -232,17 +248,6 @@ namespace Infrastructure.Data.Repositories.System.Search
                 var result = await command.ExecuteScalarAsync(ct);
                 return result != DBNull.Value ? (T)Convert.ChangeType(result, typeof(T)) : default!;
             }
-        }
-
-        private bool TableHasCompanyId(string tableName)
-        {
-            var tablesWithCompanyId = new[]
-            {
-                "sys_Branches", "sys_Departments", "sys_Sectors", "hrs_Positions", "sys_Locations",
-                "hrs_Sponsors", "sys_Currencies", "sys_Banks", "hrs_HICompanies", "hrs_Educations",
-                "hrs_Professions", "hrs_ContractsTypes", "hrs_DependantsTypes"
-            };
-            return tablesWithCompanyId.Contains(tableName);
         }
 
         private string EscapeSqlString(string value)

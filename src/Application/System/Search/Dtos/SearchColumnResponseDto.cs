@@ -6,8 +6,8 @@
         string DisplayName,
         string? FieldType,
         int? FieldLength,
-        bool IsCriteria,
-        bool IsView,
+        bool IsCriteria,    
+        bool IsView,        
         int? RankCriteria,
         int? RankView
     );

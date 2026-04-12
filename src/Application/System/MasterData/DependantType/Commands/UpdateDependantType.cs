@@ -56,8 +56,7 @@ namespace Application.System.MasterData.DependantType.Commands
                         _localizer.GetMessage("DependantType", lang),
                         request.Data.Id));
 
-                // التأكد أن نوع المعال يتبع الشركة الحالية
-                if (entity.CompanyId != companyId)
+                 if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Dependant type does not belong to your company");
 
                 entity.Update(

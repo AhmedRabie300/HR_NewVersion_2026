@@ -15,27 +15,21 @@ namespace Application.System.MasterData.Branch.Queries
         public class Handler : IRequestHandler<Query, PagedResult<BranchDto>>
         {
             private readonly IBranchRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _ContextService;
             
 
-            public Handler(IBranchRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(IBranchRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
+                _ContextService = ContextService;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-                return companyId.Value;
-            }
+          
 
             public async Task<PagedResult<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = GetRequiredCompanyId();
+                var companyId = _ContextService.GetCurrentCompanyId();
+
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,

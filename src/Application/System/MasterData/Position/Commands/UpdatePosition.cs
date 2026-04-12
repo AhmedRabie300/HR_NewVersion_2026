@@ -69,23 +69,16 @@ namespace Application.System.MasterData.Position.Commands
                     entity.UpdateParent(request.Data.ParentId);
                 }
 
-                // Update position level
-                if (request.Data.PositionLevelId.HasValue)
-                {
+                 
                     entity.UpdatePositionLevel(request.Data.PositionLevelId);
-                }
-
-                // Update employees no
-                if (request.Data.EmployeesNo.HasValue)
-                {
+ 
+              
                     entity.UpdateEmployeesNo(request.Data.EmployeesNo);
-                }
+                 
 
-                // Update position budget
-                if (request.Data.PositionBudget != null)
-                {
+              
                     entity.UpdatePositionBudget(request.Data.PositionBudget);
-                }
+                 
 
                 await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

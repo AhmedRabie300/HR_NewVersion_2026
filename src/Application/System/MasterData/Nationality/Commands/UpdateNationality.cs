@@ -54,17 +54,13 @@ namespace Application.System.MasterData.Nationality.Commands
                     );
                 
 
-                // Update travel info
-                if (request.Data.TravelRoute.HasValue ||
-                    request.Data.TravelClass.HasValue ||
-                    request.Data.TicketAmount.HasValue)
-                {
+             
                     entity.UpdateTravelInfo(
                         request.Data.TravelRoute,
                         request.Data.TravelClass,
                         request.Data.TicketAmount
                     );
-                }
+                 
 
                 // Update main nationality status
                 if (request.Data.IsMainNationality.HasValue)

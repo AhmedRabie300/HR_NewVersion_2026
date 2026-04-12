@@ -60,18 +60,14 @@ namespace Application.System.MasterData.Branch.Commands
                     throw new UnauthorizedAccessException("Access denied: Branch does not belong to your company");
 
                 // Update basic info
-                if (request.Data.EngName != null ||
-                    request.Data.ArbName != null ||
-                    request.Data.ArbName4S != null ||
-                    request.Data.Remarks != null)
-                {
+            
                     branch.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
                         request.Data.Remarks
                     );
-                }
+              
 
                 // Update location
                 if (request.Data.CountryId.HasValue || request.Data.CityId.HasValue)

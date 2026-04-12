@@ -58,17 +58,10 @@ namespace Application.System.MasterData.Department.Commands
                         _localizer.GetMessage("Department", lang),
                         request.Data.Id));
 
-                // التأكد أن القسم يتبع الشركة الحالية
-                if (entity.CompanyId != companyId)
+                 if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Department does not belong to your company");
 
-                // Update basic info
-                if (request.Data.EngName != null ||
-                    request.Data.ArbName != null ||
-                    request.Data.ArbName4S != null ||
-                    request.Data.Remarks != null ||
-                    request.Data.CostCenterCode != null)
-                {
+             
                     entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -76,7 +69,7 @@ namespace Application.System.MasterData.Department.Commands
                         request.Data.Remarks,
                         request.Data.CostCenterCode
                     );
-                }
+                 
 
                 // Update parent
                 if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)

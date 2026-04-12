@@ -1,8 +1,8 @@
-﻿// Application/System/Search/Queries/ExecuteSearchQuery.cs
-using Application.System.Search.Dtos;
+﻿// Application/System/Search/Queries/ExecuteSearch.cs
+using Application.Common.Abstractions;
 using Application.System.Search.Abstractions;
+using Application.System.Search.Dtos;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.Search.Queries
 {
@@ -13,32 +13,19 @@ namespace Application.System.Search.Queries
         public class Handler : IRequestHandler<Query, SearchExecuteResultDto>
         {
             private readonly IGeneralSearchRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _contextService;
 
-            public Handler(IGeneralSearchRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(IGeneralSearchRepository repo, IContextService contextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-            }
-
-            private int GetLanguage()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var lang = context?.Items["Language"] as int?;
-                return lang ?? 1;
-            }
-
-            private int GetCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                return companyId ?? 0;
+                _contextService = contextService;
             }
 
             public async Task<SearchExecuteResultDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = GetLanguage();
-                var companyId = GetCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
+                var companyId = _contextService.GetCurrentCompanyId();
+
                 return await _repo.ExecuteSearchAsync(request.Request, lang, companyId, cancellationToken);
             }
         }

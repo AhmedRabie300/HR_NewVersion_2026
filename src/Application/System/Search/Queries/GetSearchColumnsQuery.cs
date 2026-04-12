@@ -2,6 +2,7 @@
 using Application.System.Search.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Application.Common.Abstractions;
 
 namespace Application.System.Search.Queries
 {
@@ -12,24 +13,19 @@ namespace Application.System.Search.Queries
         public class Handler : IRequestHandler<Query, List<SearchColumnResponseDto>>
         {
             private readonly IGeneralSearchRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+            private readonly IContextService _ContextService;
 
-            public Handler(IGeneralSearchRepository repo, IHttpContextAccessor httpContextAccessor)
+            public Handler(IGeneralSearchRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
+                _ContextService = ContextService;
             }
 
-            private int GetLanguage()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var lang = context?.Items["Language"] as int?;
-                return lang ?? 1;
-            }
+           
 
             public async Task<List<SearchColumnResponseDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = GetLanguage();
+                var lang = _ContextService.GetCurrentLanguage();
                 return await _repo.GetSearchColumnsAsync(request.SearchID, lang, cancellationToken);
             }
         }

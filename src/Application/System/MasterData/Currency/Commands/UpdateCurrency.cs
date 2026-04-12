@@ -58,8 +58,7 @@ namespace Application.System.MasterData.Currency.Commands
                         _localizer.GetMessage("Currency", lang),
                         request.Data.Id));
 
-                // التأكد أن العملة تتبع الشركة الحالية
-                if (entity.CompanyId != companyId)
+                 if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Currency does not belong to your company");
 
                 entity.Update(

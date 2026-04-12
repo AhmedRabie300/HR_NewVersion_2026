@@ -33,7 +33,6 @@ namespace Application.System.MasterData.Branch.Commands
         {
             private readonly IBranchRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
             private readonly IContextService _ContextService;
             private readonly ILocalizationService _localizer;
 
@@ -46,42 +45,31 @@ namespace Application.System.MasterData.Branch.Commands
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _httpContextAccessor = httpContextAccessor;
                 _ContextService = ContextService;
                 _localizer = localizer;
             }
 
-            private int GetRequiredCompanyId()
-            {
-                var context = _httpContextAccessor.HttpContext;
-                var companyId = context?.Items["CompanyId"] as int?;
-                if (!companyId.HasValue)
-                    throw new UnauthorizedAccessException("Company ID is required in request header");
-                return companyId.Value;
-            }
+           
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 var companyId =_ContextService.GetCurrentCompanyId();
                 var lang = _ContextService.GetCurrentLanguage();
 
-                // التحقق من وجود الشركة
-                var company = await _companyRepo.GetByIdAsync(companyId);
+                 var company = await _companyRepo.GetByIdAsync(companyId);
                 if (company == null)
                     throw new NotFoundException("Create Branch", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Company", lang),
                         companyId));
 
-                // التحقق من عدم تكرار الكود
-                if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
+                 if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
                     throw new ConflictException(string.Format(
                         _localizer.GetMessage("CodeExists", lang),
                         _localizer.GetMessage("Branch", lang),
                         request.Data.Code));
 
-                // التحقق من وجود الفرع الأب إذا وجد
-                if (request.Data.ParentId.HasValue)
+                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)

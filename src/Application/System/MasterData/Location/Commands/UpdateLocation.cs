@@ -69,16 +69,7 @@ namespace Application.System.MasterData.Location.Commands
                 if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Location does not belong to your company");
 
-                // Update basic info
-                if (request.Data.EngName != null ||
-                    request.Data.ArbName != null ||
-                    request.Data.ArbName4S != null ||
-                    request.Data.Remarks != null ||
-                    request.Data.CostCenterCode1 != null ||
-                    request.Data.CostCenterCode2 != null ||
-                    request.Data.CostCenterCode3 != null ||
-                    request.Data.CostCenterCode4 != null)
-                {
+             
                     entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -89,7 +80,7 @@ namespace Application.System.MasterData.Location.Commands
                         request.Data.CostCenterCode3,
                         request.Data.CostCenterCode4
                     );
-                }
+                 
 
                 // Update parent
                 if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)

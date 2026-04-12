@@ -13,19 +13,17 @@ namespace API.Endpoints
             var group = routes.MapGroup("/api/search")
                 .WithTags("Search");
 
-            // GET /api/search/columns/{searchID} - جلب أعمدة البحث
-             group.MapGet("/columns/{searchID:int}", async (
-                IMediator mediator,
-                int searchID,
-                CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new GetSearchColumns.Query(searchID), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetSearchColumns")
-            .WithDescription("Get search columns (criteria and view) for a specific search ID");
+            //  group.MapGet("/columns/{searchID:int}", async (
+            //    IMediator mediator,
+            //    int searchID,
+            //    CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new GetSearchColumns.Query(searchID), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetSearchColumns")
+            //.WithDescription("Get search columns (criteria and view) for a specific search ID");
 
-            // POST /api/search/execute - تنفيذ البحث
             group.MapPost("/execute", async (
                 IMediator mediator,
                 [FromBody] SearchExecuteRequestDto request,
