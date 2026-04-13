@@ -92,7 +92,7 @@ namespace Application.System.MasterData.MaritalStatus.Commands
                     code = request.Data.Code;
 
                     if (string.IsNullOrWhiteSpace(code))
-                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+                        throw new RequiredFieldException("CodeRequired", _localizer.GetMessage("CodeRequired", lang), "code");
 
                     if (await _repo.CodeExistsAsync(code))
                         throw new ConflictException(string.Format(

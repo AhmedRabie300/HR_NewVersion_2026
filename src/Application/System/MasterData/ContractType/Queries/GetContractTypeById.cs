@@ -1,10 +1,12 @@
 ﻿// Application/System/MasterData/ContractType/Queries/GetContractTypeById.cs
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.ContractType.Dtos;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Application.System.MasterData.ContractType.Queries
 {
@@ -49,7 +51,7 @@ namespace Application.System.MasterData.ContractType.Queries
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound",string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("ContractType", lang),
                         request.Id));
@@ -60,7 +62,6 @@ namespace Application.System.MasterData.ContractType.Queries
                 return new ContractTypeDto(
                     Id: entity.Id,
                     Code: entity.Code,
-                    CompanyId: entity.CompanyId,
                     CompanyName: entity.Company?.EngName ?? entity.Company?.ArbName,
                     EngName: entity.EngName,
                     ArbName: entity.ArbName,

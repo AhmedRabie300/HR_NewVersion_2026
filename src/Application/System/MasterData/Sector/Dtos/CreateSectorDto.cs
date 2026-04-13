@@ -2,7 +2,6 @@
 {
     public sealed record CreateSectorDto(
         string Code,
-        int CompanyId,
         string? EngName,
         string? ArbName,
         string? ArbName4S,

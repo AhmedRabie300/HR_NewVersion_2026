@@ -1,38 +1,36 @@
-﻿using Application.UARbac.Users.Dtos;
+﻿using Application.Common.Abstractions;
+using Application.UARbac.Users.Dtos;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.UARbac.Users.Validators
 {
-    internal class UpdateUserValidator :AbstractValidator<UpdateUserDto>
+    public class UpdateUserValidator : AbstractValidator<UpdateUserDto>
     {
-        public UpdateUserValidator() 
-        
+        private readonly IContextService _contextService;
+        private readonly ILocalizationService _localizer;
+
+        public UpdateUserValidator(IContextService contextService, ILocalizationService localizer)
         {
+            _contextService = contextService;
+            _localizer = localizer;
+
+            var lang = _contextService.GetCurrentLanguage();
+
             RuleFor(x => x.Id)
-           .GreaterThan(0)
-           .WithMessage("Id is required.");
+                .GreaterThan(0)
+                .WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
 
             RuleFor(x => x.EngName)
                 .MaximumLength(100)
-                .WithMessage("English Caption max length is 100.");
+                .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 100));
 
             RuleFor(x => x.ArbName)
                 .MaximumLength(100)
-                .WithMessage("Arabic Caption max length is 100.");
+                .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 100));
 
-            // Optional: if your business wants at least one change
             RuleFor(x => x)
-                .Must(x =>
-                    x.EngName != null ||
-                    x.ArbName != null  
-                    )
-                .WithMessage("At least one field must be provided to update.");
+                .Must(x => x.EngName != null || x.ArbName != null || x.IsAdmin != null || x.DeviceToken != null)
+                .WithMessage(_localizer.GetMessage("AtLeastOneField", lang));
         }
-
-
-    }    
+    }
 }
-

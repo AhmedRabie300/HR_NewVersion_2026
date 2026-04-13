@@ -127,9 +127,9 @@ namespace Application.System.MasterData.Branch.Commands
                     code = request.Data.Code;
 
                     if (string.IsNullOrWhiteSpace(code))
-                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+                        throw new NotFoundException("CodeRequired", _localizer.GetMessage("CodeRequired", lang));
 
-                     if (await _repo.CodeExistsAsync(code, companyId))
+                    if (await _repo.CodeExistsAsync(code, companyId))
                         throw new ConflictException(string.Format(
                             _localizer.GetMessage("CodeExists", lang),
                             _localizer.GetMessage("Branch", lang),

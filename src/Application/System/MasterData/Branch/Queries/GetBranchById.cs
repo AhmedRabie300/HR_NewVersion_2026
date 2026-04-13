@@ -1,4 +1,5 @@
-﻿using Application.Common.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
 using FluentValidation;
@@ -48,7 +49,7 @@ namespace Application.System.MasterData.Branch.Queries
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound",string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Branch", lang),
                         request.Id));
@@ -59,7 +60,7 @@ namespace Application.System.MasterData.Branch.Queries
                 return new BranchDto(
                     Id: entity.Id,
                     Code: entity.Code,
-                    CompanyId: entity.CompanyId,
+                    CompanyId: companyId,
                     CompanyName: entity.Company?.EngName ?? entity.Company?.ArbName,
                     EngName: entity.EngName,
                     ArbName: entity.ArbName,

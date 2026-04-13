@@ -49,15 +49,9 @@ namespace Infrastructure.Data.Repositories.UARbac
         public async Task DeleteAsync(int id)
         {
             var form = await _db.Forms.FindAsync(id);
-            if (form != null)
-            {
-                // Check if has permissions
-                var hasPermissions = await _db.FormPermissions.AnyAsync(x => x.FormId == id);
-                if (hasPermissions)
-                    throw new Exception("Cannot delete form that has permissions");
-
+         
                 _db.Forms.Remove(form);
-            }
+             
         }
 
         public async Task<bool> ExistsAsync(int id)

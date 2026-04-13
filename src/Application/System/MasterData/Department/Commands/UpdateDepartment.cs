@@ -53,7 +53,7 @@ namespace Application.System.MasterData.Department.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Update Department",string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Department", lang),
                         request.Data.Id));

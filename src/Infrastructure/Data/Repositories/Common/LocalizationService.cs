@@ -1,6 +1,5 @@
-﻿// Infrastructure/Services/LocalizationService.cs
-using Application.Common.Abstractions;
- 
+﻿using Application.Common.Abstractions;
+
 namespace Infrastructure.Services
 {
     public class LocalizationService : ILocalizationService
@@ -32,10 +31,80 @@ namespace Infrastructure.Services
                     { 1, "Code is required" },
                     { 2, "الكود مطلوب" }
                 },
+                ["PasswordRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Password is required" },
+                    { 2, "كلمة المرور مطلوبة" }
+                },
                 ["MaxLength"] = new Dictionary<int, string>
                 {
                     { 1, "Maximum length is {0} characters" },
                     { 2, "الحد الأقصى للطول هو {0} حرف" }
+                },
+                ["CodePattern"] = new Dictionary<int, string>
+                {
+                    { 1, "Code can only contain letters, numbers and underscore" },
+                    { 2, "الكود يمكن أن يحتوي فقط على أحرف وأرقام وشرطة سفلية" }
+                },
+                ["FormIdGreaterThanZero"] = new Dictionary<int, string>
+                {
+                    { 1, "Form ID must be greater than 0" },
+                    { 2, "معرف النموذج يجب أن يكون أكبر من 0" }
+                },
+                ["RankMustBePositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Rank must be zero or positive number" },
+                    { 2, "الترتيب يجب أن يكون صفر أو رقم موجب" }
+                },
+                ["UserIdRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "User ID is required" },
+                    { 2, "معرف المستخدم مطلوب" }
+                },
+                ["GroupIdRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Group ID is required" },
+                    { 2, "معرف المجموعة مطلوب" }
+                },
+                ["UserAlreadyInGroup"] = new Dictionary<int, string>
+                {
+                    { 1, "{0} already belongs to this {1}" },
+                    { 2, "{0} موجود بالفعل في هذه {1}" }
+                },
+                ["ModuleIdRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Module ID is required" },
+                    { 2, "معرف الوحدة مطلوب" }
+                },
+                ["CanViewMustBeTrue"] = new Dictionary<int, string>
+                {
+                    { 1, "CanView must be true if provided" },
+                    { 2, "يجب أن تكون صلاحية العرض true إذا تم توفيرها" }
+                },
+                ["AtLeastOneField"] = new Dictionary<int, string>
+                {
+                    { 1, "At least one field must be provided to update" },
+                    { 2, "يجب توفير حقل واحد على الأقل للتحديث" }
+                },
+                ["EitherGroupOrUser"] = new Dictionary<int, string>
+                {
+                    { 1, "Either GroupId or UserId must be provided, but not both" },
+                    { 2, "يجب توفير إما GroupId أو UserId، وليس كلاهما" }
+                },
+                ["AtLeastOnePermission"] = new Dictionary<int, string>
+                {
+                    { 1, "At least one permission must be granted" },
+                    { 2, "يجب منح صلاحية واحدة على الأقل" }
+                },
+                ["MenuCannotBeParentOfItself"] = new Dictionary<int, string>
+                {
+                    { 1, "Menu cannot be parent of itself" },
+                    { 2, "القائمة لا يمكن أن تكون أباً لنفسها" }
+                },
+                ["ParentMenu"] = new Dictionary<int, string>
+                {
+                    { 1, "Parent menu" },
+                    { 2, "القائمة الأب" }
                 },
 
                 // ===== CRUD Messages =====
@@ -54,23 +123,28 @@ namespace Infrastructure.Services
                     { 1, "{0} deleted successfully" },
                     { 2, "تم حذف {0} بنجاح" }
                 },
-
                 ["NotFound"] = new Dictionary<int, string>
                 {
                     { 1, "{0} with ID {1} not found" },
                     { 2, "{0} بالمعرف {1} غير موجود" }
                 },
-                ["UserNotFound"] = new Dictionary<int, string>
+                ["CodeExists"] = new Dictionary<int, string>
                 {
-                    { 1, "User not found" },
-                    { 2, "المستخدم غير موجود" }
+                    { 1, "{0} with code '{1}' already exists" },
+                    { 2, "{0} بالكود '{1}' موجود بالفعل" }
                 },
-                ["GroupNotFound"] = new Dictionary<int, string>
+                ["PermissionAlreadyExists"] = new Dictionary<int, string>
                 {
-                    { 1, "Group not found" },
-                    { 2, "المجموعة غير موجودة" }
+                    { 1, "Permission already exists for this {0} and {1}" },
+                    { 2, "الصلاحية موجودة بالفعل لهذا {0} و {1}" }
+                },
+                ["CannotDeleteHasChildren"] = new Dictionary<int, string>
+                {
+                    { 1, "Cannot delete {0} because it has child items" },
+                    { 2, "لا يمكن حذف {0} لأنه يحتوي على عناصر فرعية" }
                 },
 
+                // ===== Authentication Messages =====
                 ["Unauthorized"] = new Dictionary<int, string>
                 {
                     { 1, "Unauthorized: User not authenticated" },
@@ -86,68 +160,7 @@ namespace Infrastructure.Services
                     { 1, "You do not have '{0}' permission for this page" },
                     { 2, "ليس لديك صلاحية '{0}' لهذه الصفحة" }
                 },
-                // ===== Company Specific Messages =====
-                ["Company"] = new Dictionary<int, string>
-{
-    { 1, "Company" },
-    { 2, "الشركة" }
-},
-                ["CodeExists"] = new Dictionary<int, string>
-{
-    { 1, "{0} with code '{1}' already exists" },
-    { 2, "{0} بالكود '{1}' موجود بالفعل" }
-},
-                ["SequenceLengthMustBePositive"] = new Dictionary<int, string>
-{
-    { 1, "Sequence length must be greater than 0" },
-    { 2, "طول التسلسل يجب أن يكون أكبر من 0" }
-},
-                ["PrefixMustBePositive"] = new Dictionary<int, string>
-{
-    { 1, "Prefix must be greater than 0" },
-    { 2, "البادئة يجب أن تكون أكبر من 0" }
-},
-                ["SeparatorMaxLength"] = new Dictionary<int, string>
-{
-    { 1, "Separator must be a single character" },
-    { 2, "العلامة الفاصلة يجب أن تكون حرف واحد" }
-},
-                ["PrepareDayRange"] = new Dictionary<int, string>
-{
-    { 1, "Prepare day must be between 1 and 31" },
-    { 2, "يوم التحضير يجب أن يكون بين 1 و 31" }
-},
-                ["ExecuseRequestHoursPositive"] = new Dictionary<int, string>
-{
-    { 1, "Execuse request hours allowed must be greater than 0" },
-    { 2, "ساعات الإذن المسموحة يجب أن تكون أكبر من 0" }
-},
-                // ===== Branch Specific Messages (موجودة لكن نكمل) =====
-                ["Branch"] = new Dictionary<int, string>
-{
-    { 1, "Branch" },
-    { 2, "الفرع" }
-},
-                ["ParentBranch"] = new Dictionary<int, string>
-{
-    { 1, "Parent branch" },
-    { 2, "الفرع الأب" }
-},
-                ["ParentBranchRequired"] = new Dictionary<int, string>
-{
-    { 1, "Parent branch ID must be greater than 0" },
-    { 2, "معرف الفرع الأب يجب أن يكون أكبر من 0" }
-},
-                ["CountryRequired"] = new Dictionary<int, string>
-{
-    { 1, "Country ID must be greater than 0" },
-    { 2, "معرف الدولة يجب أن يكون أكبر من 0" }
-},
-                ["CityRequired"] = new Dictionary<int, string>
-{
-    { 1, "City ID must be greater than 0" },
-    { 2, "معرف المدينة يجب أن يكون أكبر من 0" }
-},
+
                 // ===== Login Messages =====
                 ["LoginSuccess"] = new Dictionary<int, string>
                 {
@@ -175,198 +188,259 @@ namespace Infrastructure.Services
                     { 2, "برجاء ادخال اسم المستخدم وكلمة المرور" }
                 },
 
-                // ===== Validation =====
-                ["AtLeastOneField"] = new Dictionary<int, string>
-                {
-                    { 1, "At least one field must be provided to update" },
-                    { 2, "يجب توفير حقل واحد على الأقل للتحديث" }
-                },
-                ["EitherGroupOrUser"] = new Dictionary<int, string>
-                {
-                    { 1, "Either GroupId or UserId must be provided, but not both" },
-                    { 2, "يجب توفير إما GroupId أو UserId، وليس كلاهما" }
-                },
-                ["AtLeastOnePermission"] = new Dictionary<int, string>
-                {
-                    { 1, "At least one permission must be granted" },
-                    { 2, "يجب منح صلاحية واحدة على الأقل" }
-                },
-
-
-// ===== Sector Specific Messages =====
-["Sector"] = new Dictionary<int, string>
-{
-    { 1, "Sector" },
-    { 2, "القطاع" }
-},
-                ["ParentSector"] = new Dictionary<int, string>
-{
-    { 1, "Parent sector" },
-    { 2, "القطاع الأب" }
-},
+                // ===== Entity Names =====
                 ["Company"] = new Dictionary<int, string>
-{
-    { 1, "Company" },
-    { 2, "الشركة" }
-},
-                ["Code"] = new Dictionary<int, string>
-{
-    { 1, "Code" },
-    { 2, "الكود" }
-},
-                ["ParentMustBeSameCompany"] = new Dictionary<int, string>
-{
-    { 1, "Parent sector must belong to the same company" },
-    { 2, "القطاع الأب يجب أن يكون تابع لنفس الشركة" }
-},
-                ["CannotDeleteHasChildren"] = new Dictionary<int, string>
-{
-    { 1, "Cannot delete {0} because it has child sectors" },
-    { 2, "لا يمكن حذف {0} لأنه يحتوي على قطاعات فرعية" }
-}
-            ,
-                // ===== Location Specific Messages =====
-                ["Location"] = new Dictionary<int, string>
-{
-    { 1, "Location" },
-    { 2, "الموقع" }
-},
+                {
+                    { 1, "Company" },
+                    { 2, "الشركة" }
+                },
                 ["Branch"] = new Dictionary<int, string>
-{
-    { 1, "Branch" },
-    { 2, "الفرع" }
-},
+                {
+                    { 1, "Branch" },
+                    { 2, "الفرع" }
+                },
+                ["ParentBranch"] = new Dictionary<int, string>
+                {
+                    { 1, "Parent branch" },
+                    { 2, "الفرع الأب" }
+                },
                 ["Department"] = new Dictionary<int, string>
-{
-    { 1, "Department" },
-    { 2, "الإدارة" }
-},
-                ["AtLeastOneIdentifier"] = new Dictionary<int, string>
-{
-    { 1, "At least one identifier (Company or Branch) must be provided" },
-    { 2, "يجب توفير معرّف واحد على الأقل (شركة أو فرع)" }
-}
-
-                ,
-
-                // ===== Position Specific Messages =====
+                {
+                    { 1, "Department" },
+                    { 2, "القسم" }
+                },
+                ["ParentDepartment"] = new Dictionary<int, string>
+                {
+                    { 1, "Parent department" },
+                    { 2, "القسم الأب" }
+                },
+                ["Sector"] = new Dictionary<int, string>
+                {
+                    { 1, "Sector" },
+                    { 2, "القطاع" }
+                },
+                ["ParentSector"] = new Dictionary<int, string>
+                {
+                    { 1, "Parent sector" },
+                    { 2, "القطاع الأب" }
+                },
+                ["Location"] = new Dictionary<int, string>
+                {
+                    { 1, "Location" },
+                    { 2, "الموقع" }
+                },
+                ["ParentLocation"] = new Dictionary<int, string>
+                {
+                    { 1, "Parent location" },
+                    { 2, "الموقع الأب" }
+                },
                 ["Position"] = new Dictionary<int, string>
-{
-    { 1, "Position" },
-    { 2, "الوظيفة" }
-},
+                {
+                    { 1, "Position" },
+                    { 2, "الوظيفة" }
+                },
                 ["ParentPosition"] = new Dictionary<int, string>
-{
-    { 1, "Parent position" },
-    { 2, "الوظيفة الأب" }
-},
-                ["CannotDeleteHasChildren"] = new Dictionary<int, string>
-{
-    { 1, "Cannot delete {0} because it has child positions" },
-    { 2, "لا يمكن حذف {0} لأنه يحتوي على وظائف فرعية" }
-}
-                ,
-                // ===== BloodGroup Specific Messages =====
-                ["BloodGroup"] = new Dictionary<int, string>
-{
-    { 1, "Blood group" },
-    { 2, "فصيلة الدم" }
-},
-                ["CodeExists"] = new Dictionary<int, string>
-{
-    { 1, "{0} with code '{1}' already exists" },
-    { 2, "{0} بالكود '{1}' موجود بالفعل" }
-},
-
-                // ===== DependantType Specific Messages =====
-                ["DependantType"] = new Dictionary<int, string>
-{
-    { 1, "Dependant type" },
-    { 2, "نوع المعال" }
-},
-                ["CompanyRequired"] = new Dictionary<int, string>
-{
-    { 1, "Company is required" },
-    { 2, "الشركة مطلوبة" }
-},
-                // ===== Currency Specific Messages =====
-                ["Currency"] = new Dictionary<int, string>
-{
-    { 1, "Currency" },
-    { 2, "العملة" }
-},
-                ["DecimalFractionRequired"] = new Dictionary<int, string>
-{
-    { 1, "Decimal fraction is required" },
-    { 2, "الجزء العشري مطلوب" }
-},
-                // ===== MaritalStatus Specific Messages =====
-                ["MaritalStatus"] = new Dictionary<int, string>
-{
-    { 1, "Marital status" },
-    { 2, "الحالة الاجتماعية" }
-},
-                // ===== Sponsor Specific Messages =====
+                {
+                    { 1, "Parent position" },
+                    { 2, "الوظيفة الأب" }
+                },
                 ["Sponsor"] = new Dictionary<int, string>
-{
-    { 1, "Sponsor" },
-    { 2, "الكفيل" }
-},
-                ["SponsorNumberMustBePositive"] = new Dictionary<int, string>
-{
-    { 1, "Sponsor number must be greater than 0" },
-    { 2, "رقم الكفيل يجب أن يكون أكبر من 0" }
-},
-                // ===== ContractType Specific Messages =====
+                {
+                    { 1, "Sponsor" },
+                    { 2, "الكفيل" }
+                },
+                ["Currency"] = new Dictionary<int, string>
+                {
+                    { 1, "Currency" },
+                    { 2, "العملة" }
+                },
+                ["Bank"] = new Dictionary<int, string>
+                {
+                    { 1, "Bank" },
+                    { 2, "البنك" }
+                },
+                ["Education"] = new Dictionary<int, string>
+                {
+                    { 1, "Education" },
+                    { 2, "المؤهل العلمي" }
+                },
+                ["Profession"] = new Dictionary<int, string>
+                {
+                    { 1, "Profession" },
+                    { 2, "المهنة" }
+                },
                 ["ContractType"] = new Dictionary<int, string>
-{
-    { 1, "Contract type" },
-    { 2, "نوع العقد" }
-},
-                ["IsSpecialRequired"] = new Dictionary<int, string>
-{
-    { 1, "Special contract flag is required" },
-    { 2, "علامة العقد الخاص مطلوبة" }
-},
-                // ===== DocumentTypesGroup Specific Messages =====
-                ["DocumentTypesGroup"] = new Dictionary<int, string>
-{
-    { 1, "Document types group" },
-    { 2, "مجموعة أنواع المستندات" }
-},
-                // ===== Document Specific Messages =====
-                ["Document"] = new Dictionary<int, string>
-{
-    { 1, "Document" },
-    { 2, "المستند" }
-},
-                ["DocumentTypesGroupRequired"] = new Dictionary<int, string>
-{
-    { 1, "Document types group is required" },
-    { 2, "مجموعة أنواع المستندات مطلوبة" }
-},
-                // ===== Nationality Specific Messages =====
+                {
+                    { 1, "Contract type" },
+                    { 2, "نوع العقد" }
+                },
+                ["DependantType"] = new Dictionary<int, string>
+                {
+                    { 1, "Dependant type" },
+                    { 2, "نوع المعال" }
+                },
                 ["Nationality"] = new Dictionary<int, string>
-{
-    { 1, "Nationality" },
-    { 2, "الجنسية" }
-},
-                ["TravelRouteMustBePositive"] = new Dictionary<int, string>
-{
-    { 1, "Travel route must be greater than 0" },
-    { 2, "مسار السفر يجب أن يكون أكبر من 0" }
-},
-                ["TravelClassMustBePositive"] = new Dictionary<int, string>
-{
-    { 1, "Travel class must be greater than 0" },
-    { 2, "درجة السفر يجب أن تكون أكبر من 0" }
-},
-                ["TicketAmountMustBePositive"] = new Dictionary<int, string>
-{
-    { 1, "Ticket amount must be greater than 0" },
-    { 2, "قيمة التذكرة يجب أن تكون أكبر من 0" }
-},
+                {
+                    { 1, "Nationality" },
+                    { 2, "الجنسية" }
+                },
+                ["Religion"] = new Dictionary<int, string>
+                {
+                    { 1, "Religion" },
+                    { 2, "الديانة" }
+                },
+                ["BloodGroup"] = new Dictionary<int, string>
+                {
+                    { 1, "Blood group" },
+                    { 2, "فصيلة الدم" }
+                },
+                ["MaritalStatus"] = new Dictionary<int, string>
+                {
+                    { 1, "Marital status" },
+                    { 2, "الحالة الاجتماعية" }
+                },
+                ["Document"] = new Dictionary<int, string>
+                {
+                    { 1, "Document" },
+                    { 2, "المستند" }
+                },
+                ["DocumentTypesGroup"] = new Dictionary<int, string>
+                {
+                    { 1, "Document types group" },
+                    { 2, "مجموعة أنواع المستندات" }
+                },
+                ["Module"] = new Dictionary<int, string>
+                {
+                    { 1, "Module" },
+                    { 2, "الوحدة" }
+                },
+                ["ModulePermission"] = new Dictionary<int, string>
+                {
+                    { 1, "Module permission" },
+                    { 2, "صلاحية الوحدة" }
+                },
+                ["Form"] = new Dictionary<int, string>
+                {
+                    { 1, "Form" },
+                    { 2, "النموذج" }
+                },
+                ["FormPermission"] = new Dictionary<int, string>
+                {
+                    { 1, "Form permission" },
+                    { 2, "صلاحية النموذج" }
+                },
+                ["Menu"] = new Dictionary<int, string>
+                {
+                    { 1, "Menu" },
+                    { 2, "القائمة" }
+                },
+                ["Group"] = new Dictionary<int, string>
+                {
+                    { 1, "Group" },
+                    { 2, "المجموعة" }
+                },
+                ["User"] = new Dictionary<int, string>
+                {
+                    { 1, "User" },
+                    { 2, "المستخدم" }
+                },
+                ["UserGroup"] = new Dictionary<int, string>
+                {
+                    { 1, "User group" },
+                    { 2, "مجموعة المستخدمين" }
+                },
 
+                // ===== Specific Field Messages =====
+                ["ParentBranchRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Parent branch ID must be greater than 0" },
+                    { 2, "معرف الفرع الأب يجب أن يكون أكبر من 0" }
+                },
+                ["CountryRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Country ID must be greater than 0" },
+                    { 2, "معرف الدولة يجب أن يكون أكبر من 0" }
+                },
+                ["CityRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "City ID must be greater than 0" },
+                    { 2, "معرف المدينة يجب أن يكون أكبر من 0" }
+                },
+                ["SequenceLengthMustBePositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Sequence length must be greater than 0" },
+                    { 2, "طول التسلسل يجب أن يكون أكبر من 0" }
+                },
+                ["PrefixMustBePositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Prefix must be greater than 0" },
+                    { 2, "البادئة يجب أن تكون أكبر من 0" }
+                },
+                ["SeparatorMaxLength"] = new Dictionary<int, string>
+                {
+                    { 1, "Separator must be a single character" },
+                    { 2, "العلامة الفاصلة يجب أن تكون حرف واحد" }
+                },
+                ["PrepareDayRange"] = new Dictionary<int, string>
+                {
+                    { 1, "Prepare day must be between 1 and 31" },
+                    { 2, "يوم التحضير يجب أن يكون بين 1 و 31" }
+                },
+                ["ExecuseRequestHoursPositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Execuse request hours allowed must be greater than 0" },
+                    { 2, "ساعات الإذن المسموحة يجب أن تكون أكبر من 0" }
+                },
+                ["AtLeastOneIdentifier"] = new Dictionary<int, string>
+                {
+                    { 1, "At least one identifier (Company or Branch) must be provided" },
+                    { 2, "يجب توفير معرّف واحد على الأقل (شركة أو فرع)" }
+                },
+                ["ParentMustBeSameCompany"] = new Dictionary<int, string>
+                {
+                    { 1, "Parent must belong to the same company" },
+                    { 2, "الأب يجب أن يكون تابع لنفس الشركة" }
+                },
+                ["SponsorNumberMustBePositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Sponsor number must be greater than 0" },
+                    { 2, "رقم الكفيل يجب أن يكون أكبر من 0" }
+                },
+                ["IsSpecialRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Special contract flag is required" },
+                    { 2, "علامة العقد الخاص مطلوبة" }
+                },
+                ["DocumentTypesGroupRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Document types group is required" },
+                    { 2, "مجموعة أنواع المستندات مطلوبة" }
+                },
+                ["DecimalFractionRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Decimal fraction is required" },
+                    { 2, "الجزء العشري مطلوب" }
+                },
+                ["CompanyRequired"] = new Dictionary<int, string>
+                {
+                    { 1, "Company is required" },
+                    { 2, "الشركة مطلوبة" }
+                },
+                ["TravelRouteMustBePositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Travel route must be greater than 0" },
+                    { 2, "مسار السفر يجب أن يكون أكبر من 0" }
+                },
+                ["TravelClassMustBePositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Travel class must be greater than 0" },
+                    { 2, "درجة السفر يجب أن تكون أكبر من 0" }
+                },
+                ["TicketAmountMustBePositive"] = new Dictionary<int, string>
+                {
+                    { 1, "Ticket amount must be greater than 0" },
+                    { 2, "قيمة التذكرة يجب أن تكون أكبر من 0" }
+                }
             };
         }
 
@@ -377,12 +451,12 @@ namespace Infrastructure.Services
                 return _messages[key][lang];
             }
 
-             if (_messages.ContainsKey(key) && _messages[key].ContainsKey(1))
+            if (_messages.ContainsKey(key) && _messages[key].ContainsKey(1))
             {
                 return _messages[key][1];
             }
 
-            return key; // Return key if nothing found
+            return key;
         }
 
         public string GetMessage(string key, string lang)

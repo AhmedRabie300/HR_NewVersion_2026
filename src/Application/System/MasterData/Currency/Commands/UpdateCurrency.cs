@@ -53,7 +53,7 @@ namespace Application.System.MasterData.Currency.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("Update Currency",string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Currency", lang),
                         request.Data.Id));

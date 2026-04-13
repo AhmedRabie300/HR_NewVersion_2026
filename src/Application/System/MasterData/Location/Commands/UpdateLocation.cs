@@ -60,13 +60,12 @@ namespace Application.System.MasterData.Location.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Location", lang),
                         request.Data.Id));
 
-                // التأكد أن الموقع يتبع الشركة الحالية
-                if (entity.CompanyId != companyId)
+                 if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Location does not belong to your company");
 
              
@@ -87,7 +86,7 @@ namespace Application.System.MasterData.Location.Commands
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new Exception(string.Format(
+                        throw new NotFoundException("NotFound", string.Format(
                             _localizer.GetMessage("NotFound", lang),
                             _localizer.GetMessage("ParentLocation", lang),
                             request.Data.ParentId));
@@ -99,7 +98,7 @@ namespace Application.System.MasterData.Location.Commands
                 {
                     var branch = await _branchRepo.GetByIdAsync(request.Data.BranchId.Value);
                     if (branch == null)
-                        throw new Exception(string.Format(
+                        throw new NotFoundException("NotFound", string.Format(
                             _localizer.GetMessage("NotFound", lang),
                             _localizer.GetMessage("Branch", lang),
                             request.Data.BranchId));

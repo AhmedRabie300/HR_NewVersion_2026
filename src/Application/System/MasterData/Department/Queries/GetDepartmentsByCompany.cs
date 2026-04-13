@@ -1,4 +1,6 @@
 ﻿// Application/System/MasterData/Department/Queries/GetDepartmentsByCompany.cs
+using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
 using FluentValidation;
@@ -8,14 +10,13 @@ namespace Application.System.MasterData.Department.Queries
 {
     public static class GetDepartmentsByCompany
     {
-        public record Query(int CompanyId) : IRequest<List<DepartmentDto>>;
+        public record Query : IRequest<List<DepartmentDto>>;
 
         public sealed class Validator : AbstractValidator<Query>
         {
             public Validator()
             {
-                RuleFor(x => x.CompanyId)
-                    .GreaterThan(0).WithMessage("Valid company ID is required");
+                // لا توجد قواعد
             }
         }
 
@@ -23,20 +24,34 @@ namespace Application.System.MasterData.Department.Queries
         {
             private readonly IDepartmentRepository _repo;
             private readonly ICompanyRepository _companyRepo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IDepartmentRepository repo, ICompanyRepository companyRepo)
+            public Handler(
+                IDepartmentRepository repo,
+                ICompanyRepository companyRepo,
+                IContextService contextService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<List<DepartmentDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-                if (company == null)
-                    throw new Exception($"Company with ID {request.CompanyId} not found");
+                var companyId = _contextService.GetCurrentCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
 
-                var departments = await _repo.GetByCompanyIdAsync(request.CompanyId);
+                var company = await _companyRepo.GetByIdAsync(companyId);
+                if (company == null)
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Company", lang),
+                        companyId,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Company", lang), companyId));
+
+                var departments = await _repo.GetByCompanyIdAsync(companyId);
 
                 return departments.Select(d => new DepartmentDto(
                     Id: d.Id,

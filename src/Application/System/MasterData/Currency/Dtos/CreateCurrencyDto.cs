@@ -12,7 +12,6 @@
         string? DecimalArbName,
         decimal? Amount,
         int? NoDecimalPlaces,
-        int? CompanyId,
         string? Remarks,
         int? RegUserId,
         int? regComputerId

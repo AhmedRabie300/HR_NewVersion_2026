@@ -55,7 +55,7 @@ public static class UserEndpoints
                     );
                 }
             })
-           // .RequirePermission("Users", "View")
+            //.RequirePermission("Users", "View")
             .WithName("GetUserById");
 
         // POST - إنشاء مستخدم جديد

@@ -2,6 +2,7 @@
 using Application.UARbac.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.UARbac.ModulePermissions.Commands
 {
@@ -33,7 +34,7 @@ namespace Application.UARbac.ModulePermissions.Commands
             {
                 var permission = await _repo.GetByIdAsync(request.Data.Id);
                 if (permission == null)
-                    throw new Exception($"Permission with ID {request.Data.Id} not found");
+                    throw new NotFoundException("NotFound", $"Permission with ID {request.Data.Id} not found");
 
                 permission.UpdatePermission(request.Data.CanView);
 

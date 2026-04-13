@@ -41,7 +41,6 @@ namespace Application.System.MasterData.ContractType.Queries
                 var items = pagedResult.Items.Select(x => new ContractTypeDto(
                     Id: x.Id,
                     Code: x.Code,
-                    CompanyId: x.CompanyId,
                     CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
                     EngName: x.EngName,
                     ArbName: x.ArbName,

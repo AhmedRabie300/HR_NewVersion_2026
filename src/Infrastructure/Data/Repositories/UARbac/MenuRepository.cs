@@ -48,15 +48,9 @@ namespace Infrastructure.Data.Repositories.UARbac
         public async Task DeleteAsync(int id)
         {
             var menu = await _db.Menus.FindAsync(id);
-            if (menu != null)
-            {
-                // Check if has children
-                var hasChildren = await _db.Menus.AnyAsync(x => x.ParentId == id);
-                if (hasChildren)
-                    throw new Exception("Cannot delete menu that has children");
-
+         
                 _db.Menus.Remove(menu);
-            }
+            
         }
 
         public async Task<bool> ExistsAsync(int id)

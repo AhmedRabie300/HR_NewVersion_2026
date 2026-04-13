@@ -1,10 +1,12 @@
-﻿// Application/UARbac/Users/Commands/Update.cs
-using Application.UARbac.Users.Dtos;
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
+using Application.UARbac.Modules.Validators;
+using Application.UARbac.Users.Dtos;
+using Application.UARbac.Users.Validators;
 using Domain.UARbac;
 using FluentValidation;
 using MediatR;
-using Mapster;
 
 namespace Application.UARbac.Users.Commands
 {
@@ -14,47 +16,45 @@ namespace Application.UARbac.Users.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
-                RuleFor(x => x.Data.Id)
-                    .GreaterThan(0)
-                    .WithMessage("User Id is required.");
+                _contextService = contextService;
+                _localizer = localizer;
 
-                RuleFor(x => x.Data.EngName)
-                    .MaximumLength(100)
-                    .WithMessage("English name max length is 100.");
+                var lang = _contextService.GetCurrentLanguage();
 
-                RuleFor(x => x.Data.ArbName)
-                    .MaximumLength(100)
-                    .WithMessage("Arabic name max length is 100.");
-
-                // At least one field must be provided
                 RuleFor(x => x.Data)
-                    .Must(x => x.EngName != null ||
-                               x.ArbName != null ||
-                               x.IsAdmin != null ||
-                               x.DeviceToken != null)
-                    .WithMessage("At least one field must be provided to update.");
+                    .SetValidator(new UpdateUserValidator(_contextService, _localizer));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IUserRepository _repo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IUserRepository repo)
+            public Handler(IUserRepository repo, IContextService contextService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                // Get user by id
+                var lang = _contextService.GetCurrentLanguage();
+
                 var user = await _repo.GetByIdAsync(request.Data.Id);
                 if (user == null)
-                    throw new Exception($"User with ID {request.Data.Id} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("User", lang),
+                        request.Data.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("User", lang), request.Data.Id));
 
-                // Update user properties
                 if (request.Data.EngName != null)
                     user.UpdatePersonalInfo(request.Data.EngName, null, null, null);
 
@@ -67,7 +67,6 @@ namespace Application.UARbac.Users.Commands
                 if (request.Data.DeviceToken != null)
                     user.UpdateDeviceToken(request.Data.DeviceToken);
 
-                // Save changes
                 await _repo.UpdateAsync(user);
                 await _repo.SaveChangesAsync(cancellationToken);
 

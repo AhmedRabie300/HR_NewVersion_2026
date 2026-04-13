@@ -2,6 +2,7 @@
 using Application.UARbac.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.UARbac.Modules.Queries
 {
@@ -33,7 +34,7 @@ namespace Application.UARbac.Modules.Queries
                  var module = await _repo.GetByIdAsync(request.Id);
 
                  if (module == null)
-                    throw new Exception($"Module with ID {request.Id} not found");
+                    throw new NotFoundException("NotFound", $"Module with ID {request.Id} not found");
 
                  return new GetModuleDto(
                     Id: module.Id,

@@ -19,10 +19,12 @@ namespace Application.System.MasterData.BloodGroup.Validators
             //    .MaximumLength(50).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 50));
 
             RuleFor(x => x.EngName)
+                .NotEmpty().WithMessage(x => _localizer.GetMessage("EngNameRequired", _ContextService.GetCurrentLanguage()))
                 .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
+           .NotEmpty().WithMessage(x => _localizer.GetMessage("ArbNameRequired", _ContextService.GetCurrentLanguage()))
+           .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));

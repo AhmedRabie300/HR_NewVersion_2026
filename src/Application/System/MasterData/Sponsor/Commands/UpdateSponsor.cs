@@ -59,7 +59,7 @@ namespace Application.System.MasterData.Sponsor.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Sponsor", lang),
                         request.Data.Id));

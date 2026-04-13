@@ -42,7 +42,7 @@ namespace Application.System.MasterData.Position.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Position", lang),
                         request.Data.Id));
@@ -62,7 +62,7 @@ namespace Application.System.MasterData.Position.Commands
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new Exception(string.Format(
+                        throw new NotFoundException("NotFound", string.Format(
                             _localizer.GetMessage("NotFound", lang),
                             _localizer.GetMessage("ParentPosition", lang),
                             request.Data.ParentId));

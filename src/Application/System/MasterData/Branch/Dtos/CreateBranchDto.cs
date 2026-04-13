@@ -1,7 +1,7 @@
 ﻿namespace Application.System.MasterData.Branch.Dtos
 {
     public sealed record CreateBranchDto(
-        string Code,
+        string? Code,
         int CompanyId,
         string? EngName,
         string? ArbName,

@@ -2,7 +2,6 @@
 {
     public sealed record CreateProfessionDto(
         string Code,
-        int CompanyId,
         string? EngName,
         string? ArbName,
         string? ArbName4S,

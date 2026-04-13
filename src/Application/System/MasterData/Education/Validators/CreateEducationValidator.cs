@@ -19,8 +19,8 @@ namespace Application.System.MasterData.Education.Validators
             //    .NotEmpty().WithMessage(x => _localizer.GetMessage("CodeRequired", _ContextService.GetCurrentLanguage()))
             //    .MaximumLength(50).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 50));
 
-            RuleFor(x => x.CompanyId)
-                .GreaterThan(0).WithMessage(x => _localizer.GetMessage("CompanyRequired", _ContextService.GetCurrentLanguage()));
+            //RuleFor(x => x.CompanyId)
+            //    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("CompanyRequired", _ContextService.GetCurrentLanguage()));
 
             RuleFor(x => x.EngName)
                 .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));

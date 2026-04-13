@@ -51,12 +51,11 @@ namespace Application.System.MasterData.Education.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Education", lang),
                         request.Data.Id));
 
-                // التأكد أن المؤهل العلمي يتبع الشركة الحالية
                 if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Education does not belong to your company");
 

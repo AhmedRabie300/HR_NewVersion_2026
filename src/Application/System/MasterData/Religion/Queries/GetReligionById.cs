@@ -1,4 +1,6 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Religion.Dtos;
 using FluentValidation;
 using MediatR;
@@ -11,26 +13,42 @@ namespace Application.System.MasterData.Religion.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            public Validator()
+            private readonly ILocalizationService _localizer;
+            private readonly IContextService _contextService;
+
+            public Validator(ILocalizationService localizer, IContextService contextService)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage("Religion ID must be greater than 0");
+                _localizer = localizer;
+                _contextService = contextService;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
             }
         }
 
         public class Handler : IRequestHandler<Query, ReligionDto>
         {
             private readonly IReligionRepository _repo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IReligionRepository repo)
+            public Handler(IReligionRepository repo, IContextService contextService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<ReligionDto> Handle(Query request, CancellationToken cancellationToken)
             {
+                var lang = _contextService.GetCurrentLanguage();
+
                 var religion = await _repo.GetByIdAsync(request.Id);
                 if (religion == null)
-                    throw new Exception($"Religion with ID {request.Id} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Religion", lang),
+                        request.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Religion", lang), request.Id));
 
                 return new ReligionDto(
                     Id: religion.Id,

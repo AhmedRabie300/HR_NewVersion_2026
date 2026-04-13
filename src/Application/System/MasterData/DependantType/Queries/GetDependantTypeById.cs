@@ -1,4 +1,5 @@
 ﻿// Application/System/MasterData/DependantType/Queries/GetDependantTypeById.cs
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.DependantType.Dtos;
@@ -49,7 +50,7 @@ namespace Application.System.MasterData.DependantType.Queries
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("DependantType", lang),
                         request.Id));

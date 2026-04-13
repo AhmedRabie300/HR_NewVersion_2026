@@ -42,10 +42,9 @@ namespace Application.System.MasterData.Location.Validators
             RuleFor(x => x.CostCenterCode4)
                 .MaximumLength(50).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 50));
 
-            // At least one identifier should be provided
-            RuleFor(x => x)
-                .Must(x => x.CompanyId.HasValue || x.BranchId.HasValue)
-                .WithMessage(x => _localizer.GetMessage("AtLeastOneIdentifier", _ContextService.GetCurrentLanguage()));
+        //    RuleFor(x => x)
+        //        .Must(x => x.CompanyId.HasValue || x.BranchId.HasValue)
+        //        .WithMessage(x => _localizer.GetMessage("AtLeastOneIdentifier", _ContextService.GetCurrentLanguage()));
         }
     }
 }

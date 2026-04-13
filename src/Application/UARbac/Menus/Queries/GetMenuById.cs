@@ -1,4 +1,5 @@
-﻿// Application/UARbac/Menus/Queries/GetMenuById.cs
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
 using Application.UARbac.Menus.Dtos;
 using FluentValidation;
@@ -12,48 +13,65 @@ namespace Application.UARbac.Menus.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            public Validator()
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
-                RuleFor(x => x.Id).GreaterThan(0);
+                _contextService = contextService;
+                _localizer = localizer;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0)
+                    .WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
             }
         }
 
         public class Handler : IRequestHandler<Query, MenuDetailsDto>
         {
             private readonly IMenuRepository _repo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IMenuRepository repo)
+            public Handler(IMenuRepository repo, IContextService contextService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<MenuDetailsDto> Handle(Query request, CancellationToken cancellationToken)
             {
+                var lang = _contextService.GetCurrentLanguage();
+
                 var menu = await _repo.GetByIdAsync(request.Id);
                 if (menu == null)
-                    throw new Exception($"Menu with ID {request.Id} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Menu", lang),
+                        request.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Menu", lang), request.Id));
 
                 return new MenuDetailsDto(
-                    menu.Id,
-                    menu.Code,
-                    menu.EngName,
-                    menu.ArbName,
-                    menu.ArbName4S,
-                    menu.ParentId,
-                    menu.Parent?.EngName ?? menu.Parent?.ArbName,  
-                    menu.Shortcut,
-                    menu.Rank,
-                    menu.FormId,
-                    menu.ObjectId,
-                    menu.ViewFormId,
-                    menu.IsHide,
-                    menu.Image,
-                    menu.ViewType,
-                    menu.RegUserId,
-                    menu.regComputerId,
-                    menu.RegDate,
-                    menu.CancelDate,
-                    menu.Children?.Count ?? 0
+                    Id: menu.Id,
+                    Code: menu.Code,
+                    EngName: menu.EngName,
+                    ArbName: menu.ArbName,
+                    ArbName4S: menu.ArbName4S,
+                    ParentId: menu.ParentId,
+                    ParentName: menu.Parent != null ? (lang == 2 ? menu.Parent.ArbName : menu.Parent.EngName) : null,
+                    Shortcut: menu.Shortcut,
+                    Rank: menu.Rank,
+                    FormId: menu.FormId,
+                    ObjectId: menu.ObjectId,
+                    ViewFormId: menu.ViewFormId,
+                    IsHide: menu.IsHide,
+                    Image: menu.Image,
+                    ViewType: menu.ViewType,
+                    RegUserId: menu.RegUserId,
+                    regComputerId: menu.regComputerId,
+                    RegDate: menu.RegDate,
+                    CancelDate: menu.CancelDate,
+                    ChildrenCount: menu.Children?.Count ?? 0
                 );
             }
         }

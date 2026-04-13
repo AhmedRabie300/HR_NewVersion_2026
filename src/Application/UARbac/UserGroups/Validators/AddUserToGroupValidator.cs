@@ -1,5 +1,4 @@
-﻿// Application/UARbac/UserGroups/Validators/AddUserToGroupValidator.cs
-using Application.UARbac.UserGroups.Dtos;
+﻿using Application.UARbac.UserGroups.Dtos;
 using FluentValidation;
 
 namespace Application.UARbac.UserGroups.Validators

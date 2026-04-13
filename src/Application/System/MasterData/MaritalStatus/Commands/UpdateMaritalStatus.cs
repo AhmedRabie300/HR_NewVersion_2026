@@ -1,4 +1,5 @@
-﻿using Application.Common.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.MaritalStatus.Dtos;
 using Application.System.MasterData.MaritalStatus.Validators;
@@ -39,7 +40,7 @@ namespace Application.System.MasterData.MaritalStatus.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("MaritalStatus", lang),
                         request.Data.Id));

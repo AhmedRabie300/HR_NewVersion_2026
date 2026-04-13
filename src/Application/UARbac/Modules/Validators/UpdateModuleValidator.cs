@@ -1,49 +1,58 @@
-﻿using Application.UARbac.Modules.Dtos;
+﻿using Application.Common.Abstractions;
+using Application.UARbac.Modules.Dtos;
 using FluentValidation;
 
 namespace Application.UARbac.Modules.Validators
 {
     public class UpdateModuleValidator : AbstractValidator<UpdateModuleDto>
     {
-        public UpdateModuleValidator()
-        {
-             RuleFor(x => x.Id)
-                .GreaterThan(0)
-                    .WithMessage("Valid module ID is required");
+        private readonly IContextService _contextService;
+        private readonly ILocalizationService _localizer;
 
-             RuleFor(x => x.EngName)
+        public UpdateModuleValidator(IContextService contextService, ILocalizationService localizer)
+        {
+            _contextService = contextService;
+            _localizer = localizer;
+
+            var lang = _contextService.GetCurrentLanguage();
+
+            RuleFor(x => x.Id)
+                .GreaterThan(0)
+                .WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
+
+            RuleFor(x => x.EngName)
                 .MaximumLength(100)
                     .When(x => x.EngName != null)
-                    .WithMessage("English name must not exceed 100 characters");
+                    .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 100));
 
-             RuleFor(x => x.ArbName)
+            RuleFor(x => x.ArbName)
                 .MaximumLength(100)
                     .When(x => x.ArbName != null)
-                    .WithMessage("Arabic name must not exceed 100 characters");
+                    .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 100));
 
-             RuleFor(x => x.ArbName4S)
+            RuleFor(x => x.ArbName4S)
                 .MaximumLength(100)
                     .When(x => x.ArbName4S != null)
-                    .WithMessage("Arabic name (4S) must not exceed 100 characters");
+                    .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 100));
 
-             RuleFor(x => x.Rank)
+            RuleFor(x => x.Rank)
                 .GreaterThanOrEqualTo(0)
                     .When(x => x.Rank.HasValue)
-                    .WithMessage("Rank must be zero or positive number");
+                    .WithMessage(_localizer.GetMessage("RankMustBePositive", lang));
 
-             RuleFor(x => x.Remarks)
+            RuleFor(x => x.Remarks)
                 .MaximumLength(2048)
                     .When(x => x.Remarks != null)
-                    .WithMessage("Remarks must not exceed 2048 characters");
+                    .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 2048));
 
-             RuleFor(x => x.FormId)
+            RuleFor(x => x.FormId)
                 .GreaterThan(0)
                     .When(x => x.FormId.HasValue)
-                    .WithMessage("Form ID must be greater than 0");
+                    .WithMessage(_localizer.GetMessage("FormIdGreaterThanZero", lang));
 
-             RuleFor(x => x)
+            RuleFor(x => x)
                 .Must(HaveAtLeastOneField)
-                .WithMessage("At least one field must be provided for update");
+                .WithMessage(_localizer.GetMessage("AtLeastOneField", lang));
         }
 
         private bool HaveAtLeastOneField(UpdateModuleDto dto)

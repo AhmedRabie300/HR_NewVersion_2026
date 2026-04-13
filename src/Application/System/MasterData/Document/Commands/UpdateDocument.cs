@@ -4,6 +4,7 @@ using Application.System.MasterData.Document.Validators;
 using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Common;
 
 namespace Application.System.MasterData.Document.Commands
 {
@@ -36,7 +37,7 @@ namespace Application.System.MasterData.Document.Commands
             {
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound",string.Format(
                         _localizer.GetMessage("NotFound", request.Lang),
                         _localizer.GetMessage("Document", request.Lang),
                         request.Data.Id));
@@ -45,9 +46,8 @@ namespace Application.System.MasterData.Document.Commands
                 {
                     var docTypeGroup = await _docTypeGroupRepo.GetByIdAsync(request.Data.DocumentTypesGroupId.Value);
                     if (docTypeGroup == null)
-                        throw new Exception(string.Format(
-                            _localizer.GetMessage("NotFound", request.Lang),
-                            _localizer.GetMessage("DocumentTypesGroup", request.Lang),
+                        throw new NotFoundException("NotFound", string.Format(
+         _localizer.GetMessage("DocumentTypesGroup", request.Lang),
                             request.Data.DocumentTypesGroupId));
                 }
 

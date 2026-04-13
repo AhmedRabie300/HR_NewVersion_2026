@@ -1,7 +1,8 @@
 ﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
 using Application.UARbac.FormPermission.Dtos;
-using Domain.UARbac;   
+using Domain.UARbac;
 using FluentValidation;
 using MediatR;
 
@@ -13,22 +14,30 @@ namespace Application.UARbac.FormPermissions.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
+                var lang = _contextService.GetCurrentLanguage();
+
                 RuleFor(x => x.Data.FormId)
                     .GreaterThan(0)
-                    .WithMessage("Form ID is required");
+                    .WithMessage(_localizer.GetMessage("FormIdRequired", lang));
 
                 RuleFor(x => x.Data)
                     .Must(x => (x.GroupId.HasValue && !x.UserId.HasValue) ||
                               (!x.GroupId.HasValue && x.UserId.HasValue))
-                    .WithMessage("Either GroupId or UserId must be provided, but not both");
+                    .WithMessage(_localizer.GetMessage("EitherGroupOrUser", lang));
 
                 RuleFor(x => x.Data)
                     .Must(x => x.AllowView == true || x.AllowAdd == true ||
                               x.AllowEdit == true || x.AllowDelete == true ||
                               x.AllowPrint == true)
-                    .WithMessage("At least one permission must be granted");
+                    .WithMessage(_localizer.GetMessage("AtLeastOnePermission", lang));
             }
         }
 
@@ -38,59 +47,79 @@ namespace Application.UARbac.FormPermissions.Commands
             private readonly IFormRepository _formRepo;
             private readonly IGroupRepository _groupRepo;
             private readonly IUserRepository _userRepo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
             public Handler(
                 IFormPermissionRepository repo,
                 IFormRepository formRepo,
                 IGroupRepository groupRepo,
-                IUserRepository userRepo)
+                IUserRepository userRepo,
+                IContextService contextService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
                 _formRepo = formRepo;
                 _groupRepo = groupRepo;
                 _userRepo = userRepo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                // Check if form exists
+                var lang = _contextService.GetCurrentLanguage();
+
                 var form = await _formRepo.GetByIdAsync(request.Data.FormId);
                 if (form == null)
-                    throw new Exception($"Form with ID {request.Data.FormId} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Form", lang),
+                        request.Data.FormId,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Form", lang), request.Data.FormId));
 
-                // Check if group exists (if provided)
                 if (request.Data.GroupId.HasValue)
                 {
                     var group = await _groupRepo.GetByIdAsync(request.Data.GroupId.Value);
                     if (group == null)
-                        throw new Exception($"Group with ID {request.Data.GroupId} not found");
+                        throw new NotFoundException(
+                            _localizer.GetMessage("Group", lang),
+                            request.Data.GroupId.Value,
+                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Group", lang), request.Data.GroupId.Value));
 
-                    // Check if permission already exists for this form and group
                     var existing = await _repo.GetByFormAndGroupAsync(
                         request.Data.FormId,
                         request.Data.GroupId.Value);
 
                     if (existing != null)
-                        throw new Exception($"Permission already exists for this form and group");
+                        throw new ConflictException(
+                            _localizer.GetMessage("FormPermission", lang),
+                            "FormId/GroupId",
+                            $"{request.Data.FormId}/{request.Data.GroupId.Value}",
+                            string.Format(_localizer.GetMessage("PermissionAlreadyExists", lang), _localizer.GetMessage("Form", lang), _localizer.GetMessage("Group", lang)));
                 }
 
-                // Check if user exists (if provided)
                 if (request.Data.UserId.HasValue)
                 {
                     var user = await _userRepo.GetByIdAsync(request.Data.UserId.Value);
                     if (user == null)
-                        throw new Exception($"User with ID {request.Data.UserId} not found");
+                        throw new NotFoundException(
+                            _localizer.GetMessage("User", lang),
+                            request.Data.UserId.Value,
+                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("User", lang), request.Data.UserId.Value));
 
-                    // Check if permission already exists for this form and user
                     var existing = await _repo.GetByFormAndUserAsync(
                         request.Data.FormId,
                         request.Data.UserId.Value);
 
                     if (existing != null)
-                        throw new NotFoundException("Create Form Permission",$"Permission already exists for this form and user");
+                        throw new ConflictException(
+                            _localizer.GetMessage("FormPermission", lang),
+                            "FormId/UserId",
+                            $"{request.Data.FormId}/{request.Data.UserId.Value}",
+                            string.Format(_localizer.GetMessage("PermissionAlreadyExists", lang), _localizer.GetMessage("Form", lang), _localizer.GetMessage("User", lang)));
                 }
 
-                 var permission = new Domain.UARbac.FormPermission(  
+                var permission = new Domain.UARbac.FormPermission(
                     request.Data.FormId,
                     request.Data.GroupId,
                     request.Data.UserId,

@@ -1,6 +1,5 @@
 ﻿using Application.Common;
 using Application.Common.Abstractions;
-using Application.Common.BaseHandlers;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Location.Dtos;
 using FluentValidation;
@@ -10,57 +9,66 @@ namespace Application.System.MasterData.Location.Queries
 {
     public static class GetLocationsByCompany
     {
-        public record Query(int CompanyId, int Lang = 1) : IRequest<List<LocationDto>>;
+        public record Query : IRequest<List<LocationDto>>;
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            public Validator(ILocalizationService localization, int lang = 1)
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
-                RuleFor(x => x.CompanyId)
-                    .GreaterThan(0).WithMessage(localization.GetMessage("IdGreaterThanZero", lang));
+                _contextService = contextService;
+                _localizer = localizer;
+                // لا توجد قواعد إضافية
             }
         }
 
-        public class Handler : BaseCommandHandler, IRequestHandler<Query, List<LocationDto>>
+        public class Handler : IRequestHandler<Query, List<LocationDto>>
         {
             private readonly ILocationRepository _repo;
             private readonly ICompanyRepository _companyRepo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
             public Handler(
                 ILocationRepository repo,
                 ICompanyRepository companyRepo,
-                ILocalizationService localization) : base(localization)
+                IContextService contextService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<List<LocationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-                if (company == null)
-                {
-                    throw new NotFoundException(
-                        GetMessage("Company", request.Lang),
-                        request.CompanyId,
-                        GetFormattedMessage("NotFound", request.Lang, GetMessage("Company", request.Lang), request.CompanyId)
-                    );
-                }
+                var companyId = _contextService.GetCurrentCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
 
-                var locations = await _repo.GetByCompanyIdAsync(request.CompanyId);
+                var company = await _companyRepo.GetByIdAsync(companyId);
+                if (company == null)
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Company", lang),
+                        companyId,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Company", lang), companyId));
+
+                var locations = await _repo.GetByCompanyIdAsync(companyId);
 
                 return locations.Select(l => new LocationDto(
                     Id: l.Id,
                     Code: l.Code,
                     CompanyId: l.CompanyId,
-                    CompanyName: request.Lang == 2 ? company.ArbName : company.EngName,
+                    CompanyName: lang == 2 ? company.ArbName : company.EngName,
                     EngName: l.EngName,
                     ArbName: l.ArbName,
                     ArbName4S: l.ArbName4S,
                     CityId: l.CityId,
                     CityName: null,
                     BranchId: l.BranchId,
-                    BranchName: request.Lang == 2 ? l.Branch?.ArbName : l.Branch?.EngName,
+                    BranchName: lang == 2 ? l.Branch?.ArbName : l.Branch?.EngName,
                     StoreId: l.StoreId,
                     StoreName: null,
                     InventoryCostLedgerId: l.InventoryCostLedgerId,
@@ -68,7 +76,7 @@ namespace Application.System.MasterData.Location.Queries
                     InventoryAdjustmentLedgerId: l.InventoryAdjustmentLedgerId,
                     InventoryAdjustmentLedgerName: null,
                     DepartmentId: l.DepartmentId,
-                    DepartmentName: request.Lang == 2 ? l.Department?.ArbName : l.Department?.EngName,
+                    DepartmentName: lang == 2 ? l.Department?.ArbName : l.Department?.EngName,
                     Remarks: l.Remarks,
                     CostCenterCode1: l.CostCenterCode1,
                     CostCenterCode2: l.CostCenterCode2,

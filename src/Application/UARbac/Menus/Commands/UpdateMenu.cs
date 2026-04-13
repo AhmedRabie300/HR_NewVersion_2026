@@ -1,6 +1,8 @@
-﻿// Application/UARbac/Menus/Commands/UpdateMenu.cs
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
 using Application.UARbac.Menus.Dtos;
+using Application.UARbac.Menus.Validators;
 using FluentValidation;
 using MediatR;
 
@@ -12,68 +14,60 @@ namespace Application.UARbac.Menus.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
-                RuleFor(x => x.Data.Id)
-                    .GreaterThan(0)
-                    .WithMessage("Menu ID is required");
-
-                RuleFor(x => x.Data.EngName)
-                    .MaximumLength(200);
-
-                RuleFor(x => x.Data.ArbName)
-                    .MaximumLength(200);
-
-                RuleFor(x => x.Data.Shortcut)
-                    .MaximumLength(50);
-
-                RuleFor(x => x.Data.Image)
-                    .MaximumLength(500);
+                _contextService = contextService;
+                _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .Must(x => x.EngName != null ||
-                               x.ArbName != null ||
-                               x.ArbName4S != null ||
-                               x.Shortcut != null ||
-                               x.Rank != null ||
-                               x.ParentId != null ||
-                               x.FormId != null ||
-                               x.ObjectId != null ||
-                               x.ViewFormId != null ||
-                               x.IsHide != null ||
-                               x.Image != null ||
-                               x.ViewType != null)
-                    .WithMessage("At least one field must be provided to update");
+                    .SetValidator(new UpdateMenuValidator(_contextService, _localizer));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IMenuRepository _repo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IMenuRepository repo)
+            public Handler(IMenuRepository repo, IContextService contextService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _contextService.GetCurrentLanguage();
+
                 var menu = await _repo.GetByIdAsync(request.Data.Id);
                 if (menu == null)
-                    throw new Exception($"Menu with ID {request.Data.Id} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Menu", lang),
+                        request.Data.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Menu", lang), request.Data.Id));
 
-                // Check if parent exists and not self
                 if (request.Data.ParentId.HasValue)
                 {
                     if (request.Data.ParentId == menu.Id)
-                        throw new Exception("Menu cannot be parent of itself");
+                        throw new ConflictException(
+                            _localizer.GetMessage("Menu", lang),
+                            "ParentId",
+                            request.Data.ParentId.Value.ToString(),
+                            _localizer.GetMessage("MenuCannotBeParentOfItself", lang));
 
                     var parentExists = await _repo.ExistsAsync(request.Data.ParentId.Value);
                     if (!parentExists)
-                        throw new Exception($"Parent menu with ID {request.Data.ParentId} not found");
+                        throw new NotFoundException(
+                            _localizer.GetMessage("ParentMenu", lang),
+                            request.Data.ParentId.Value,
+                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("ParentMenu", lang), request.Data.ParentId.Value));
                 }
 
-                // Update basic info
                 menu.UpdateBasicInfo(
                     request.Data.EngName,
                     request.Data.ArbName,
@@ -84,7 +78,6 @@ namespace Application.UARbac.Menus.Commands
                     request.Data.ViewType
                 );
 
-                // Update relations
                 menu.UpdateRelations(
                     request.Data.ParentId,
                     request.Data.FormId,
@@ -92,7 +85,6 @@ namespace Application.UARbac.Menus.Commands
                     request.Data.ViewFormId
                 );
 
-                // Update visibility
                 menu.UpdateVisibility(request.Data.IsHide);
 
                 await _repo.UpdateAsync(menu);
@@ -102,4 +94,4 @@ namespace Application.UARbac.Menus.Commands
             }
         }
     }
-}   
+}

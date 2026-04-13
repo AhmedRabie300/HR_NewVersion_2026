@@ -51,7 +51,7 @@ namespace Application.System.MasterData.DependantType.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound",string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("DependantType", lang),
                         request.Data.Id));

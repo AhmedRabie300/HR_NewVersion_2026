@@ -14,8 +14,7 @@ namespace Application.System.MasterData.Branch.Queries
         {
             public Validator()
             {
-                RuleFor(x => x.CompanyId)
-                    .GreaterThan(0).WithMessage("Valid company ID is required");
+        
             }
         }
 

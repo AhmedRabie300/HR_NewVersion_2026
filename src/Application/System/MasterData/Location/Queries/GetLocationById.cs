@@ -1,4 +1,5 @@
 ﻿// Application/System/MasterData/Location/Queries/GetLocationById.cs
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Location.Dtos;
@@ -48,7 +49,7 @@ namespace Application.System.MasterData.Location.Queries
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Location", lang),
                         request.Id));

@@ -3,7 +3,7 @@
     public sealed record ContractTypeDto(
         int Id,
         string Code,
-        int CompanyId,
+       
         string? CompanyName,
         string? EngName,
         string? ArbName,

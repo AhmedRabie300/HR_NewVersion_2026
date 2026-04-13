@@ -1,4 +1,6 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Nationality.Dtos;
 using FluentValidation;
 using MediatR;
@@ -11,27 +13,42 @@ namespace Application.System.MasterData.Nationality.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            public Validator()
+            private readonly ILocalizationService _localizer;
+            private readonly IContextService _contextService;
+
+            public Validator(ILocalizationService localizer, IContextService contextService)
             {
+                _localizer = localizer;
+                _contextService = contextService;
+
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage("Nationality ID must be greater than 0");
+                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
             }
         }
 
         public class Handler : IRequestHandler<Query, NationalityDto>
         {
             private readonly INationalityRepository _repo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(INationalityRepository repo)
+            public Handler(INationalityRepository repo, IContextService contextService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<NationalityDto> Handle(Query request, CancellationToken cancellationToken)
             {
+                var lang = _contextService.GetCurrentLanguage();
+
                 var nationality = await _repo.GetByIdAsync(request.Id);
                 if (nationality == null)
-                    throw new Exception($"Nationality with ID {request.Id} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Nationality", lang),
+                        request.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Nationality", lang), request.Id));
 
                 return new NationalityDto(
                     Id: nationality.Id,

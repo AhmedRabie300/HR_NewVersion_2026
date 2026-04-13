@@ -63,7 +63,7 @@ namespace Application.System.MasterData.DependantType.Commands
 
                 if (company.HasSequence == true)
                 {
-                    var prefix = "DT";
+                    var prefix = company.Prefix;
                     var separator = company.Separator ?? "-";
                     var sequenceLength = company.SequenceLength ?? 5;
 
@@ -92,7 +92,7 @@ namespace Application.System.MasterData.DependantType.Commands
                     code = request.Data.Code;
 
                     if (string.IsNullOrWhiteSpace(code))
-                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+                        throw new RequiredFieldException("CodeRequired",_localizer.GetMessage("CodeRequired", lang), "DependantCode");
 
                     if (await _repo.CodeExistsAsync(code, companyId))
                         throw new ConflictException(string.Format(

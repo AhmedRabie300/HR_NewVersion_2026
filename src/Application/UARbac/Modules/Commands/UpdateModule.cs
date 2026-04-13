@@ -1,4 +1,6 @@
-﻿using Application.UARbac.Modules.Dtos;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.UARbac.Modules.Dtos;
 using Application.UARbac.Abstractions;
 using FluentValidation;
 using MediatR;
@@ -12,29 +14,49 @@ namespace Application.UARbac.Modules.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateModuleValidator());
+                    .SetValidator(new UpdateModuleValidator(_contextService, _localizer));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IModuleRepository _repo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IModuleRepository repo)
+            public Handler(IModuleRepository repo, IContextService contextService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _contextService.GetCurrentLanguage();
+
                 var module = await _repo.GetByIdAsync(request.Data.Id);
                 if (module == null)
-                    throw new Exception($"Module with ID {request.Data.Id} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Module", lang),
+                        request.Data.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Module", lang), request.Data.Id));
 
-             
+                if (request.Data.EngName != null ||
+                    request.Data.ArbName != null ||
+                    request.Data.ArbName4S != null ||
+                    request.Data.Rank.HasValue ||
+                    request.Data.Remarks != null)
+                {
                     module.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -42,7 +64,7 @@ namespace Application.UARbac.Modules.Commands
                         request.Data.Rank,
                         request.Data.Remarks
                     );
-                
+                }
 
                 if (request.Data.IsAR.HasValue ||
                     request.Data.IsAP.HasValue ||

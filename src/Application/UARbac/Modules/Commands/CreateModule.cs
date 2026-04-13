@@ -1,9 +1,11 @@
-﻿using Application.UARbac.Modules.Dtos;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.UARbac.Modules.Dtos;
 using Application.UARbac.Abstractions;
 using Domain.UARbac;
 using FluentValidation;
 using MediatR;
-using Application.UARbac.Modules.Validators;  
+using Application.UARbac.Modules.Validators;
 
 namespace Application.UARbac.Modules.Commands
 {
@@ -13,27 +15,43 @@ namespace Application.UARbac.Modules.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
                 RuleFor(x => x.Data)
-                  .SetValidator(new CreateModuleValidator());
+                    .SetValidator(new CreateModuleValidator(_contextService, _localizer));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IModuleRepository _repo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
-            public Handler(IModuleRepository repo)
+            public Handler(IModuleRepository repo, IContextService contextService, ILocalizationService localizer)
             {
                 _repo = repo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
+                var lang = _contextService.GetCurrentLanguage();
+
                 var exists = await _repo.CodeExistsAsync(request.Data.Code);
                 if (exists)
-                    throw new Exception($"Module with code '{request.Data.Code}' already exists");
+                    throw new ConflictException(
+                        _localizer.GetMessage("Module", lang),
+                        "Code",
+                        request.Data.Code,
+                        string.Format(_localizer.GetMessage("CodeExists", lang), _localizer.GetMessage("Module", lang), request.Data.Code));
 
                 var module = new Module(
                     code: request.Data.Code,

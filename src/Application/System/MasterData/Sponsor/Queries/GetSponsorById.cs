@@ -1,6 +1,7 @@
-﻿using Application.System.MasterData.Abstractions;
-using Application.System.MasterData.Sponsor.Dtos;
+﻿using Application.Common;
 using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.Sponsor.Dtos;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -50,7 +51,7 @@ namespace Application.System.MasterData.Sponsor.Queries
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new Exception(string.Format(
+                    throw new NotFoundException("NotFound", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Sponsor", lang),
                         request.Id));

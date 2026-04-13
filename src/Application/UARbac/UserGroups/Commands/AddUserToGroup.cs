@@ -1,4 +1,5 @@
-﻿// Application/UARbac/UserGroups/Commands/AddUserToGroup.cs
+﻿using Application.Common;
+using Application.Common.Abstractions;
 using Application.UARbac.UserGroups.Dtos;
 using Application.UARbac.Abstractions;
 using Domain.UARbac;
@@ -13,15 +14,23 @@ namespace Application.UARbac.UserGroups.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
+                var lang = _contextService.GetCurrentLanguage();
+
                 RuleFor(x => x.Data.UserId)
                     .GreaterThan(0)
-                    .WithMessage("User ID is required");
+                    .WithMessage(_localizer.GetMessage("UserIdRequired", lang));
 
                 RuleFor(x => x.Data.GroupId)
                     .GreaterThan(0)
-                    .WithMessage("Group ID is required");
+                    .WithMessage(_localizer.GetMessage("GroupIdRequired", lang));
             }
         }
 
@@ -30,39 +39,62 @@ namespace Application.UARbac.UserGroups.Commands
             private readonly IUserGroupRepository _userGroupRepo;
             private readonly IUserRepository _userRepo;
             private readonly IGroupRepository _groupRepo;
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
 
             public Handler(
                 IUserGroupRepository userGroupRepo,
                 IUserRepository userRepo,
-                IGroupRepository groupRepo)
+                IGroupRepository groupRepo,
+                IContextService contextService,
+                ILocalizationService localizer)
             {
                 _userGroupRepo = userGroupRepo;
                 _userRepo = userRepo;
                 _groupRepo = groupRepo;
+                _contextService = contextService;
+                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                // Check if user exists
+                var lang = _contextService.GetCurrentLanguage();
+
                 var user = await _userRepo.GetByIdAsync(request.Data.UserId);
                 if (user == null)
-                    throw new Exception($"User with ID {request.Data.UserId} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("User", lang),
+                        request.Data.UserId,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("User", lang), request.Data.UserId));
 
-                // Check if group exists
                 var group = await _groupRepo.GetByIdAsync(request.Data.GroupId);
                 if (group == null)
-                    throw new Exception($"Group with ID {request.Data.GroupId} not found");
+                    throw new NotFoundException(
+                        _localizer.GetMessage("Group", lang),
+                        request.Data.GroupId,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Group", lang), request.Data.GroupId));
 
-                // Check if already in group
                 var exists = await _userGroupRepo.IsUserInGroupAsync(
                     request.Data.UserId,
                     request.Data.GroupId);
 
                 if (exists)
-                    throw new Exception($"User already belongs to this group");
- 
+                    throw new ConflictException(
+                        _localizer.GetMessage("UserGroup", lang),
+                        "UserId/GroupId",
+                        $"{request.Data.UserId}/{request.Data.GroupId}",
+                        string.Format(_localizer.GetMessage("UserAlreadyInGroup", lang), _localizer.GetMessage("User", lang), _localizer.GetMessage("Group", lang)));
 
-                // Create new UserGroup
+                if (request.Data.IsPrimary)
+                {
+                    var currentPrimary = await _userGroupRepo.GetUserPrimaryGroupAsync(request.Data.UserId);
+                    if (currentPrimary != null)
+                    {
+                        currentPrimary.SetPrimary(false);
+                        await _userGroupRepo.UpdateAsync(currentPrimary);
+                    }
+                }
+
                 var userGroup = new UserGroup(
                     request.Data.UserId,
                     request.Data.GroupId,
