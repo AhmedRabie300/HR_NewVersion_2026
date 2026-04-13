@@ -6,7 +6,6 @@ using Application.System.MasterData.Sponsor.Validators;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Sponsor.Commands
 {
@@ -16,16 +15,16 @@ namespace Application.System.MasterData.Sponsor.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateSponsorValidator(_localizer, _ContextService));
+                    .SetValidator(new CreateSponsorValidator(_localizer, _contextService));
             }
         }
 
@@ -33,54 +32,84 @@ namespace Application.System.MasterData.Sponsor.Commands
         {
             private readonly ISponsorRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 ISponsorRepository repo,
                 ICompanyRepository companyRepo,
-                IContextService ContextService,
-                ILocalizationService localizer
-                )
+                IContextService contextService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
             }
 
-      
-
-       
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
+                var companyId = _contextService.GetCurrentCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
 
-                 var company = await _companyRepo.GetByIdAsync(companyId);
+                var company = await _companyRepo.GetByIdAsync(companyId);
                 if (company == null)
                     throw new NotFoundException("Create Sponsor", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Company", lang),
                         companyId));
 
-                // التحقق من عدم تكرار الكود داخل نفس الشركة
-                if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
-                    throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", lang),
-                        _localizer.GetMessage("Sponsor", lang),
-                        request.Data.Code));
+                string code;
 
-                
+                if (company.HasSequence == true)
+                {
+                    var prefix = company.Prefix;
+                    var separator = company.Separator ?? "-";
+                    var sequenceLength = company.SequenceLength ?? 5;
+
+                    var maxCode = await _repo.GetMaxCodeAsync(companyId, cancellationToken);
+                    int lastNumber = 0;
+
+                    if (!string.IsNullOrEmpty(maxCode))
+                    {
+                        if (maxCode.Contains(separator))
+                        {
+                            var lastPart = maxCode.Split(separator).Last();
+                            int.TryParse(lastPart, out lastNumber);
+                        }
+                        else
+                        {
+                            int.TryParse(maxCode, out lastNumber);
+                        }
+                    }
+
+                    var newNumber = lastNumber + 1;
+                    var formattedNumber = newNumber.ToString($"D{sequenceLength}");
+                    code = $"{prefix}{separator}{formattedNumber}";
+                }
+                else
+                {
+                    code = request.Data.Code;
+
+                    if (string.IsNullOrWhiteSpace(code))
+                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+
+                    if (await _repo.CodeExistsAsync(code, companyId))
+                        throw new ConflictException(string.Format(
+                            _localizer.GetMessage("CodeExists", lang),
+                            _localizer.GetMessage("Sponsor", lang),
+                            code));
+                }
+
                 var entity = new Domain.System.MasterData.Sponsor(
-                    code: request.Data.Code,
+                    code: code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
                     sponsorNumber: request.Data.SponsorNumber,
                     regUserId: request.Data.RegUserId,
                     regComputerId: request.Data.RegComputerId,
-                    companyId: companyId  
+                    companyId: companyId
                 );
 
                 await _repo.AddAsync(entity);

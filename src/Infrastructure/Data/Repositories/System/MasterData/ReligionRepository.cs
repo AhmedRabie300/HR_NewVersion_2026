@@ -124,5 +124,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         {
             return _db.SaveChangesAsync(ct);
         }
+        public async Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct)
+        {
+            return await _db.Religions
+                .Where(x => x.CancelDate == null)
+                .OrderByDescending(x => x.Code)
+                .Select(x => x.Code)
+                .FirstOrDefaultAsync(ct);
+        }
     }
 }

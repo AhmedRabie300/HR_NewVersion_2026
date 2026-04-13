@@ -18,5 +18,7 @@ namespace Application.System.MasterData.Abstractions
         Task<PagedResult<Domain.System.MasterData.Currency>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId);
         Task SoftDeleteAsync(int id, int? regUserId = null);
         Task SaveChangesAsync(CancellationToken ct);
+        Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
+
     }
 }

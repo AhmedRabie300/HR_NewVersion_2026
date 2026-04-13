@@ -23,5 +23,7 @@ namespace Application.System.MasterData.Abstractions
         Task<PagedResult<Domain.System.MasterData.Nationality>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm);
 
          Task SoftDeleteAsync(int id, int? regUserId = null);
+        Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
+
     }
 }

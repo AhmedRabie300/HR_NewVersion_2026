@@ -24,10 +24,10 @@ namespace Application.System.MasterData.Abstractions
         Task<List<Domain.System.MasterData.Location>> GetActiveLocationsAsync(int companyId);   
         Task<PagedResult<Domain.System.MasterData.Location>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId, int? branchId = null);  // ← companyId إجباري
 
-        // Soft delete
-        Task SoftDeleteAsync(int id, int? regUserId = null);
+         Task SoftDeleteAsync(int id, int? regUserId = null);
 
-        // Save changes
-        Task SaveChangesAsync(CancellationToken ct);
+         Task SaveChangesAsync(CancellationToken ct);
+        Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
+
     }
 }

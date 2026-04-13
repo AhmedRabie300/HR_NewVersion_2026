@@ -1,5 +1,4 @@
-﻿// Application/System/MasterData/Currency/Commands/CreateCurrency.cs
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Currency.Dtos;
@@ -7,7 +6,6 @@ using Application.System.MasterData.Currency.Validators;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Currency.Commands
 {
@@ -17,16 +15,16 @@ namespace Application.System.MasterData.Currency.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateCurrencyValidator(_localizer, _ContextService));
+                    .SetValidator(new CreateCurrencyValidator(_localizer, _contextService));
             }
         }
 
@@ -34,44 +32,77 @@ namespace Application.System.MasterData.Currency.Commands
         {
             private readonly ICurrencyRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 ICurrencyRepository repo,
                 ICompanyRepository companyRepo,
-                IHttpContextAccessor httpContextAccessor,
-                IContextService ContextService,
+                IContextService contextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
             }
 
-            
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
+                var companyId = _contextService.GetCurrentCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
 
-                 var company = await _companyRepo.GetByIdAsync(companyId);
+                var company = await _companyRepo.GetByIdAsync(companyId);
                 if (company == null)
                     throw new NotFoundException("Create Currency", string.Format(
                         _localizer.GetMessage("NotFound", lang),
                         _localizer.GetMessage("Company", lang),
                         companyId));
 
-                // التحقق من عدم تكرار الكود
-                if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
-                    throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", lang),
-                        _localizer.GetMessage("Currency", lang),
-                        request.Data.Code));
+                string code;
+
+                if (company.HasSequence == true)
+                {
+                    var prefix = "CUR";
+                    var separator = company.Separator ?? "-";
+                    var sequenceLength = company.SequenceLength ?? 5;
+
+                    var maxCode = await _repo.GetMaxCodeAsync(companyId, cancellationToken);
+                    int lastNumber = 0;
+
+                    if (!string.IsNullOrEmpty(maxCode))
+                    {
+                        if (maxCode.Contains(separator))
+                        {
+                            var lastPart = maxCode.Split(separator).Last();
+                            int.TryParse(lastPart, out lastNumber);
+                        }
+                        else
+                        {
+                            int.TryParse(maxCode, out lastNumber);
+                        }
+                    }
+
+                    var newNumber = lastNumber + 1;
+                    var formattedNumber = newNumber.ToString($"D{sequenceLength}");
+                    code = $"{prefix}{separator}{formattedNumber}";
+                }
+                else
+                {
+                    code = request.Data.Code;
+
+                    if (string.IsNullOrWhiteSpace(code))
+                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+
+                    if (await _repo.CodeExistsAsync(code, companyId))
+                        throw new ConflictException(string.Format(
+                            _localizer.GetMessage("CodeExists", lang),
+                            _localizer.GetMessage("Currency", lang),
+                            code));
+                }
 
                 var entity = new Domain.System.MasterData.Currency(
-                    code: request.Data.Code,
+                    code: code,
                     companyId: companyId,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,

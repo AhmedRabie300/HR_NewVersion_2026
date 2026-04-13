@@ -108,5 +108,14 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public Task SaveChangesAsync(CancellationToken ct)
             => _db.SaveChangesAsync(ct);
+
+        public async Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct)
+        {
+            return await _db.Educations
+                .Where(x => x.CompanyId == companyId && x.CancelDate == null)
+                .OrderByDescending(x => x.Code)
+                .Select(x => x.Code)
+                .FirstOrDefaultAsync(ct);
+        }
     }
 }

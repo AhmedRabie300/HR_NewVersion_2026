@@ -27,5 +27,7 @@ namespace Application.System.MasterData.Abstractions
 
         // Save changes
         Task SaveChangesAsync(CancellationToken ct);
+        Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
+
     }
 }

@@ -1,8 +1,6 @@
-﻿// Infrastructure/Data/Repositories/System/MasterData/CurrencyRepository.cs
-using Application.Common.Models;
+﻿using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
-using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Repositories.System.MasterData
@@ -81,8 +79,8 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             {
                 searchTerm = searchTerm.Trim();
                 query = query.Where(x =>
-                    (x.EngName != null && x.EngName.Contains(searchTerm)) ||
-                    (x.ArbName != null && x.ArbName.Contains(searchTerm)) ||
+                    x.EngName != null && x.EngName.Contains(searchTerm) ||
+                    x.ArbName != null && x.ArbName.Contains(searchTerm) ||
                     x.Code.Contains(searchTerm));
             }
 
@@ -108,5 +106,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         public Task SaveChangesAsync(CancellationToken ct)
             => _db.SaveChangesAsync(ct);
+        public async Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct)
+        {
+            return await _db.Currencies
+                .Where(x => x.CompanyId == companyId && x.CancelDate == null)
+                .OrderByDescending(x => x.Code)
+                .Select(x => x.Code)
+                .FirstOrDefaultAsync(ct);
+        }
     }
 }

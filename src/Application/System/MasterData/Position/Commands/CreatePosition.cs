@@ -15,10 +15,16 @@ namespace Application.System.MasterData.Position.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreatePositionValidator(localizer, ContextService));
+                    .SetValidator(new CreatePositionValidator(_localizer, _contextService));
             }
         }
 
@@ -26,29 +32,75 @@ namespace Application.System.MasterData.Position.Commands
         {
             private readonly IPositionRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IPositionRepository repo, ICompanyRepository companyRepo, IContextService ContextService, ILocalizationService localizer)
+            public Handler(
+                IPositionRepository repo,
+                ICompanyRepository companyRepo,
+                IContextService contextService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
+                var companyId = _contextService.GetCurrentCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
 
-                // Check if code exists
-                if (await _repo.CodeExistsAsync(request.Data.Code))
-                    throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", lang),
-                        _localizer.GetMessage("Position", lang),
-                        request.Data.Code));
+                var company = await _companyRepo.GetByIdAsync(companyId);
+                if (company == null)
+                    throw new NotFoundException("Create Position", string.Format(
+                        _localizer.GetMessage("NotFound", lang),
+                        _localizer.GetMessage("Company", lang),
+                        companyId));
 
-                // Validate parent if provided
+                string code;
+
+                if (company.HasSequence == true)
+                {
+                    var prefix = company.Prefix;
+                    var separator = company.Separator ?? "-";
+                    var sequenceLength = company.SequenceLength ?? 5;
+
+                    var maxCode = await _repo.GetMaxCodeAsync(companyId, cancellationToken);
+                    int lastNumber = 0;
+
+                    if (!string.IsNullOrEmpty(maxCode))
+                    {
+                        if (maxCode.Contains(separator))
+                        {
+                            var lastPart = maxCode.Split(separator).Last();
+                            int.TryParse(lastPart, out lastNumber);
+                        }
+                        else
+                        {
+                            int.TryParse(maxCode, out lastNumber);
+                        }
+                    }
+
+                    var newNumber = lastNumber + 1;
+                    var formattedNumber = newNumber.ToString($"D{sequenceLength}");
+                    code = $"{prefix}{separator}{formattedNumber}";
+                }
+                else
+                {
+                    code = request.Data.Code;
+
+                    if (string.IsNullOrWhiteSpace(code))
+                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+
+                    if (await _repo.CodeExistsAsync(code))
+                        throw new ConflictException(string.Format(
+                            _localizer.GetMessage("CodeExists", lang),
+                            _localizer.GetMessage("Position", lang),
+                            code));
+                }
+
                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
@@ -60,7 +112,7 @@ namespace Application.System.MasterData.Position.Commands
                 }
 
                 var entity = new Domain.System.MasterData.Position(
-                    code: request.Data.Code,
+                    code: code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,

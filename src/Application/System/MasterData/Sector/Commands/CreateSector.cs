@@ -1,5 +1,4 @@
-﻿// Application/System/MasterData/Sector/Commands/CreateSector.cs
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sector.Dtos;
@@ -7,7 +6,6 @@ using Application.System.MasterData.Sector.Validators;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Sector.Commands
 {
@@ -17,16 +15,16 @@ namespace Application.System.MasterData.Sector.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
 
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateSectorValidator(_localizer, _ContextService));
+                    .SetValidator(new CreateSectorValidator(_localizer, _contextService));
             }
         }
 
@@ -34,28 +32,26 @@ namespace Application.System.MasterData.Sector.Commands
         {
             private readonly ISectorRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 ISectorRepository repo,
                 ICompanyRepository companyRepo,
-                IContextService ContextService,
+                IContextService contextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
             }
 
-  
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
+                var companyId = _contextService.GetCurrentCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
 
-                // التحقق من وجود الشركة
                 var company = await _companyRepo.GetByIdAsync(companyId);
                 if (company == null)
                     throw new NotFoundException("Create Sector", string.Format(
@@ -63,14 +59,48 @@ namespace Application.System.MasterData.Sector.Commands
                         _localizer.GetMessage("Company", lang),
                         companyId));
 
-                // التحقق من عدم تكرار الكود
-                if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
-                    throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", lang),
-                        _localizer.GetMessage("Sector", lang),
-                        request.Data.Code));
+                string code;
 
-                // التحقق من وجود القطاع الأب إذا وجد
+                if (company.HasSequence == true)
+                {
+                    var prefix = company.Prefix;
+                    var separator = company.Separator ?? "-";
+                    var sequenceLength = company.SequenceLength ?? 5;
+
+                    var maxCode = await _repo.GetMaxCodeAsync(companyId, cancellationToken);
+                    int lastNumber = 0;
+
+                    if (!string.IsNullOrEmpty(maxCode))
+                    {
+                        if (maxCode.Contains(separator))
+                        {
+                            var lastPart = maxCode.Split(separator).Last();
+                            int.TryParse(lastPart, out lastNumber);
+                        }
+                        else
+                        {
+                            int.TryParse(maxCode, out lastNumber);
+                        }
+                    }
+
+                    var newNumber = lastNumber + 1;
+                    var formattedNumber = newNumber.ToString($"D{sequenceLength}");
+                    code = $"{prefix}{separator}{formattedNumber}";
+                }
+                else
+                {
+                    code = request.Data.Code;
+
+                    if (string.IsNullOrWhiteSpace(code))
+                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+
+                    if (await _repo.CodeExistsAsync(code, companyId))
+                        throw new ConflictException(string.Format(
+                            _localizer.GetMessage("CodeExists", lang),
+                            _localizer.GetMessage("Sector", lang),
+                            code));
+                }
+
                 if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
@@ -82,7 +112,7 @@ namespace Application.System.MasterData.Sector.Commands
                 }
 
                 var entity = new Domain.System.MasterData.Sector(
-                    code: request.Data.Code,
+                    code: code,
                     companyId: companyId,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,

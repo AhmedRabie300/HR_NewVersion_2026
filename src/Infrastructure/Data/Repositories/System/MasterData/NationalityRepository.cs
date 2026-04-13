@@ -139,5 +139,14 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 _db.Nationalities.Update(nationality);
             }
         }
+
+        public async Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct)
+        {
+            return await _db.Nationalities
+                .Where(x =>  x.CancelDate == null)
+                .OrderByDescending(x => x.Code)
+                .Select(x => x.Code)
+                .FirstOrDefaultAsync(ct);
+        }
     }
 }

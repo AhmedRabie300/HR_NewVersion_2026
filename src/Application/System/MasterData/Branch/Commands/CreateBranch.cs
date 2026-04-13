@@ -7,6 +7,7 @@ using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using System.Data;
 
 namespace Application.System.MasterData.Branch.Commands
 {
@@ -16,16 +17,47 @@ namespace Application.System.MasterData.Branch.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
+            private readonly ICompanyRepository _companyRepo;
 
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+
+            public Validator(   
+                IContextService contextService,
+                ILocalizationService localizer,
+                ICompanyRepository companyRepo
+                )
             {
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
-
+                _companyRepo = companyRepo;
+                
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateBranchValidator(_localizer, _ContextService));
+                    .CustomAsync(async (data, context, ct) =>
+                    {
+                        var companyId = _contextService.GetCurrentCompanyId();
+                        var company = await _companyRepo.GetByIdAsync(companyId);
+                        var lang = _contextService.GetCurrentLanguage();
+
+                         if (company?.HasSequence != true)
+                        {
+                            if (string.IsNullOrWhiteSpace(data.Code))
+                            {
+                                context.AddFailure("Code", _localizer.GetMessage("CodeRequired", lang));
+                            }
+                            else if (data.Code.Length > 50)
+                            {
+                                context.AddFailure("Code", string.Format(_localizer.GetMessage("MaxLength", lang), 50));
+                            }
+                        }
+
+                         var validator = new CreateBranchValidator(_localizer, _contextService);
+                        var result = await validator.ValidateAsync(data, ct);
+                        foreach (var error in result.Errors)
+                        {
+                            context.AddFailure(error);
+                        }
+                    });
             }
         }
 
@@ -33,28 +65,25 @@ namespace Application.System.MasterData.Branch.Commands
         {
             private readonly IBranchRepository _repo;
             private readonly ICompanyRepository _companyRepo;
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
-
+        
             public Handler(
                 IBranchRepository repo,
                 ICompanyRepository companyRepo,
-                IHttpContextAccessor httpContextAccessor,
-                IContextService ContextService,
+                IContextService contextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
                 _companyRepo = companyRepo;
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
-            }
-
-           
+             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId =_ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
+                var companyId = _contextService.GetCurrentCompanyId();
+                var lang = _contextService.GetCurrentLanguage();
 
                  var company = await _companyRepo.GetByIdAsync(companyId);
                 if (company == null)
@@ -63,13 +92,51 @@ namespace Application.System.MasterData.Branch.Commands
                         _localizer.GetMessage("Company", lang),
                         companyId));
 
-                 if (await _repo.CodeExistsAsync(request.Data.Code, companyId))
-                    throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", lang),
-                        _localizer.GetMessage("Branch", lang),
-                        request.Data.Code));
+                string code;
 
-                 if (request.Data.ParentId.HasValue)
+
+ 
+                 if (company?.HasSequence == true)
+                {
+                    var separator = company.Separator ?? "-";
+                    var sequenceLength = company.SequenceLength ?? 5;
+                    var maxCode = await _repo.GetMaxCodeAsync(companyId, cancellationToken);
+                    int lastNumber = 0;
+
+                    if (!string.IsNullOrEmpty(maxCode))
+                    {
+
+                        if (maxCode.Contains(separator))
+                        {
+                            var lastPart = maxCode.Split(separator).Last();
+                            int.TryParse(lastPart, out lastNumber);
+                        }
+                        else
+                        {
+                            int.TryParse(maxCode, out lastNumber);
+                        }
+                    }
+               
+
+                    var newNumber = lastNumber + 1;
+                    var formattedNumber = newNumber.ToString($"D{sequenceLength}");
+                    code = formattedNumber.ToString();
+                }
+                else
+                {
+                    code = request.Data.Code;
+
+                    if (string.IsNullOrWhiteSpace(code))
+                        throw new Exception(_localizer.GetMessage("CodeRequired", lang));
+
+                     if (await _repo.CodeExistsAsync(code, companyId))
+                        throw new ConflictException(string.Format(
+                            _localizer.GetMessage("CodeExists", lang),
+                            _localizer.GetMessage("Branch", lang),
+                            code));
+                }
+
+                if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
@@ -80,7 +147,7 @@ namespace Application.System.MasterData.Branch.Commands
                 }
 
                 var entity = new Domain.System.MasterData.Branch(
-                    code: request.Data.Code,
+                    code: code,
                     companyId: companyId,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
@@ -101,6 +168,7 @@ namespace Application.System.MasterData.Branch.Commands
 
                 return entity.Id;
             }
+ 
         }
     }
 }
