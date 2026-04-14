@@ -3,6 +3,7 @@ using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace Infrastructure.Data.Repositories.System.MasterData
 {
@@ -124,13 +125,43 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         {
             return _db.SaveChangesAsync(ct);
         }
+
         public async Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct)
         {
-            return await _db.Religions
+            var allCodes = await _db.Religions
                 .Where(x => x.CancelDate == null)
-                .OrderByDescending(x => x.Code)
                 .Select(x => x.Code)
-                .FirstOrDefaultAsync(ct);
+                .ToListAsync(ct);
+
+            if (!allCodes.Any())
+                return null;
+
+            var maxCode = allCodes
+               .Select(code => new
+               {
+                   Code = code,
+                   Number = ExtractNumberFromCode(code)
+               })
+               .Where(x => x.Number > 0)
+               .OrderByDescending(x => x.Number)
+               .FirstOrDefault();
+
+            return maxCode?.Code;
+        }
+
+        private int ExtractNumberFromCode(string code)
+        {
+            if (string.IsNullOrEmpty(code))
+                return 0;
+
+            var match = Regex.Match(code, @"\d+$");
+            if (match.Success && int.TryParse(match.Value, out int number))
+                return number;
+
+            if (int.TryParse(code, out int directNumber))
+                return directNumber;
+
+            return 0;
         }
     }
 }

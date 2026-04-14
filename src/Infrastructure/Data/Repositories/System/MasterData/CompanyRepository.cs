@@ -31,8 +31,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         {
             try
             {
-                // جيب Id فقط عشان تتأكد إن الاتصال شغال
-                var ids = await _db.Companies
+                 var ids = await _db.Companies
                     .Where(x => x.CancelDate == null)
                     .Select(x => x.Id)
                     .ToListAsync();

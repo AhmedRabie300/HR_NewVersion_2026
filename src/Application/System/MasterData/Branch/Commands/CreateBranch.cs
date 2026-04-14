@@ -121,6 +121,7 @@ namespace Application.System.MasterData.Branch.Commands
                     var newNumber = lastNumber + 1;
                     var formattedNumber = newNumber.ToString($"D{sequenceLength}");
                     code = formattedNumber.ToString();
+                  
                 }
                 else
                 {
