@@ -4,6 +4,7 @@ using API.Endpoints;
 using API.Helpers;
 using API.Middleware;
 using API.system.MasterData;
+using API.System.HRS;
 using API.System.MasterData;
 using API.UARbac;
 using Application;
@@ -119,6 +120,13 @@ v1Api.MapContractTypeEndpoints();
 v1Api.MapDocumentTypesGroupEndpoints();
 v1Api.MapDocumentEndpoints();
 v1Api.MapSearchEndpoints();
-
+v1Api.MapCityEndpoints();
+v1Api.MapCountryEndpoints();
+v1Api.MapRegionEndpoints();
+v1Api.MapBankEndpoints();
+v1Api.MapVacationsPaidTypeEndpoints();
+v1Api.MapVacationsTypeEndpoints();
+v1Api.MapGenderEndpoints();
+v1Api.MapTransactionsGroupEndpoints();
 
 app.Run();

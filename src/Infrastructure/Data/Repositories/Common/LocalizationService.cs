@@ -123,11 +123,7 @@ namespace Infrastructure.Services
                     { 1, "{0} deleted successfully" },
                     { 2, "تم حذف {0} بنجاح" }
                 },
-                ["NotFound"] = new Dictionary<int, string>
-                {
-                    { 1, "{0} with ID {1} not found" },
-                    { 2, "{0} بالمعرف {1} غير موجود" }
-                },
+            
                 ["CodeExists"] = new Dictionary<int, string>
                 {
                     { 1, "{0} with code '{1}' already exists" },
@@ -143,7 +139,16 @@ namespace Infrastructure.Services
                     { 1, "Cannot delete {0} because it has child items" },
                     { 2, "لا يمكن حذف {0} لأنه يحتوي على عناصر فرعية" }
                 },
-
+                 ["City"] = new Dictionary<int, string>
+{
+    { 1, "City" },
+    { 2, "المدينة" }
+},
+                ["RegionRequired"] = new Dictionary<int, string>
+{
+    { 1, "Region ID must be greater than 0" },
+    { 2, "معرف المنطقة يجب أن يكون أكبر من 0" }
+},
                 // ===== Authentication Messages =====
                 ["Unauthorized"] = new Dictionary<int, string>
                 {
@@ -349,6 +354,75 @@ namespace Infrastructure.Services
                     { 1, "User group" },
                     { 2, "مجموعة المستخدمين" }
                 },
+ 
+                ["Country"] = new Dictionary<int, string>
+{
+    { 1, "Country" },
+    { 2, "الدولة" }
+},
+
+                ["CurrencyRequired"] = new Dictionary<int, string>
+{
+    { 1, "Currency ID must be greater than 0" },
+    { 2, "معرف العملة يجب أن يكون أكبر من 0" }
+},
+
+                ["NationalityRequired"] = new Dictionary<int, string>
+{
+    { 1, "Nationality ID must be greater than 0" },
+    { 2, "معرف الجنسية يجب أن يكون أكبر من 0" }
+},
+
+                ["CapitalRequired"] = new Dictionary<int, string>
+{
+    { 1, "Capital ID must be greater than 0" },
+    { 2, "معرف العاصمة يجب أن يكون أكبر من 0" }
+},
+
+                ["CodeExists"] = new Dictionary<int, string>
+{
+    { 1, "{0} with code '{1}' already exists" },
+    { 2, "{0} بالكود '{1}' موجود بالفعل" }
+},
+                // Infrastructure/Services/LocalizationService.cs
+
+                ["Bank"] = new Dictionary<int, string>
+{
+    { 1, "Bank" },
+    { 2, "البنك" }
+},
+
+                ["CodeExists"] = new Dictionary<int, string>
+{
+    { 1, "{0} with code '{1}' already exists" },
+    { 2, "{0} بالكود '{1}' موجود بالفعل" }
+},
+
+                ["CodeRequired"] = new Dictionary<int, string>
+{
+    { 1, "Code is required" },
+    { 2, "الكود مطلوب" }
+},
+
+                ["MaxLength"] = new Dictionary<int, string>
+{
+    { 1, "Maximum length is {0} characters" },
+    { 2, "الحد الأقصى للطول هو {0} حرف" }
+},
+
+                ["IdGreaterThanZero"] = new Dictionary<int, string>
+{
+    { 1, "ID must be greater than 0" },
+    { 2, "المعرف يجب أن يكون أكبر من 0" }
+},
+
+                ["AtLeastOneField"] = new Dictionary<int, string>
+{
+    { 1, "At least one field must be provided for update" },
+    { 2, "يجب توفير حقل واحد على الأقل للتحديث" }
+},
+
+ 
 
                 // ===== Specific Field Messages =====
                 ["ParentBranchRequired"] = new Dictionary<int, string>
@@ -440,7 +514,132 @@ namespace Infrastructure.Services
                 {
                     { 1, "Ticket amount must be greater than 0" },
                     { 2, "قيمة التذكرة يجب أن تكون أكبر من 0" }
-                }
+                },
+ 
+                ["VacationsType"] = new Dictionary<int, string>
+{
+    { 1, "Vacations Type" },
+    { 2, "نوع الإجازة" }
+},
+
+                ["CodeExists"] = new Dictionary<int, string>
+{
+    { 1, "{0} with code '{1}' already exists" },
+    { 2, "{0} بالكود '{1}' موجود بالفعل" }
+},
+
+                ["CodeRequired"] = new Dictionary<int, string>
+{
+    { 1, "Code is required" },
+    { 2, "الكود مطلوب" }
+},
+
+                ["MaxLength"] = new Dictionary<int, string>
+{
+    { 1, "Maximum length is {0} characters" },
+    { 2, "الحد الأقصى للطول هو {0} حرف" }
+},
+
+                ["IdGreaterThanZero"] = new Dictionary<int, string>
+{
+    { 1, "ID must be greater than 0" },
+    { 2, "المعرف يجب أن يكون أكبر من 0" }
+},
+
+                ["AtLeastOneField"] = new Dictionary<int, string>
+{
+    { 1, "At least one field must be provided for update" },
+    { 2, "يجب توفير حقل واحد على الأقل للتحديث" }
+},
+
+                ["NotFound"] = new Dictionary<int, string>
+{
+    { 1, "{0} with ID '{1}' was not found" },
+    { 2, "{0} بالمعرف '{1}' غير موجود" }
+},
+
+ 
+                ["SexMustBeMOrFOrB"] = new Dictionary<int, string>
+{
+    { 1, "Sex must be 'M' (Male), 'F' (Female), or 'B' (Both)" },
+    { 2, "النوع يجب أن يكون 'M' (ذكر)، 'F' (أنثى)، أو 'B' (كلاهما)" }
+},
+
+                ["TimesNoInYearGreaterThanZero"] = new Dictionary<int, string>
+{
+    { 1, "Times number in year must be greater than 0" },
+    { 2, "عدد المرات في السنة يجب أن يكون أكبر من 0" }
+},
+
+                ["AllowedDaysNoGreaterThanZero"] = new Dictionary<int, string>
+{
+    { 1, "Allowed days number must be greater than 0" },
+    { 2, "عدد الأيام المسموحة يجب أن يكون أكبر من 0" }
+},
+
+                ["PercentageBetween0And100"] = new Dictionary<int, string>
+{
+    { 1, "Percentage must be between 0 and 100" },
+    { 2, "النسبة المئوية يجب أن تكون بين 0 و 100" }
+},
+                // Infrastructure/Services/LocalizationService.cs
+
+                ["Gender"] = new Dictionary<int, string>
+{
+    { 1, "Gender" },
+    { 2, "النوع" }
+},
+
+                ["CodeExists"] = new Dictionary<int, string>
+{
+    { 1, "{0} with code '{1}' already exists" },
+    { 2, "{0} بالكود '{1}' موجود بالفعل" }
+},
+
+                ["CodeRequired"] = new Dictionary<int, string>
+{
+    { 1, "Code is required" },
+    { 2, "الكود مطلوب" }
+},
+
+                ["MaxLength"] = new Dictionary<int, string>
+{
+    { 1, "Maximum length is {0} characters" },
+    { 2, "الحد الأقصى للطول هو {0} حرف" }
+},
+
+                ["IdGreaterThanZero"] = new Dictionary<int, string>
+{
+    { 1, "ID must be greater than 0" },
+    { 2, "المعرف يجب أن يكون أكبر من 0" }
+},
+
+                ["AtLeastOneField"] = new Dictionary<int, string>
+{
+    { 1, "At least one field must be provided for update" },
+    { 2, "يجب توفير حقل واحد على الأقل للتحديث" }
+},
+
+
+                // Infrastructure/Services/LocalizationService.cs
+
+                ["TransactionsGroup"] = new Dictionary<int, string>
+{
+    { 1, "Transactions Group" },
+    { 2, "مجموعة المعاملات" }
+}
+
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+
+ 
+ 
             };
         }
 

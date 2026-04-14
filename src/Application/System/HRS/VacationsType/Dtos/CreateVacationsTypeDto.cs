@@ -1,0 +1,36 @@
+﻿namespace Application.System.HRS.VacationsType.Dtos
+{
+    public sealed record CreateVacationsTypeDto(
+        string Code,
+        string? EngName,
+        string? ArbName,
+        string? ArbName4S,
+        short? IsPaid,
+        string? Sex,
+        bool? IsAnnual,
+        bool? IsSickVacation,
+        bool? IsFromAnnual,
+        int? ForSalaryTransaction,
+        string? Remarks,
+        int? RegUserId,
+        int? RegComputerId,
+        int? OBalanceTransactionId,
+        int? OverDueVacationId,
+        float? Stage1Pct,
+        float? Stage2Pct,
+        float? Stage3Pct,
+        int? ForDeductionTransaction,
+        bool? AffectEos,
+        int? VactionTypeCaculation,
+        int? ExceededDaysType,
+        bool? HasPayment,
+        bool? RoundAnnualVacBalance,
+        string? Religion,
+        bool? IsOfficial,
+        bool? OverlapWithAnotherVac,
+        bool? ConsiderAllowedDays,
+        int? TimesNoInYear,
+        int? AllowedDaysNo,
+        bool? ExcludedFromSsRequests
+    );
+}

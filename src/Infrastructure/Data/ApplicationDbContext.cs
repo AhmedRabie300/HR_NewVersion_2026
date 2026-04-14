@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.UARbac.FormPermission.Dtos;
 using Domain.Common;
+using Domain.System.HRS;
 using Domain.System.MasterData;
 using Domain.System.Search;
 using Domain.UARbac;
@@ -53,12 +54,20 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Sys_Fields> Sys_Fields => Set<Sys_Fields>();
     public DbSet<Sys_Searchs> Sys_Searchs => Set<Sys_Searchs>();
     public DbSet<Sys_SearchsColumns> Sys_SearchsColumns => Set<Sys_SearchsColumns>();
-
-
-
-    //Master Data
-
     public DbSet<Nationality> Nationalities => Set<Nationality>();
+
+    public DbSet<City> Cities => Set<City>();
+    public DbSet<Country> Countries => Set<Country>();
+    public DbSet<Region> Regions => Set<Region>();
+
+    public DbSet<Bank> Banks => Set<Bank>();
+    //HRS
+    public DbSet<VacationsPaidType> VacationsPaidTypes => Set<VacationsPaidType>();
+    public DbSet<VacationsType> VacationsTypes => Set<VacationsType>();
+    public DbSet<Gender> Genders => Set<Gender>();
+    public DbSet<TransactionsGroup> TransactionsGroups => Set<TransactionsGroup>();
+
+
 
 
 

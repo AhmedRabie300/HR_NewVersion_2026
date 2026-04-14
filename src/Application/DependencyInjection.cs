@@ -11,10 +11,8 @@ namespace Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            // مش هنضيف Validators تلقائياً
-            services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
-            //services.AddScoped<IValidator<CreateCompany.Command>, CreateCompany.Validator>();
-
+             services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
+ 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             return services;
