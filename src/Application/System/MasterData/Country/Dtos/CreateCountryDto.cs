@@ -10,7 +10,6 @@
         string? PhoneKey,
         bool? IsMainCountries,
         string? Remarks,
-        int? RegUserId,
         int? RegComputerId,
         int? RegionId,
         string? ISOAlpha2,

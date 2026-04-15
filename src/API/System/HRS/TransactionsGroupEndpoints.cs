@@ -1,7 +1,9 @@
-﻿using Application.System.HRS.TransactionsGroup.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.HRS.TransactionsGroup.Commands;
 using Application.System.HRS.TransactionsGroup.Dtos;
 using Application.System.HRS.TransactionsGroup.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.HRS
 {
@@ -12,7 +14,6 @@ namespace API.System.HRS
             var group = routes.MapGroup("/hrs/transactions-groups")
                 .WithTags("Transactions Groups");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListTransactionsGroups.Query(), ct);
@@ -20,7 +21,6 @@ namespace API.System.HRS
             })
             .WithName("GetAllTransactionsGroups");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -34,31 +34,26 @@ namespace API.System.HRS
             })
             .WithName("GetPagedTransactionsGroups");
 
-            // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetTransactionsGroupById.Query(id), ct);
                 return Results.Ok(result);
             })
             .WithName("GetTransactionsGroupById");
-
-            // GET by company id
-            group.MapGet("/by-company/{companyId:int}", async (IMediator mediator, int companyId, CancellationToken ct) =>
+ 
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateTransactionsGroupDto dto,
+                CancellationToken ct) =>
             {
-                var result = await mediator.Send(new GetTransactionsGroupsByCompanyId.Query(companyId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetTransactionsGroupsByCompanyId");
-
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateTransactionsGroupDto dto, CancellationToken ct) =>
-            {
-                var id = await mediator.Send(new CreateTransactionsGroup.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateTransactionsGroup.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/hrs/transactions-groups/{id}", new { id });
             })
             .WithName("CreateTransactionsGroup");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -71,7 +66,6 @@ namespace API.System.HRS
             })
             .WithName("UpdateTransactionsGroup");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -83,7 +77,6 @@ namespace API.System.HRS
             })
             .WithName("SoftDeleteTransactionsGroup");
 
-            // DELETE hard
             group.MapDelete("/{id:int}", async (
                 IMediator mediator,
                 int id,

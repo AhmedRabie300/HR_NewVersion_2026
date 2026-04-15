@@ -5,8 +5,8 @@
         string? EngName,
         string? ArbName,
         string? ArbName4S,
-        int? SponsorNumber,
-        int? RegUserId,
+        string? SponsorNumber,
+        string? Remarks,
         int? RegComputerId
-     );
+    );
 }

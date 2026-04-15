@@ -4,6 +4,6 @@
         string? Code,
         string? EngName,
         string? ArbName,
-        int? RegUserId
+        int? regComputerId
     );
 }

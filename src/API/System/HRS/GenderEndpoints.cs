@@ -1,7 +1,9 @@
-﻿using Application.System.HRS.Gender.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.HRS.Gender.Commands;
 using Application.System.HRS.Gender.Dtos;
 using Application.System.HRS.Gender.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.HRS
 {
@@ -11,8 +13,8 @@ namespace API.System.HRS
         {
             var group = routes.MapGroup("/hrs/genders")
                 .WithTags("Genders");
- 
-            // GET paged
+
+          
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -26,7 +28,6 @@ namespace API.System.HRS
             })
             .WithName("GetPagedGenders");
 
-            // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetGenderById.Query(id), ct);
@@ -34,15 +35,19 @@ namespace API.System.HRS
             })
             .WithName("GetGenderById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateGenderDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateGenderDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateGender.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateGender.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/hrs/genders/{id}", new { id });
             })
             .WithName("CreateGender");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -55,7 +60,6 @@ namespace API.System.HRS
             })
             .WithName("UpdateGender");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -67,11 +71,7 @@ namespace API.System.HRS
             })
             .WithName("SoftDeleteGender");
 
-            // DELETE hard
-            group.MapDelete("/{id:int}", async (
-                IMediator mediator,
-                int id,
-                CancellationToken ct) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new DeleteGender.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();

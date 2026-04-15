@@ -31,9 +31,7 @@ namespace Application.System.MasterData.Company.Queries
             public async Task<CompanyDto> Handle(Query request, CancellationToken cancellationToken)
             {
                 var company = await _repo.GetByIdAsync(request.Id);
-                if (company == null)
-                    throw new NotFoundException("Get Company Details", $"Company with code '{request.Id}' not found");
-
+              
                 return new CompanyDto(
                     Id: company.Id,
                     Code: company.Code,

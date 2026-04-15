@@ -7,8 +7,11 @@ namespace Application.System.MasterData.Document.Queries
 {
     public static class GetPagedDocuments
     {
-        public record Query(int PageNumber, int PageSize, string? SearchTerm, int? DocumentTypesGroupId)
-            : IRequest<PagedResult<DocumentDto>>;
+        public record Query(
+            int PageNumber,
+            int PageSize,
+            string? SearchTerm
+        ) : IRequest<PagedResult<DocumentDto>>;
 
         public class Handler : IRequestHandler<Query, PagedResult<DocumentDto>>
         {
@@ -21,11 +24,12 @@ namespace Application.System.MasterData.Document.Queries
 
             public async Task<PagedResult<DocumentDto>> Handle(Query request, CancellationToken cancellationToken)
             {
+                // ✅ تمرير null كـ groupId (أو القيمة المناسبة)
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
                     request.SearchTerm,
-                    request.DocumentTypesGroupId
+                    null  // ✅ groupId (ممكن يكون null أو قيمة معينة)
                 );
 
                 var items = pagedResult.Items.Select(x => new DocumentDto(

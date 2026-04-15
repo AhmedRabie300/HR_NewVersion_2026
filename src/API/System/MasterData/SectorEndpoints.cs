@@ -1,9 +1,9 @@
-﻿// API/System/MasterData/SectorEndpoints.cs
-using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.Sector.Commands;
 using Application.System.MasterData.Sector.Dtos;
 using Application.System.MasterData.Sector.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -14,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/sectors")
                 .WithTags("Sectors");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListSectors.Query(), ct);
@@ -22,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllSectors");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -36,7 +34,15 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedSectors");
 
-            // GET by id
+            group.MapGet("/by-company", async (
+                IMediator mediator,
+                CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new GetSectorsByCompany.Query(), ct);
+                return Results.Ok(result);
+            })
+            .WithName("GetSectorsByCompany");
+
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetSectorById.Query(id), ct);
@@ -44,17 +50,19 @@ namespace API.System.MasterData
             })
             .WithName("GetSectorById");
 
-  
-
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateSectorDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateSectorDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateSector.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateSector.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/sectors/{id}", new { id });
             })
             .WithName("CreateSector");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -67,7 +75,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateSector");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -78,7 +85,7 @@ namespace API.System.MasterData
                 return Results.NoContent();
             })
             .WithName("SoftDeleteSector");
-
+ 
             return routes;
         }
     }

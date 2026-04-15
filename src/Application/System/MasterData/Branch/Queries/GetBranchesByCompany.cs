@@ -32,9 +32,7 @@ namespace Application.System.MasterData.Branch.Queries
             public async Task<List<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-                if (company == null)
-                    throw new NotFoundException("Get Branch For Company",$"Company with ID {request.CompanyId} not found");
-
+                 
                 var branches = await _repo.GetByCompanyIdAsync(request.CompanyId);
 
                 return branches.Select(b => new BranchDto(

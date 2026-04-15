@@ -1,7 +1,9 @@
-﻿using Application.System.MasterData.Sponsor.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Sponsor.Commands;
 using Application.System.MasterData.Sponsor.Dtos;
 using Application.System.MasterData.Sponsor.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -12,84 +14,76 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/sponsors")
                 .WithTags("Sponsors");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListSponsors.Query(), ct);
                 return Results.Ok(result);
             })
-            //.RequirePermission("Sponsors", "View")
             .WithName("GetAllSponsors");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
                 string? searchTerm = null,
-                int? companyId = null,
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedSponsors.Query(pageNumber, pageSize, searchTerm, companyId), ct);
+                    new GetPagedSponsors.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
-            //.RequirePermission("Sponsors", "View")
             .WithName("GetPagedSponsors");
 
-            // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetSponsorById.Query(id), ct);
                 return Results.Ok(result);
             })
-            //.RequirePermission("Sponsors", "View")
             .WithName("GetSponsorById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateSponsorDto dto, CancellationToken ct = default) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateSponsorDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateSponsor.Command(dto), ct);
-                return Results.Created($"/api/hr/master-data/sponsors/{id}", new { id });
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateSponsor.Command(companyId, regUserId, dto), ct);
+                return Results.Created($"/master-data/sponsors/{id}", new { id });
             })
-            //.RequirePermission("Sponsors", "Add")
             .WithName("CreateSponsor");
 
-            // PUT update
-            group.MapPut("/{id:int}", async (
+             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
+                [FromHeader(Name = "CompanyId")] int companyId,  
                 UpdateSponsorDto dto,
-                CancellationToken ct = default) =>
+                CancellationToken ct) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateSponsor.Command(fixedDto), ct);
+                await mediator.Send(new UpdateSponsor.Command(companyId, fixedDto), ct);  
                 return Results.NoContent();
             })
-            //.RequirePermission("Sponsors", "Edit")
             .WithName("UpdateSponsor");
 
-            // DELETE hard
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct = default) =>
-            {
-                var result = await mediator.Send(new DeleteSponsor.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            //.RequirePermission("Sponsors", "Delete")
-            .WithName("DeleteSponsor");
-
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                CancellationToken ct = default) =>
+                CancellationToken ct) =>
             {
                 await mediator.Send(new SoftDeleteSponsor.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            //.RequirePermission("Sponsors", "Delete")
             .WithName("SoftDeleteSponsor");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteSponsor.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteSponsor");
 
             return routes;
         }

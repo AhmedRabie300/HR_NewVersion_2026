@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿using Application.Common.Abstractions;
+using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sponsor.Dtos;
 using MediatR;
@@ -7,29 +8,29 @@ namespace Application.System.MasterData.Sponsor.Queries
 {
     public static class GetPagedSponsors
     {
-        public record Query(int PageNumber, int PageSize, string? SearchTerm, int? CompanyId)
+         public record Query(int PageNumber, int PageSize, string? SearchTerm)
             : IRequest<PagedResult<SponsorDto>>;
 
         public class Handler : IRequestHandler<Query, PagedResult<SponsorDto>>
         {
             private readonly ISponsorRepository _repo;
+            private readonly IContextService _contextService;
 
-            public Handler(ISponsorRepository repo)
+            public Handler(ISponsorRepository repo, IContextService contextService)
             {
                 _repo = repo;
+                _contextService = contextService;
             }
 
             public async Task<PagedResult<SponsorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                // ✅ تحويل CompanyId من int? إلى int
-                // لو CompanyId = null، نستخدم 0 أو قيمة افتراضية
-                var companyId = request.CompanyId ?? 0;
+                 var companyId = _contextService.GetCurrentCompanyId();
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
                     request.SearchTerm,
-                    request.CompanyId 
+                    companyId   
                 );
 
                 var items = pagedResult.Items.Select(x => new SponsorDto(

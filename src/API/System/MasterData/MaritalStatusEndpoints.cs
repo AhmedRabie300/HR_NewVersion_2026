@@ -1,8 +1,9 @@
-﻿using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.MaritalStatus.Commands;
 using Application.System.MasterData.MaritalStatus.Dtos;
 using Application.System.MasterData.MaritalStatus.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -10,15 +11,14 @@ namespace API.System.MasterData
     {
         public static IEndpointRouteBuilder MapMaritalStatusEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/master-data/marital-status")
-                .WithTags("MaritalStatus");
+            var group = routes.MapGroup("/master-data/marital-statuses")
+                .WithTags("MaritalStatuses");
 
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListMaritalStatuses.Query(), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("MaritalStatus", "View")
             .WithName("GetAllMaritalStatuses");
 
             group.MapGet("/paged", async (
@@ -32,7 +32,6 @@ namespace API.System.MasterData
                     new GetPagedMaritalStatuses.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("MaritalStatus", "View")
             .WithName("GetPagedMaritalStatuses");
 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -40,15 +39,19 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetMaritalStatusById.Query(id), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("MaritalStatus", "View")
             .WithName("GetMaritalStatusById");
 
-            group.MapPost("/", async (IMediator mediator, CreateMaritalStatusDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateMaritalStatusDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateMaritalStatus.Command(dto), ct);
-                return Results.Created($"/api/hr/master-data/marital-status/{id}", new { id });
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateMaritalStatus.Command(companyId, regUserId, dto), ct);
+                return Results.Created($"/master-data/marital-statuses/{id}", new { id });
             })
-           // .RequirePermission("MaritalStatus", "Add")
             .WithName("CreateMaritalStatus");
 
             group.MapPut("/{id:int}", async (
@@ -61,16 +64,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateMaritalStatus.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("MaritalStatus", "Edit")
             .WithName("UpdateMaritalStatus");
-
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteMaritalStatus.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-           // .RequirePermission("MaritalStatus", "Delete")
-            .WithName("DeleteMaritalStatus");
 
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
@@ -81,8 +75,14 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteMaritalStatus.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("MaritalStatus", "Delete")
             .WithName("SoftDeleteMaritalStatus");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteMaritalStatus.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteMaritalStatus");
 
             return routes;
         }

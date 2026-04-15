@@ -14,36 +14,45 @@ namespace Application.System.MasterData.MaritalStatus.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateMaritalStatusValidator(localizer, ContextService));
+                    .SetValidator(new UpdateMaritalStatusValidator(_localizer, _contextService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IMaritalStatusRepository _repo;
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
-            public Handler(IMaritalStatusRepository repo, IContextService ContextService, ILocalizationService localizer)
+            public Handler(
+                IMaritalStatusRepository repo,
+                IContextService contextService,
+                ILocalizationService localizer)
             {
                 _repo = repo;
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
+                var lang = _contextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
+                    throw new NotFoundException(
                         _localizer.GetMessage("MaritalStatus", lang),
-                        request.Data.Id));
+                        request.Data.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("MaritalStatus", lang), request.Data.Id));
 
                 entity.Update(
                     request.Data.EngName,

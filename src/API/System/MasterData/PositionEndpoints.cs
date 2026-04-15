@@ -1,8 +1,9 @@
-﻿using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.Position.Commands;
 using Application.System.MasterData.Position.Dtos;
 using Application.System.MasterData.Position.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -13,17 +14,13 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/positions")
                 .WithTags("Positions");
 
-            // GET /api/hr/master-data/positions
-            group.MapGet("/", async (
-                IMediator mediator,
-                CancellationToken ct = default) =>
+            group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListPositions.Query(), ct);
                 return Results.Ok(result);
             })
             .WithName("GetAllPositions");
 
-            // GET /api/hr/master-data/positions/paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -32,40 +29,36 @@ namespace API.System.MasterData
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedPositions.Query(pageNumber, pageSize, searchTerm),
-                    ct);
+                    new GetPagedPositions.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
             .WithName("GetPagedPositions");
-
-            // GET /api/hr/master-data/positions/{id}
-            group.MapGet("/{id:int}", async (
-                IMediator mediator,
-                int id,
-                CancellationToken ct = default) =>
+ 
+            group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetPositionById.Query(id), ct);
                 return Results.Ok(result);
             })
             .WithName("GetPositionById");
 
-            // POST /api/hr/master-data/positions
             group.MapPost("/", async (
                 IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
                 CreatePositionDto dto,
-                CancellationToken ct = default) =>
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreatePosition.Command(dto), ct);
-                return Results.Created($"/api/hr/master-data/positions/{id}", new { id });
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreatePosition.Command(companyId, regUserId, dto), ct);
+                return Results.Created($"/master-data/positions/{id}", new { id });
             })
             .WithName("CreatePosition");
 
-            // PUT /api/hr/master-data/positions/{id}
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 UpdatePositionDto dto,
-                CancellationToken ct = default) =>
+                CancellationToken ct) =>
             {
                 var fixedDto = dto with { Id = id };
                 await mediator.Send(new UpdatePosition.Command(fixedDto), ct);
@@ -73,18 +66,18 @@ namespace API.System.MasterData
             })
             .WithName("UpdatePosition");
 
-            // DELETE /api/hr/master-data/positions/{id} (Soft Delete)
-            group.MapDelete("/{id:int}", async (
+            group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
                 int? regUserId,
-                CancellationToken ct = default) =>
+                CancellationToken ct) =>
             {
                 await mediator.Send(new SoftDeletePosition.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeletePosition");
 
+          
             return routes;
         }
     }

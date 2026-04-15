@@ -1,7 +1,9 @@
-﻿using Application.System.MasterData.Bank.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Bank.Commands;
 using Application.System.MasterData.Bank.Dtos;
 using Application.System.MasterData.Bank.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -12,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/banks")
                 .WithTags("Banks");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListBanks.Query(), ct);
@@ -20,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllBanks");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -34,7 +34,17 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedBanks");
 
-            // GET by id
+            group.MapGet("/by-company", async (
+                IMediator mediator,
+                [FromServices] IContextService contextService,
+                CancellationToken ct) =>
+            {
+                var companyId = contextService.GetCurrentCompanyId();
+                var result = await mediator.Send(new GetBanksByCompanyId.Query(companyId), ct);
+                return Results.Ok(result);
+            })
+            .WithName("GetBanksByCompanyId");
+
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetBankById.Query(id), ct);
@@ -42,23 +52,19 @@ namespace API.System.MasterData
             })
             .WithName("GetBankById");
 
-            // GET by company id
-            group.MapGet("/by-company/{companyId:int}", async (IMediator mediator, int companyId, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateBankDto dto,
+                CancellationToken ct) =>
             {
-                var result = await mediator.Send(new GetBanksByCompanyId.Query(companyId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetBanksByCompanyId");
-
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateBankDto dto, CancellationToken ct) =>
-            {
-                var id = await mediator.Send(new CreateBank.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateBank.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/banks/{id}", new { id });
             })
             .WithName("CreateBank");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -71,7 +77,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateBank");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -83,11 +88,7 @@ namespace API.System.MasterData
             })
             .WithName("SoftDeleteBank");
 
-            // DELETE hard
-            group.MapDelete("/{id:int}", async (
-                IMediator mediator,
-                int id,
-                CancellationToken ct) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new DeleteBank.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();

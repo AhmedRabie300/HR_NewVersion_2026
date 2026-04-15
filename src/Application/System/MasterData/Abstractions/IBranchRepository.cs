@@ -22,6 +22,6 @@ namespace Application.System.MasterData.Abstractions
         Task SoftDeleteAsync(int id, int? regUserId = null);
         Task SaveChangesAsync(CancellationToken ct);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
-
+ 
     }
 }

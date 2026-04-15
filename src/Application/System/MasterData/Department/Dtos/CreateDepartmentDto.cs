@@ -7,8 +7,7 @@
         string? ArbName4S,
         int? ParentId,
         string? Remarks,
-        int? RegUserId,
-        int? regComputerId,
-        string? CostCenterCode
+        string? CostCenterCode,
+        int? RegComputerId
     );
 }

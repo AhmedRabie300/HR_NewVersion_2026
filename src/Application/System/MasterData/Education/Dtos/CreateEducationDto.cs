@@ -8,7 +8,6 @@
         int? Level,
         double? RequiredYears,
         string? Remarks,
-        int? RegUserId,
         int? regComputerId
     );
 }

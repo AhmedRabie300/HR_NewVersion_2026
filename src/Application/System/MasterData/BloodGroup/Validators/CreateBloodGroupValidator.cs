@@ -1,36 +1,31 @@
-﻿using Application.System.MasterData.BloodGroup.Dtos;
-using Application.Common.Abstractions;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.BloodGroup.Dtos;
 using FluentValidation;
 
 namespace Application.System.MasterData.BloodGroup.Validators
 {
     public class CreateBloodGroupValidator : AbstractValidator<CreateBloodGroupDto>
     {
-        private readonly ILocalizationService _localizer;
-        private readonly IContextService _ContextService;
-
-        public CreateBloodGroupValidator(ILocalizationService localizer, IContextService ContextService)
+        public CreateBloodGroupValidator(ILocalizationService localizer, IContextService contextService)
         {
-            _localizer = localizer;
-            _ContextService = ContextService;
+            var lang = contextService.GetCurrentLanguage();
 
-            //RuleFor(x => x.Code)
-            //    .NotEmpty().WithMessage(x => _localizer.GetMessage("CodeRequired", _ContextService.GetCurrentLanguage()))
-            //    .MaximumLength(50).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 50));
+             RuleFor(x => x.Code)
+                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
 
             RuleFor(x => x.EngName)
-                .NotEmpty().WithMessage(x => _localizer.GetMessage("EngNameRequired", _ContextService.GetCurrentLanguage()))
-                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
+                .NotEmpty().WithMessage(localizer.GetMessage("EngNameRequired", lang))
+                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
 
             RuleFor(x => x.ArbName)
-           .NotEmpty().WithMessage(x => _localizer.GetMessage("ArbNameRequired", _ContextService.GetCurrentLanguage()))
-           .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
+                .NotEmpty().WithMessage(localizer.GetMessage("ArbNameRequired", lang))
+                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
+                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
 
             RuleFor(x => x.Remarks)
-                .MaximumLength(2048).WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 2048));
+                .MaximumLength(2048).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 2048));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Abstractions;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Infrastructure.Services
 {
@@ -41,6 +42,17 @@ namespace Infrastructure.Services
         {
             var context = _httpContextAccessor.HttpContext;
             return context?.Items.ContainsKey("CompanyId") == true && context.Items["CompanyId"] != null;
+        }
+
+        public int? GetCurrentUserId()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            var userIdString = context?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (int.TryParse(userIdString, out int userId))
+                return userId;
+
+            return null;
         }
     }
 }

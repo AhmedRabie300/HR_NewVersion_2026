@@ -39,12 +39,7 @@ namespace Application.System.MasterData.Company.Commands
                 var lang = _ContextService.GetCurrentLanguage();
 
                 var company = await _repo.GetByIdAsync(request.Data.Id);
-                if (company == null)
-                    throw new NotFoundException("Update Company",string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Company", lang),
-                        request.Data.Id));
-
+           
                 
                     company.UpdateBasicInfo(
                         request.Data.EngName,

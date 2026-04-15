@@ -1,7 +1,9 @@
-﻿using Application.System.MasterData.BloodGroup.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.BloodGroup.Commands;
 using Application.System.MasterData.BloodGroup.Dtos;
 using Application.System.MasterData.BloodGroup.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -17,7 +19,6 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new ListBloodGroups.Query(), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("BloodGroups", "View")
             .WithName("GetAllBloodGroups");
 
             group.MapGet("/paged", async (
@@ -31,7 +32,6 @@ namespace API.System.MasterData
                     new GetPagedBloodGroups.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("BloodGroups", "View")
             .WithName("GetPagedBloodGroups");
 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -39,15 +39,19 @@ namespace API.System.MasterData
                 var result = await mediator.Send(new GetBloodGroupById.Query(id), ct);
                 return Results.Ok(result);
             })
-           // .RequirePermission("BloodGroups", "View")
             .WithName("GetBloodGroupById");
 
-            group.MapPost("/", async (IMediator mediator, CreateBloodGroupDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateBloodGroupDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateBloodGroup.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateBloodGroup.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/blood-groups/{id}", new { id });
             })
-           // .RequirePermission("BloodGroups", "Add")
             .WithName("CreateBloodGroup");
 
             group.MapPut("/{id:int}", async (
@@ -60,16 +64,7 @@ namespace API.System.MasterData
                 await mediator.Send(new UpdateBloodGroup.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("BloodGroups", "Edit")
             .WithName("UpdateBloodGroup");
-
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteBloodGroup.Command(id), ct);
-                return Results.Accepted("/master-data/blood-groups/{id}",result);
-            })
-           // .RequirePermission("BloodGroups", "Delete")
-            .WithName("DeleteBloodGroup");
 
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
@@ -80,8 +75,14 @@ namespace API.System.MasterData
                 await mediator.Send(new SoftDeleteBloodGroup.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-           // .RequirePermission("BloodGroups", "Delete")
             .WithName("SoftDeleteBloodGroup");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteBloodGroup.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteBloodGroup");
 
             return routes;
         }

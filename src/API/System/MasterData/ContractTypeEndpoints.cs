@@ -1,8 +1,9 @@
-﻿using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.ContractType.Commands;
 using Application.System.MasterData.ContractType.Dtos;
 using Application.System.MasterData.ContractType.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -13,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/contract-types")
                 .WithTags("ContractTypes");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListContractTypes.Query(), ct);
@@ -21,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllContractTypes");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -35,9 +34,7 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedContractTypes");
 
-     
-
-            // GET by id
+         
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetContractTypeById.Query(id), ct);
@@ -45,15 +42,19 @@ namespace API.System.MasterData
             })
             .WithName("GetContractTypeById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateContractTypeDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateContractTypeDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateContractType.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateContractType.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/contract-types/{id}", new { id });
             })
             .WithName("CreateContractType");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -66,7 +67,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateContractType");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -77,6 +77,13 @@ namespace API.System.MasterData
                 return Results.NoContent();
             })
             .WithName("SoftDeleteContractType");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteContractType.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteContractType");
 
             return routes;
         }

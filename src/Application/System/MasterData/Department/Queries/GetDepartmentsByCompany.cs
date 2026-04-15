@@ -1,5 +1,4 @@
-﻿// Application/System/MasterData/Department/Queries/GetDepartmentsByCompany.cs
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
@@ -10,13 +9,13 @@ namespace Application.System.MasterData.Department.Queries
 {
     public static class GetDepartmentsByCompany
     {
-        public record Query : IRequest<List<DepartmentDto>>;
+         public record Query : IRequest<List<DepartmentDto>>;
 
         public sealed class Validator : AbstractValidator<Query>
         {
             public Validator()
             {
-                // لا توجد قواعد
+                
             }
         }
 
@@ -45,24 +44,19 @@ namespace Application.System.MasterData.Department.Queries
                 var lang = _contextService.GetCurrentLanguage();
 
                 var company = await _companyRepo.GetByIdAsync(companyId);
-                if (company == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Company", lang),
-                        companyId,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Company", lang), companyId));
-
+             
                 var departments = await _repo.GetByCompanyIdAsync(companyId);
 
                 return departments.Select(d => new DepartmentDto(
                     Id: d.Id,
                     Code: d.Code,
                     CompanyId: d.CompanyId,
-                    CompanyName: company.EngName ?? company.ArbName,
+                    CompanyName: lang == 2 ? company.ArbName : company.EngName,
                     EngName: d.EngName,
                     ArbName: d.ArbName,
                     ArbName4S: d.ArbName4S,
                     ParentId: d.ParentId,
-                    ParentDepartmentName: d.ParentDepartment?.EngName ?? d.ParentDepartment?.ArbName,
+                    ParentDepartmentName: d.ParentDepartment != null ? (lang == 2 ? d.ParentDepartment.ArbName : d.ParentDepartment.EngName) : null,
                     Remarks: d.Remarks,
                     CostCenterCode: d.CostCenterCode,
                     RegDate: d.RegDate,

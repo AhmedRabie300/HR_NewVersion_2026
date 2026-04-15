@@ -13,7 +13,6 @@
         decimal? Amount,
         int? NoDecimalPlaces,
         string? Remarks,
-        int? RegUserId,
         int? regComputerId
     );
 }

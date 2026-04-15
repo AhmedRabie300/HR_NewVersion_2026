@@ -1,7 +1,9 @@
-﻿using Application.System.MasterData.Country.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Country.Commands;
 using Application.System.MasterData.Country.Dtos;
 using Application.System.MasterData.Country.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -12,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/countries")
                 .WithTags("Countries");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListCountries.Query(), ct);
@@ -20,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllCountries");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -33,8 +33,8 @@ namespace API.System.MasterData
                 return Results.Ok(result);
             })
             .WithName("GetPagedCountries");
+ 
 
-            // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetCountryById.Query(id), ct);
@@ -42,16 +42,19 @@ namespace API.System.MasterData
             })
             .WithName("GetCountryById");
  
-
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateCountryDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateCountryDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateCountry.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateCountry.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/countries/{id}", new { id });
             })
             .WithName("CreateCountry");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -64,7 +67,7 @@ namespace API.System.MasterData
             })
             .WithName("UpdateCountry");
 
-             group.MapDelete("/{id:int}/soft", async (
+            group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
                 int? regUserId,
@@ -75,10 +78,7 @@ namespace API.System.MasterData
             })
             .WithName("SoftDeleteCountry");
 
-             group.MapDelete("/{id:int}", async (
-                IMediator mediator,
-                int id,
-                CancellationToken ct) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new DeleteCountry.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();

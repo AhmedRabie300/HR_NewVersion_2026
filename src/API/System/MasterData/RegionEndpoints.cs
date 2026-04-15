@@ -1,7 +1,9 @@
-﻿using Application.System.MasterData.Region.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.Region.Commands;
 using Application.System.MasterData.Region.Dtos;
 using Application.System.MasterData.Region.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -12,14 +14,14 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/regions")
                 .WithTags("Regions");
 
-             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
+            group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListRegions.Query(), ct);
                 return Results.Ok(result);
             })
             .WithName("GetAllRegions");
 
-             group.MapGet("/paged", async (
+            group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
@@ -32,28 +34,34 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedRegions");
 
-             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new GetRegionById.Query(id), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetRegionById");
-
-             group.MapGet("/by-country/{countryId:int}", async (IMediator mediator, int countryId, CancellationToken ct) =>
+            group.MapGet("/by-country/{countryId:int}", async (IMediator mediator, int countryId, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetRegionsByCountryId.Query(countryId), ct);
                 return Results.Ok(result);
             })
             .WithName("GetRegionsByCountryId");
 
-             group.MapPost("/", async (IMediator mediator, CreateRegionDto dto, CancellationToken ct) =>
+            group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateRegion.Command(dto), ct);
+                var result = await mediator.Send(new GetRegionById.Query(id), ct);
+                return Results.Ok(result);
+            })
+            .WithName("GetRegionById");
+
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateRegionDto dto,
+                CancellationToken ct) =>
+            {
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateRegion.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/regions/{id}", new { id });
             })
             .WithName("CreateRegion");
 
-             group.MapPut("/{id:int}", async (
+            group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 UpdateRegionDto dto,
@@ -65,7 +73,7 @@ namespace API.System.MasterData
             })
             .WithName("UpdateRegion");
 
-             group.MapDelete("/{id:int}/soft", async (
+            group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
                 int? regUserId,
@@ -76,10 +84,7 @@ namespace API.System.MasterData
             })
             .WithName("SoftDeleteRegion");
 
-             group.MapDelete("/{id:int}", async (
-                IMediator mediator,
-                int id,
-                CancellationToken ct) =>
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new DeleteRegion.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();

@@ -48,12 +48,7 @@ namespace Application.System.MasterData.Sector.Queries
                 var lang = _contextService.GetCurrentLanguage();
 
                 var company = await _companyRepo.GetByIdAsync(companyId);
-                if (company == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Company", lang),
-                        companyId,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Company", lang), companyId));
-
+       
                 var sectors = await _repo.GetByCompanyIdAsync(companyId);
 
                 return sectors.Select(s => new SectorDto(

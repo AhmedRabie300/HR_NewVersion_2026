@@ -69,6 +69,8 @@ namespace Infrastructure
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<IRegionRepository, RegionRepository>();
             services.AddScoped<IBankRepository, BankRepository>();
+            services.AddScoped<ICodeGenerationService, CodeGenerationService>();
+
             //HRS
             services.AddScoped<IVacationsPaidTypeRepository, VacationsPaidTypeRepository>();
             services.AddScoped<IVacationsTypeRepository, VacationsTypeRepository>();

@@ -6,9 +6,7 @@
         string? ArbName,
         string? ArbName4S,
         int CountryId,
-        int? CompanyId,
         string? Remarks,
-        int? RegUserId,
         int? RegComputerId
     );
 }

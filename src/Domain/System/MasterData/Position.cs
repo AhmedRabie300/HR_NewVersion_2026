@@ -22,12 +22,10 @@ namespace Domain.System.MasterData
         public string? PositionBudget { get; private set; }
         public int? AppraisalTypeGroupId { get; private set; }
 
-        // Navigation properties
-        public Position? ParentPosition { get; private set; }
+         public Position? ParentPosition { get; private set; }
         public ICollection<Position>? ChildPositions { get; private set; }
-        // public PositionLevel? PositionLevel { get; private set; } // هتضاف بعدين
-
-        private Position() { } // For EF Core
+ 
+        private Position() { } 
 
         public Position(
             string code,

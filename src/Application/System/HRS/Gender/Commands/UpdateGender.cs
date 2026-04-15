@@ -54,8 +54,7 @@ namespace Application.System.HRS.Gender.Commands
                         request.Data.Id,
                         string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Gender", lang), request.Data.Id));
 
-                // Check code uniqueness if code is being changed
-                if (request.Data.Code != null && request.Data.Code != entity.Code)
+                 if (request.Data.Code != null && request.Data.Code != entity.Code)
                 {
                     if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.Id))
                         throw new ConflictException(string.Format(

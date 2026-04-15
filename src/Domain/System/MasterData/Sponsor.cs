@@ -8,7 +8,7 @@ namespace Domain.System.MasterData
         public string? EngName { get; private set; }
         public string? ArbName { get; private set; }
         public string? ArbName4S { get; private set; }
-        public int? SponsorNumber { get; private set; }
+        public string? SponsorNumber { get; private set; }
         public int? RegUserId { get; private set; }
         public int? RegComputerId { get; private set; }
         public int CompanyId { get; private set; }
@@ -24,7 +24,7 @@ namespace Domain.System.MasterData
             string? engName,
             string? arbName,
             string? arbName4S,
-            int? sponsorNumber,
+            string? sponsorNumber,
             int? regUserId,
             int? regComputerId,
             int companyId)
@@ -44,12 +44,12 @@ namespace Domain.System.MasterData
             string? engName,
             string? arbName,
             string? arbName4S,
-            int? sponsorNumber)
+            string? sponsorNumber)
         {
             if (engName != null) EngName = engName;
             if (arbName != null) ArbName = arbName;
             if (arbName4S != null) ArbName4S = arbName4S;
-            if (sponsorNumber.HasValue) SponsorNumber = sponsorNumber;
+            if (sponsorNumber != null) SponsorNumber = sponsorNumber;
         }
 
         public void UpdateCompany(int companyId)

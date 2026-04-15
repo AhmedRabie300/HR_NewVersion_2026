@@ -7,6 +7,7 @@
         bool IsEnglish();
         int GetCurrentCompanyId();
         bool HasCompanyId();
+        int? GetCurrentUserId();
 
     }
 }

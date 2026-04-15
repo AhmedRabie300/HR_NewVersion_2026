@@ -1,12 +1,10 @@
-﻿// Application/System/MasterData/DependantType/Commands/UpdateDependantType.cs
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.DependantType.Dtos;
 using Application.System.MasterData.DependantType.Validators;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.DependantType.Commands
 {
@@ -16,47 +14,48 @@ namespace Application.System.MasterData.DependantType.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateDependantTypeValidator(_localizer, _ContextService));
+                    .SetValidator(new UpdateDependantTypeValidator(_localizer, _contextService));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IDependantTypeRepository _repo;
-            private readonly IContextService _ContextService;
+            private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
 
             public Handler(
                 IDependantTypeRepository repo,
-                IContextService ContextService,
+                IContextService contextService,
                 ILocalizationService localizer)
             {
                 _repo = repo;
-                _ContextService = ContextService;
+                _contextService = contextService;
                 _localizer = localizer;
             }
 
-
-
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
+                var lang = _contextService.GetCurrentLanguage();
+                var companyId = _contextService.GetCurrentCompanyId();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound",string.Format(
-                        _localizer.GetMessage("NotFound", lang),
+                    throw new NotFoundException(
                         _localizer.GetMessage("DependantType", lang),
-                        request.Data.Id));
+                        request.Data.Id,
+                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("DependantType", lang), request.Data.Id));
 
-                 if (entity.CompanyId != companyId)
+                if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Dependant type does not belong to your company");
 
                 entity.Update(

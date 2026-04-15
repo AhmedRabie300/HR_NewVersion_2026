@@ -1,9 +1,9 @@
-﻿// API/System/MasterData/DependantTypeEndpoints.cs
-using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.DependantType.Commands;
 using Application.System.MasterData.DependantType.Dtos;
 using Application.System.MasterData.DependantType.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -14,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/dependant-types")
                 .WithTags("DependantTypes");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListDependantTypes.Query(), ct);
@@ -22,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllDependantTypes");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -36,8 +34,7 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedDependantTypes");
 
-           
-            // GET by id
+         
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetDependantTypeById.Query(id), ct);
@@ -45,15 +42,19 @@ namespace API.System.MasterData
             })
             .WithName("GetDependantTypeById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateDependantTypeDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateDependantTypeDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateDependantType.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateDependantType.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/dependant-types/{id}", new { id });
             })
             .WithName("CreateDependantType");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -66,7 +67,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateDependantType");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -77,6 +77,13 @@ namespace API.System.MasterData
                 return Results.NoContent();
             })
             .WithName("SoftDeleteDependantType");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteDependantType.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteDependantType");
 
             return routes;
         }

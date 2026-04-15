@@ -14,7 +14,6 @@
         string? CostCenterCode2,
         string? CostCenterCode3,
         string? CostCenterCode4,
-        int? RegUserId,
-        int? regComputerId
+        int? RegComputerId
     );
 }

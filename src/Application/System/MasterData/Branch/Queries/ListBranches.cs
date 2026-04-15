@@ -24,9 +24,7 @@ namespace Application.System.MasterData.Branch.Queries
             {
                 var companyId = _contextService.GetCurrentCompanyId();
 
-                if (companyId == 0)
-                    throw new UnauthorizedAccessException("Company ID is required in request header (X-CompanyId)");
-
+               
                 var branches = await _repo.GetAllAsync(companyId);
 
                 return branches.Select(b => new BranchDto(

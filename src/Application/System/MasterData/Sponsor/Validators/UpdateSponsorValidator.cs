@@ -29,10 +29,7 @@ namespace Application.System.MasterData.Sponsor.Validators
                 .MaximumLength(100).When(x => x.ArbName4S != null)
                 .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
 
-            RuleFor(x => x.SponsorNumber)
-                .GreaterThan(0).When(x => x.SponsorNumber.HasValue)
-                .WithMessage(x => _localizer.GetMessage("SponsorNumberMustBePositive", _ContextService.GetCurrentLanguage()));
-
+             
           
             RuleFor(x => x)
                 .Must(HaveAtLeastOneField)
@@ -42,7 +39,7 @@ namespace Application.System.MasterData.Sponsor.Validators
         private bool HaveAtLeastOneField(UpdateSponsorDto dto)
         {
             return dto.EngName != null || dto.ArbName != null ||
-                   dto.ArbName4S != null || dto.SponsorNumber.HasValue;
+                   dto.ArbName4S != null || dto.SponsorNumber != null;
          }
     }
 }

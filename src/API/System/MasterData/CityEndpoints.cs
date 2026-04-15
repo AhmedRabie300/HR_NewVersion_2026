@@ -1,7 +1,9 @@
-﻿using Application.System.MasterData.City.Commands;
+﻿using Application.Common.Abstractions;
+using Application.System.MasterData.City.Commands;
 using Application.System.MasterData.City.Dtos;
 using Application.System.MasterData.City.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -12,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/cities")
                 .WithTags("Cities");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListCities.Query(), ct);
@@ -20,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllCities");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -33,8 +33,7 @@ namespace API.System.MasterData
                 return Results.Ok(result);
             })
             .WithName("GetPagedCities");
-
-            // GET by id
+ 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetCityById.Query(id), ct);
@@ -42,15 +41,20 @@ namespace API.System.MasterData
             })
             .WithName("GetCityById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateCityDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "X-Company-Id")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateCityDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateCity.Command(dto), ct);
+                 var regUserId = contextService.GetCurrentUserId();
+
+                var id = await mediator.Send(new CreateCity.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/cities/{id}", new { id });
             })
             .WithName("CreateCity");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -63,7 +67,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateCity");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -74,6 +77,13 @@ namespace API.System.MasterData
                 return Results.NoContent();
             })
             .WithName("SoftDeleteCity");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteCity.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteCity");
 
             return routes;
         }

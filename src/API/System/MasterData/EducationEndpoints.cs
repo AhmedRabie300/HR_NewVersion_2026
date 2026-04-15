@@ -1,9 +1,9 @@
-﻿// API/System/MasterData/EducationEndpoints.cs
-using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.Education.Commands;
 using Application.System.MasterData.Education.Dtos;
 using Application.System.MasterData.Education.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -14,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/educations")
                 .WithTags("Educations");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListEducations.Query(), ct);
@@ -22,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllEducations");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -35,8 +33,7 @@ namespace API.System.MasterData
                 return Results.Ok(result);
             })
             .WithName("GetPagedEducations");
-
-            // GET by id
+ 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetEducationById.Query(id), ct);
@@ -44,15 +41,19 @@ namespace API.System.MasterData
             })
             .WithName("GetEducationById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateEducationDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateEducationDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateEducation.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateEducation.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/educations/{id}", new { id });
             })
             .WithName("CreateEducation");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -65,7 +66,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateEducation");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -76,6 +76,13 @@ namespace API.System.MasterData
                 return Results.NoContent();
             })
             .WithName("SoftDeleteEducation");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteEducation.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteEducation");
 
             return routes;
         }

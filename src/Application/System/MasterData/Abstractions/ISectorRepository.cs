@@ -22,11 +22,9 @@ namespace Application.System.MasterData.Abstractions
         Task<List<Domain.System.MasterData.Sector>> GetActiveSectorsAsync(int companyId);  
         Task<PagedResult<Domain.System.MasterData.Sector>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId);  // ← companyId إجباري
 
-        // Soft delete
-        Task SoftDeleteAsync(int id, int? regUserId = null);
+         Task SoftDeleteAsync(int id, int? regUserId = null);
 
-        // Save changes
-        Task SaveChangesAsync(CancellationToken ct);
+         Task SaveChangesAsync(CancellationToken ct);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
 
     }

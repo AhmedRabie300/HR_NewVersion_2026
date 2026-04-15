@@ -44,8 +44,7 @@ namespace Application.System.MasterData.Sector.Commands
                     );
                 }
 
-                // Check if sector has children
-                var children = await _repo.GetByParentIdAsync(request.Id);
+                 var children = await _repo.GetByParentIdAsync(request.Id);
                 if (children.Any())
                 {
                     throw new DomainException(GetFormattedMessage("CannotDeleteHasChildren", request.Lang, GetMessage("Sector", request.Lang)));

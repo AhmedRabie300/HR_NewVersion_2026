@@ -7,7 +7,6 @@
         string? ArbName4S,
         bool? IsForCompany,
         string? Remarks,
-        int? RegUserId,
         int? RegComputerId,
         int? DocumentTypesGroupId
     );

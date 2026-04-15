@@ -25,7 +25,7 @@ namespace API.Middleware
 
             if (!isPublicEndpoint && !companyId.HasValue)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
                 await context.Response.WriteAsJsonAsync(new
                 {
                     success = false,

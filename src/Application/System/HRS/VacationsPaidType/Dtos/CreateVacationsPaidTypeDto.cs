@@ -3,7 +3,6 @@
     public sealed record CreateVacationsPaidTypeDto(
         string? Code,
         string? EngName,
-        string? ArbName,
-        int? RegUserId
-    );
+        string? ArbName
+     );
 }

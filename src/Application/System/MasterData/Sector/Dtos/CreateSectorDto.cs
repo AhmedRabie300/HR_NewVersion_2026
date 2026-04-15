@@ -7,7 +7,6 @@
         string? ArbName4S,
         int? ParentId,
         string? Remarks,
-        int? RegUserId,
-        int? regComputerId
+        int? RegComputerId
     );
 }

@@ -1,25 +1,32 @@
-﻿using Application.System.MasterData.Abstractions;
+﻿using Application.Common;
 using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using FluentValidation;
 using MediatR;
-using Application.Common;
 
 namespace Application.System.MasterData.BloodGroup.Commands
 {
     public static class DeleteBloodGroup
     {
-        public record Command(int Id, int Lang = 1) : IRequest<int>;
+        public record Command(int Id) : IRequest<bool>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localizer)
+            private readonly IContextService _contextService;
+            private readonly ILocalizationService _localizer;
+
+            public Validator(IContextService contextService, ILocalizationService localizer)
             {
+                _contextService = contextService;
+                _localizer = localizer;
+
+                var lang = _contextService.GetCurrentLanguage();
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(localizer.GetMessage("IdGreaterThanZero", 1));
+                    .GreaterThan(0).WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
             }
         }
 
-        public class Handler : IRequestHandler<Command, int>
+        public class Handler : IRequestHandler<Command, bool>
         {
             private readonly IBloodGroupRepository _repo;
 
@@ -28,15 +35,15 @@ namespace Application.System.MasterData.BloodGroup.Commands
                 _repo = repo;
             }
 
-            public async Task<int> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
             {
                 if (!await _repo.ExistsAsync(request.Id))
-                     throw new NotFoundException("Delete Blood Group",$"BloodGroup with Id {request.Id} not found.");
+                    return false;
 
                 await _repo.DeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return request.Id;
+                return true;
             }
         }
     }

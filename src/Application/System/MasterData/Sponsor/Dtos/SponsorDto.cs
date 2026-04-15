@@ -6,7 +6,7 @@
     string? EngName,
     string? ArbName,
     string? ArbName4S,
-    int? SponsorNumber,
+    string? SponsorNumber,
     DateTime RegDate,
     DateTime? CancelDate,
     bool IsActive

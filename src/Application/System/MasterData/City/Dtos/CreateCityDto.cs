@@ -10,7 +10,6 @@
         string? TimeZone,
         int? CountryId,
         string? Remarks,
-        int? RegUserId,
         int? RegComputerId
     );
 }

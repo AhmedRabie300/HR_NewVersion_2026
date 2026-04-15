@@ -1,9 +1,9 @@
-﻿// API/System/MasterData/DepartmentEndpoints.cs
-using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.Department.Commands;
 using Application.System.MasterData.Department.Dtos;
 using Application.System.MasterData.Department.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -14,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/departments")
                 .WithTags("Departments");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListDepartments.Query(), ct);
@@ -22,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllDepartments");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -36,7 +34,16 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedDepartments");
 
-            // GET by id
+            // ✅ تعديل: من غير companyId في الـ URL
+            group.MapGet("/by-company", async (
+                IMediator mediator,
+                CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new GetDepartmentsByCompany.Query(), ct);
+                return Results.Ok(result);
+            })
+            .WithName("GetDepartmentsByCompany");
+
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetDepartmentById.Query(id), ct);
@@ -44,16 +51,19 @@ namespace API.System.MasterData
             })
             .WithName("GetDepartmentById");
 
-  
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateDepartmentDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateDepartmentDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateDepartment.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateDepartment.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/departments/{id}", new { id });
             })
             .WithName("CreateDepartment");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -66,7 +76,24 @@ namespace API.System.MasterData
             })
             .WithName("UpdateDepartment");
 
-      
+            group.MapDelete("/{id:int}/soft", async (
+                IMediator mediator,
+                int id,
+                int? regUserId,
+                CancellationToken ct) =>
+            {
+                await mediator.Send(new SoftDeleteDepartment.Command(id, regUserId), ct);
+                return Results.NoContent();
+            })
+            .WithName("SoftDeleteDepartment");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteDepartment.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteDepartment");
+
             return routes;
         }
     }

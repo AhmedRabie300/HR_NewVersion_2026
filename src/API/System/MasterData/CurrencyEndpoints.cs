@@ -1,9 +1,9 @@
-﻿// API/System/MasterData/CurrencyEndpoints.cs
-using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.Currency.Commands;
 using Application.System.MasterData.Currency.Dtos;
 using Application.System.MasterData.Currency.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -14,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/currencies")
                 .WithTags("Currencies");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListCurrencies.Query(), ct);
@@ -22,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllCurrencies");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -36,7 +34,8 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedCurrencies");
 
-            // GET by id
+         
+
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetCurrencyById.Query(id), ct);
@@ -44,15 +43,19 @@ namespace API.System.MasterData
             })
             .WithName("GetCurrencyById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateCurrencyDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateCurrencyDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateCurrency.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateCurrency.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/currencies/{id}", new { id });
             })
             .WithName("CreateCurrency");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -65,7 +68,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateCurrency");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -76,6 +78,13 @@ namespace API.System.MasterData
                 return Results.NoContent();
             })
             .WithName("SoftDeleteCurrency");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteCurrency.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteCurrency");
 
             return routes;
         }

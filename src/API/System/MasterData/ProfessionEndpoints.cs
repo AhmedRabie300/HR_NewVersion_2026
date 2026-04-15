@@ -1,9 +1,9 @@
-﻿// API/System/MasterData/ProfessionEndpoints.cs
-using API.Helpers;
+﻿using Application.Common.Abstractions;
 using Application.System.MasterData.Profession.Commands;
 using Application.System.MasterData.Profession.Dtos;
 using Application.System.MasterData.Profession.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.MasterData
 {
@@ -14,7 +14,6 @@ namespace API.System.MasterData
             var group = routes.MapGroup("/master-data/professions")
                 .WithTags("Professions");
 
-            // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListProfessions.Query(), ct);
@@ -22,7 +21,6 @@ namespace API.System.MasterData
             })
             .WithName("GetAllProfessions");
 
-            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -36,7 +34,7 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedProfessions");
 
-            // GET by id
+     
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetProfessionById.Query(id), ct);
@@ -44,15 +42,19 @@ namespace API.System.MasterData
             })
             .WithName("GetProfessionById");
 
-            // POST create
-            group.MapPost("/", async (IMediator mediator, CreateProfessionDto dto, CancellationToken ct) =>
+            group.MapPost("/", async (
+                IMediator mediator,
+                [FromHeader(Name = "CompanyId")] int companyId,
+                [FromServices] IContextService contextService,
+                CreateProfessionDto dto,
+                CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateProfession.Command(dto), ct);
+                var regUserId = contextService.GetCurrentUserId();
+                var id = await mediator.Send(new CreateProfession.Command(companyId, regUserId, dto), ct);
                 return Results.Created($"/master-data/professions/{id}", new { id });
             })
             .WithName("CreateProfession");
 
-            // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -65,7 +67,6 @@ namespace API.System.MasterData
             })
             .WithName("UpdateProfession");
 
-            // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
@@ -76,6 +77,13 @@ namespace API.System.MasterData
                 return Results.NoContent();
             })
             .WithName("SoftDeleteProfession");
+
+            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new DeleteProfession.Command(id), ct);
+                return result ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteProfession");
 
             return routes;
         }
