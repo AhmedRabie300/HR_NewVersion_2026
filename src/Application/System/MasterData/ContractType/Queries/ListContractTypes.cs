@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/ContractType/Queries/ListContractTypes.cs
+// Application/System/MasterData/ContractType/Queries/ListContractTypes.cs
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.ContractType.Dtos;
@@ -21,8 +21,6 @@ namespace Application.System.MasterData.ContractType.Queries
                 _repo = repo;
                 _ContextService = ContextService;
             }
-
-         
 
             public async Task<List<ContractTypeDto>> Handle(Query request, CancellationToken cancellationToken)
             {

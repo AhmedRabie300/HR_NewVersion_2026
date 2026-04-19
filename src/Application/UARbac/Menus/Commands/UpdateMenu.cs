@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
 using Application.UARbac.Menus.Dtos;
@@ -14,58 +14,38 @@ namespace Application.UARbac.Menus.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateMenuValidator(_contextService, _localizer));
+                    .SetValidator(new UpdateMenuValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IMenuRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IMenuRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IMenuRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var menu = await _repo.GetByIdAsync(request.Data.Id);
                 if (menu == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Menu", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Menu", lang), request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Menu", request.Data.Id));
 
                 if (request.Data.ParentId.HasValue)
                 {
                     if (request.Data.ParentId == menu.Id)
-                        throw new ConflictException(
-                            _localizer.GetMessage("Menu", lang),
-                            "ParentId",
-                            request.Data.ParentId.Value.ToString(),
-                            _localizer.GetMessage("MenuCannotBeParentOfItself", lang));
+                        throw new ConflictException(_msg.Get("MenuCannotBeParentOfItself"));
 
                     var parentExists = await _repo.ExistsAsync(request.Data.ParentId.Value);
                     if (!parentExists)
-                        throw new NotFoundException(
-                            _localizer.GetMessage("ParentMenu", lang),
-                            request.Data.ParentId.Value,
-                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("ParentMenu", lang), request.Data.ParentId.Value));
+                        throw new NotFoundException(_msg.NotFound("ParentMenu", request.Data.ParentId.Value));
                 }
 
                 menu.UpdateBasicInfo(

@@ -1,34 +1,33 @@
-﻿using Application.Common.Abstractions;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Document.Dtos;
 using FluentValidation;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Document.Validators
 {
     public class CreateDocumentValidator : AbstractValidator<CreateDocumentDto>
     {
-        public CreateDocumentValidator(ILocalizationService localizer, IContextService contextService)
+        public CreateDocumentValidator(IValidationMessages msg)
         {
-            var lang = contextService.GetCurrentLanguage();
-
             // ✅ إضافة التحقق من Code
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .MaximumLength(50).WithMessage(msg.Format("MaxLength", 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.Remarks)
-                .MaximumLength(2048).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 2048));
+                .MaximumLength(2048).WithMessage(msg.Format("MaxLength", 2048));
 
             RuleFor(x => x.DocumentTypesGroupId)
                 .GreaterThan(0).When(x => x.DocumentTypesGroupId.HasValue)
-                .WithMessage(localizer.GetMessage("DocumentTypesGroupRequired", lang));
+                .WithMessage(msg.Get("DocumentTypesGroupRequired"));
         }
     }
 }

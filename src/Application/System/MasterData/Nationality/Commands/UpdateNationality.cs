@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Nationality.Dtos;
 using Application.System.MasterData.Nationality.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Nationality.Commands
 {
@@ -14,54 +15,42 @@ namespace Application.System.MasterData.Nationality.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateNationalityValidator(localizer, ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateNationalityValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly INationalityRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(INationalityRepository repo, IContextService ContextService, ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(INationalityRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Nationality", lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Nationality", request.Data.Id));
 
                 // Update basic info
-               
+
                     entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
                         request.Data.Remarks
                     );
-                
 
-             
                     entity.UpdateTravelInfo(
                         request.Data.TravelRoute,
                         request.Data.TravelClass,
                         request.Data.TicketAmount
                     );
-                 
 
                 // Update main nationality status
                 if (request.Data.IsMainNationality.HasValue)

@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Profession/Commands/UpdateProfession.cs
+// Application/System/MasterData/Profession/Commands/UpdateProfession.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
@@ -7,6 +7,7 @@ using Application.System.MasterData.Profession.Validators;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Profession.Commands
 {
@@ -16,43 +17,31 @@ namespace Application.System.MasterData.Profession.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateProfessionValidator(_localizer, _ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateProfessionValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IProfessionRepository _repo;
+                        private readonly IValidationMessages _msg;
             private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(
-                IProfessionRepository repo,
-                IContextService ContextService,
-                ILocalizationService localizer)
+public Handler(
+                IProfessionRepository repo, IValidationMessages msg, IContextService ContextService)
             {
                 _repo = repo;
+                _msg = msg;
                 _ContextService = ContextService;
-                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Profession", lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Profession", request.Data.Id));
 
                  if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Profession does not belong to your company");

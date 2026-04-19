@@ -1,9 +1,10 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.City.Dtos;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.City.Queries
 {
@@ -13,42 +14,30 @@ namespace Application.System.MasterData.City.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _contextService;
-
-            public Validator(ILocalizationService localizer, IContextService contextService)
+            public Validator(IValidationMessages msg)
             {
-                _localizer = localizer;
-                _contextService = contextService;
-
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, CityDto>
         {
             private readonly ICityRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(ICityRepository repo, IContextService contextService, ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(ICityRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<CityDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                var lang = 1;
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("City", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("City", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("City", request.Id));
 
                 return new CityDto(
                     Id: entity.Id,

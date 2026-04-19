@@ -1,11 +1,10 @@
-﻿// Application/System/MasterData/DependantType/Queries/GetDependantTypeById.cs
+// Application/System/MasterData/DependantType/Queries/GetDependantTypeById.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.DependantType.Dtos;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.DependantType.Queries
 {
@@ -15,48 +14,31 @@ namespace Application.System.MasterData.DependantType.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _ContextService;
-
-            public Validator(ILocalizationService localizer, IContextService ContextService)
+            public Validator(IValidationMessages msg)
             {
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _ContextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, DependantTypeDto>
         {
             private readonly IDependantTypeRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 IDependantTypeRepository repo,
-                IContextService ContextService,
-                ILocalizationService localizer)
+                IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
-
-     
 
             public async Task<DependantTypeDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("DependantType", lang),
-                        request.Id));
-
-                if (entity.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Dependant type does not belong to your company");
+                    throw new NotFoundException(_msg.NotFound("DependantType", request.Id));
 
                 return new DependantTypeDto(
                     Id: entity.Id,

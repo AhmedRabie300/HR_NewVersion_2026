@@ -31,12 +31,14 @@ namespace Application.System.HRS.VacationsPaidType.Queries
             private readonly IVacationsPaidTypeRepository _repo;
             private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IVacationsPaidTypeRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IVacationsPaidTypeRepository repo, IContextService contextService, ILocalizationService localizer, IValidationMessages msg)
             {
                 _repo = repo;
                 _contextService = contextService;
                 _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<VacationsPaidTypeDto> Handle(Query request, CancellationToken cancellationToken)
@@ -45,10 +47,7 @@ namespace Application.System.HRS.VacationsPaidType.Queries
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("VacationsPaidType", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("VacationsPaidType", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("VacationsPaidType", request.Id));
 
                 return new VacationsPaidTypeDto(
                     Id: entity.Id,

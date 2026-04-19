@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Country.Dtos;
 using Application.System.MasterData.Country.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Country.Commands
 {
@@ -14,96 +15,67 @@ namespace Application.System.MasterData.Country.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateCountryValidator(_localizer, _contextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateCountryValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ICountryRepository _repo;
-            private readonly ICurrencyRepository _currencyRepo;
+                        private readonly IValidationMessages _msg;
+private readonly ICurrencyRepository _currencyRepo;
             private readonly INationalityRepository _nationalityRepo;
             private readonly IRegionRepository _regionRepo;
             private readonly ICityRepository _cityRepo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
             public Handler(
-                ICountryRepository repo,
+                ICountryRepository repo, IValidationMessages msg,
                 ICurrencyRepository currencyRepo,
                 INationalityRepository nationalityRepo,
                 IRegionRepository regionRepo,
-                ICityRepository cityRepo,
-                IContextService contextService,
-                ILocalizationService localizer)
+                ICityRepository cityRepo)
             {
                 _repo = repo;
+                _msg = msg;
                 _currencyRepo = currencyRepo;
                 _nationalityRepo = nationalityRepo;
                 _regionRepo = regionRepo;
                 _cityRepo = cityRepo;
-                _contextService = contextService;
-                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Country", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Country", lang), request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Country", request.Data.Id));
 
                 if (request.Data.CurrencyId.HasValue)
                 {
                     var currency = await _currencyRepo.GetByIdAsync(request.Data.CurrencyId.Value);
                     if (currency == null)
-                        throw new NotFoundException(
-                            _localizer.GetMessage("Currency", lang),
-                            request.Data.CurrencyId.Value,
-                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Currency", lang), request.Data.CurrencyId.Value));
+                        throw new NotFoundException(_msg.NotFound("Currency", request.Data.CurrencyId.Value));
                 }
 
                 if (request.Data.NationalityId.HasValue)
                 {
                     var nationality = await _nationalityRepo.GetByIdAsync(request.Data.NationalityId.Value);
                     if (nationality == null)
-                        throw new NotFoundException(
-                            _localizer.GetMessage("Nationality", lang),
-                            request.Data.NationalityId.Value,
-                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Nationality", lang), request.Data.NationalityId.Value));
+                        throw new NotFoundException(_msg.NotFound("Nationality", request.Data.NationalityId.Value));
                 }
 
                 if (request.Data.RegionId.HasValue)
                 {
                     var region = await _regionRepo.GetByIdAsync(request.Data.RegionId.Value);
                     if (region == null)
-                        throw new NotFoundException(
-                            _localizer.GetMessage("Region", lang),
-                            request.Data.RegionId.Value,
-                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Region", lang), request.Data.RegionId.Value));
+                        throw new NotFoundException(_msg.NotFound("Region", request.Data.RegionId.Value));
                 }
 
                 if (request.Data.CapitalId.HasValue)
                 {
                     var capital = await _cityRepo.GetByIdAsync(request.Data.CapitalId.Value);
                     if (capital == null)
-                        throw new NotFoundException(
-                            _localizer.GetMessage("City", lang),
-                            request.Data.CapitalId.Value,
-                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("City", lang), request.Data.CapitalId.Value));
+                        throw new NotFoundException(_msg.NotFound("City", request.Data.CapitalId.Value));
                 }
 
                 entity.Update(

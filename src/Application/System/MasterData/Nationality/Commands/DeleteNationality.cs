@@ -1,49 +1,44 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Nationality.Commands
 {
     public static class DeleteNationality
     {
-        public record Command(int Id) : IRequest<bool>;
+        public record Command(int Id) : IRequest;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                var lang = _contextService.GetCurrentLanguage();
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
-        public class Handler : IRequestHandler<Command, bool>
+        public class Handler : IRequestHandler<Command>
         {
             private readonly INationalityRepository _repo;
 
-            public Handler(INationalityRepository repo)
+                        private readonly IValidationMessages _msg;
+public Handler(INationalityRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
+                _msg = msg;
             }
 
-            public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
+            public async Task Handle(Command request, CancellationToken cancellationToken)
             {
                 if (!await _repo.ExistsAsync(request.Id))
-                    return false;
+                    throw new NotFoundException(_msg.NotFound("Nationality", request.Id));
 
                 await _repo.DeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return true;
             }
         }
     }

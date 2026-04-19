@@ -1,11 +1,10 @@
-﻿// Application/System/MasterData/Currency/Queries/GetCurrencyById.cs
+// Application/System/MasterData/Currency/Queries/GetCurrencyById.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Currency.Dtos;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Currency.Queries
 {
@@ -15,49 +14,31 @@ namespace Application.System.MasterData.Currency.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _ContextService;
-
-            public Validator(ILocalizationService localizer, IContextService ContextService)
+            public Validator(IValidationMessages msg)
             {
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _ContextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, CurrencyDto>
         {
             private readonly ICurrencyRepository _repo;
- 
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 ICurrencyRepository repo,
-                IHttpContextAccessor httpContextAccessor,
-                IContextService ContextService,
-                ILocalizationService localizer)
+                IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
-      
             public async Task<CurrencyDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound",string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Currency", lang),
-                        request.Id));
-
-                if (entity.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Currency does not belong to your company");
+                    throw new NotFoundException(_msg.NotFound("Currency", request.Id));
 
                 return new CurrencyDto(
                     Id: entity.Id,

@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Position.Dtos;
@@ -26,7 +26,8 @@ namespace Application.System.MasterData.Position.Queries
 
             public async Task<PagedResult<PositionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
+                var lang = 1;
+
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,

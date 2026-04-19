@@ -49,9 +49,7 @@ namespace Domain.System.MasterData
             string? costCenterCode1,
             string? costCenterCode2,
             string? costCenterCode3,
-            string? costCenterCode4,
-            int? regUserId,
-            int? regComputerId)
+            string? costCenterCode4)
         {
             Code = code;
             CompanyId = companyId;
@@ -67,9 +65,6 @@ namespace Domain.System.MasterData
             CostCenterCode2 = costCenterCode2;
             CostCenterCode3 = costCenterCode3;
             CostCenterCode4 = costCenterCode4;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         // Update methods

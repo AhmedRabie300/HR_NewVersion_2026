@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.ContractType.Dtos;
 using Application.System.MasterData.ContractType.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.ContractType.Commands
 {
@@ -14,45 +15,28 @@ namespace Application.System.MasterData.ContractType.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateContractTypeValidator(_localizer, _contextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateContractTypeValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IContractTypeRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(
-                IContractTypeRepository repo,
-                IContextService contextService,
-                ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(
+                IContractTypeRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("ContractType", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("ContractType", lang), request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("ContractType", request.Data.Id));
 
                 entity.Update(
                     request.Data.EngName,

@@ -43,13 +43,10 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateEducationDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateEducation.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateEducation.Command( dto), ct);
                 return Results.Created($"/master-data/educations/{id}", new { id });
             })
             .WithName("CreateEducation");
@@ -72,15 +69,15 @@ namespace API.System.MasterData
                 int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteEducation.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteEducation.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteEducation");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteEducation.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+                await mediator.Send(new DeleteEducation.Command(id), ct);
+                Results.NoContent();
             })
             .WithName("DeleteEducation");
 

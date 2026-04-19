@@ -62,8 +62,8 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> ExistsAsync(int id)
             => await _db.DependantTypes.AnyAsync(x => x.Id == id);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId)
-            => await _db.DependantTypes.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
+        public async Task<bool> CodeExistsAsync(string code)
+            => await _db.DependantTypes.AnyAsync(x => x.Code == code);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
             => await _db.DependantTypes.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);

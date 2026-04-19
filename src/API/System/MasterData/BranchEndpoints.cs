@@ -45,28 +45,13 @@ namespace API.System.MasterData
             })
             .WithName("GetBranchById");
 
-            // ✅ GET by company - باستخدام CompanyId من Header
-            group.MapGet("/by-company", async (
-                IMediator mediator,
-                [FromServices] IContextService contextService,
-                CancellationToken ct) =>
-            {
-                var companyId = contextService.GetCurrentCompanyId();
-                var result = await mediator.Send(new GetBranchesByCompany.Query(companyId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetBranchesByCompany");
-
-            // ✅ POST create - باستخدام CompanyId من Header
+          
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateBranchDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateBranch.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateBranch.Command( dto), ct);
                 return Results.Created($"/master-data/branches/{id}", new { id });
             })
             .WithName("CreateBranch");
@@ -88,10 +73,9 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteBranch.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteBranch.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteBranch");
@@ -101,10 +85,10 @@ namespace API.System.MasterData
                 IMediator mediator,
                 int id,
                 CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteBranch.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
+                        {
+                            await mediator.Send(new DeleteBranch.Command(id), ct);
+                            return Results.NoContent();
+                        })
             .WithName("DeleteBranch");
 
             return routes;

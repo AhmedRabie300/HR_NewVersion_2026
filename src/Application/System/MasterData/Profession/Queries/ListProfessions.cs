@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Profession/Queries/ListProfessions.cs
+// Application/System/MasterData/Profession/Queries/ListProfessions.cs
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Profession.Dtos;
@@ -22,13 +22,9 @@ namespace Application.System.MasterData.Profession.Queries
                 _ContextService = ContextService;
             }
 
-     
-
             public async Task<List<ProfessionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var items = await _repo.GetAllAsync(companyId);
 
                 return items.Select(x => new ProfessionDto(

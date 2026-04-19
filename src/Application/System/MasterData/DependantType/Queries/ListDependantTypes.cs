@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/DependantType/Queries/ListDependantTypes.cs
+// Application/System/MasterData/DependantType/Queries/ListDependantTypes.cs
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.DependantType.Dtos;
@@ -21,8 +21,6 @@ namespace Application.System.MasterData.DependantType.Queries
                 _repo = repo;
                 _ContextService = ContextService;
             }
-
-         
 
             public async Task<List<DependantTypeDto>> Handle(Query request, CancellationToken cancellationToken)
             {

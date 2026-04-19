@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Currency/Queries/ListCurrencies.cs
+// Application/System/MasterData/Currency/Queries/ListCurrencies.cs
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Currency.Dtos;
@@ -21,7 +21,6 @@ namespace Application.System.MasterData.Currency.Queries
                 _repo = repo;
                 _ContextService = ContextService;
             }
-     
 
             public async Task<List<CurrencyDto>> Handle(Query request, CancellationToken cancellationToken)
             {

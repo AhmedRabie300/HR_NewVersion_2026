@@ -1,11 +1,10 @@
-﻿// Application/System/MasterData/ContractType/Queries/GetContractTypeById.cs
+// Application/System/MasterData/ContractType/Queries/GetContractTypeById.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.ContractType.Dtos;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Application.System.MasterData.ContractType.Queries
@@ -16,48 +15,31 @@ namespace Application.System.MasterData.ContractType.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _ContextService;
-
-            public Validator(ILocalizationService localizer, IContextService ContextService)
+            public Validator(IValidationMessages msg)
             {
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _ContextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, ContractTypeDto>
         {
             private readonly IContractTypeRepository _repo;
-             private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 IContractTypeRepository repo,
-                IHttpContextAccessor httpContextAccessor,
-                IContextService ContextService,
-                ILocalizationService localizer)
+                IValidationMessages msg)
             {
                 _repo = repo;
-                 _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
- 
 
             public async Task<ContractTypeDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound",string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("ContractType", lang),
-                        request.Id));
-
-                if (entity.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Contract type does not belong to your company");
+                    throw new NotFoundException(_msg.NotFound("ContractType", request.Id));
 
                 return new ContractTypeDto(
                     Id: entity.Id,

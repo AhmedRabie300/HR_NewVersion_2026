@@ -1,7 +1,8 @@
-﻿using Application.Common;
-using Application.UARbac.FormControls.Validators;
+using Application.Common;
+using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
 using Application.UARbac.FormControls.Dtos;
+using Application.UARbac.FormControls.Validators;
 using FluentValidation;
 using MediatR;
 
@@ -13,29 +14,32 @@ public static class Update
 
     public sealed class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(IValidationMessages msg)
         {
             RuleFor(x => x.Dto)
-                  .NotNull().WithMessage("FormControl data is required.")
-                  .SetValidator(new UpdateFormControlValidator());
+                .NotNull().WithMessage(msg.Get("Required"))
+                .SetValidator(new UpdateFormControlValidator(msg));
         }
     }
 
     public sealed class Handler : IRequestHandler<Command, Unit>
     {
         private readonly IFormControlRepository _repo;
-        public Handler(IFormControlRepository repo) => _repo = repo;
+        private readonly IValidationMessages _msg;
+
+        public Handler(IFormControlRepository repo, IValidationMessages msg)
+        {
+            _repo = repo;
+            _msg = msg;
+        }
 
         public async Task<Unit> Handle(Command request, CancellationToken ct)
         {
             var dto = request.Dto;
- ;
             var entity = await _repo.GetByIdAsync(dto.Id, ct);
             if (entity == null)
-            {
-                 throw new NotFoundException("FormControl", dto.Id);
-            }
-            // Only updates these fields, nothing else
+                throw new NotFoundException(_msg.NotFound("FormControl", dto.Id));
+
             entity.UpdateUiSettings(dto.EngCaption, dto.ArbCaption, dto.IsDisabled, dto.IsHide, dto.IsCompulory);
 
             await _repo.SaveChangesAsync(ct);

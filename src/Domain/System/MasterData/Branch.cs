@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Branch : LegacyEntity
+    public class Branch : LegacyEntity, ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -31,7 +31,6 @@ namespace Domain.System.MasterData
 
         public Branch(
             string code,
-            int companyId,
             string? engName,
             string? arbName,
             string? arbName4S,
@@ -41,12 +40,9 @@ namespace Domain.System.MasterData
             bool? defaultAbsent,
             int? prepareDay,
             bool? affectPeriod,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
-            CompanyId = companyId;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
@@ -57,9 +53,6 @@ namespace Domain.System.MasterData
             PrepareDay = prepareDay;
             AffectPeriod = affectPeriod;
             Remarks = remarks;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         // Update methods

@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Currency/Commands/UpdateCurrency.cs
+// Application/System/MasterData/Currency/Commands/UpdateCurrency.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
@@ -7,6 +7,7 @@ using Application.System.MasterData.Currency.Validators;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Currency.Commands
 {
@@ -16,47 +17,34 @@ namespace Application.System.MasterData.Currency.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateCurrencyValidator(_localizer, _ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateCurrencyValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ICurrencyRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
+                        private readonly IValidationMessages _msg;
             private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
+private readonly IHttpContextAccessor _httpContextAccessor;
             public Handler(
-                ICurrencyRepository repo,
-                IHttpContextAccessor httpContextAccessor,
-                IContextService ContextService,
-                ILocalizationService localizer)
+                ICurrencyRepository repo, IValidationMessages msg,
+                IHttpContextAccessor httpContextAccessor, IContextService ContextService)
             {
                 _repo = repo;
+                _msg = msg;
                 _httpContextAccessor = httpContextAccessor;
                 _ContextService = ContextService;
-                _localizer = localizer;
             }
- 
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("Update Currency",string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Currency", lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Currency", request.Data.Id));
 
                  if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Currency does not belong to your company");

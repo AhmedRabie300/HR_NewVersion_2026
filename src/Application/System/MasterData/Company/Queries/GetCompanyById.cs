@@ -1,8 +1,10 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
+using Application.Common.Abstractions;
 
 namespace Application.System.MasterData.Company.Queries
 {
@@ -23,15 +25,17 @@ namespace Application.System.MasterData.Company.Queries
         {
             private readonly ICompanyRepository _repo;
 
-            public Handler(ICompanyRepository repo)
+                        private readonly IValidationMessages _msg;
+public Handler(ICompanyRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
+                _msg = msg;
             }
 
             public async Task<CompanyDto> Handle(Query request, CancellationToken cancellationToken)
             {
                 var company = await _repo.GetByIdAsync(request.Id);
-              
+
                 return new CompanyDto(
                     Id: company.Id,
                     Code: company.Code,

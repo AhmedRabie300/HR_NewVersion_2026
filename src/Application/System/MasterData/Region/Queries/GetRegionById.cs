@@ -1,9 +1,10 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Region.Dtos;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Region.Queries
 {
@@ -13,41 +14,30 @@ namespace Application.System.MasterData.Region.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _contextService;
-
-            public Validator(ILocalizationService localizer, IContextService contextService)
+            public Validator(IValidationMessages msg)
             {
-                _localizer = localizer;
-                _contextService = contextService;
-
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, RegionDto>
         {
             private readonly IRegionRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(IRegionRepository repo, IContextService contextService)
+                        private readonly IValidationMessages _msg;
+public Handler(IRegionRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
+                _msg = msg;
             }
 
             public async Task<RegionDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                var lang = 1;
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Region", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Region", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("Region", request.Id));
 
                 return new RegionDto(
                     Id: entity.Id,

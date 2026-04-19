@@ -33,9 +33,7 @@ namespace Domain.System.MasterData
             int? regionId,
             string? timeZone,
             int? countryId,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
             EngName = engName;
@@ -46,9 +44,6 @@ namespace Domain.System.MasterData
             TimeZone = timeZone;
             CountryId = countryId;
             Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(

@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Sector/Queries/ListSectors.cs
+// Application/System/MasterData/Sector/Queries/ListSectors.cs
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sector.Dtos;
@@ -22,13 +22,9 @@ namespace Application.System.MasterData.Sector.Queries
                 _ContextService = ContextService;
             }
 
-     
-
             public async Task<List<SectorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var items = await _repo.GetAllAsync(companyId);
 
                 return items.Select(x => new SectorDto(

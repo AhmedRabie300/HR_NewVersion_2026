@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
 using FluentValidation;
@@ -12,50 +12,34 @@ namespace Application.UARbac.Groups.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                var lang = _contextService.GetCurrentLanguage();
-
                 RuleFor(x => x.Id)
                     .GreaterThan(0)
-                    .WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
+                    .WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Command, bool>
         {
             private readonly IGroupRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IGroupRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IGroupRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var exists = await _repo.ExistsAsync(request.Id);
                 if (!exists)
-                    return false;
+                    throw new NotFoundException(_msg.NotFound("Group", request.Id));
 
                 var hasUsers = await _repo.HasUsersAsync(request.Id);
                 if (hasUsers)
-                    throw new ConflictException(
-                        _localizer.GetMessage("Group", lang),
-                        "Id",
-                        request.Id.ToString(),
-                        string.Format(_localizer.GetMessage("CannotDeleteHasChildren", lang), _localizer.GetMessage("Group", lang)));
+                    throw new ConflictException(_msg.Get("CannotDeleteHasChildren"));
 
                 await _repo.DeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);

@@ -1,29 +1,28 @@
-﻿using Application.Common.Abstractions;
+using Application.Common.Abstractions;
 using Application.System.MasterData.DependantType.Dtos;
 using FluentValidation;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.DependantType.Validators
 {
     public class CreateDependantTypeValidator : AbstractValidator<CreateDependantTypeDto>
     {
-        public CreateDependantTypeValidator(ILocalizationService localizer, IContextService contextService)
+        public CreateDependantTypeValidator(IValidationMessages msg)
         {
-            var lang = contextService.GetCurrentLanguage();
-
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .MaximumLength(50).WithMessage(msg.Format("MaxLength", 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.Remarks)
-                .MaximumLength(2048).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 2048));
+                .MaximumLength(2048).WithMessage(msg.Format("MaxLength", 2048));
         }
     }
 }

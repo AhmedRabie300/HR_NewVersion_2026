@@ -1,39 +1,43 @@
-﻿using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
+using Application.Common;
 
 namespace Application.System.MasterData.Profession.Commands
 {
     public static class DeleteProfession
     {
-        public record Command(int Id, int Lang = 1) : IRequest<bool>;
+        public record Command(int Id) : IRequest;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage(localizer.GetMessage("IdGreaterThanZero", 1));
+                RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
-        public class Handler : IRequestHandler<Command, bool>
+        public class Handler : IRequestHandler<Command>
         {
             private readonly IProfessionRepository _repo;
 
-            public Handler(IProfessionRepository repo)
+                        private readonly IValidationMessages _msg;
+public Handler(IProfessionRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
+                _msg = msg;
             }
 
-            public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
+            public async Task Handle(Command request, CancellationToken cancellationToken)
             {
-                if (!await _repo.ExistsAsync(request.Id)) return false;
+                if (!await _repo.ExistsAsync(request.Id))
+                    throw new NotFoundException(_msg.NotFound("Profession", request.Id));
 
                 await _repo.DeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return true;
             }
         }
     }

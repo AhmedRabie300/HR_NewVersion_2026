@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Education/Queries/GetPagedEducations.cs
+// Application/System/MasterData/Education/Queries/GetPagedEducations.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -23,8 +23,6 @@ namespace Application.System.MasterData.Education.Queries
                 _repo = repo;
                 _ContextService = ContextService;
             }
-
-     
 
             public async Task<PagedResult<EducationDto>> Handle(Query request, CancellationToken cancellationToken)
             {

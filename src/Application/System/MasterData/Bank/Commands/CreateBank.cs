@@ -3,7 +3,6 @@ using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Bank.Dtos;
 using Application.System.MasterData.Bank.Validators;
-using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
 
@@ -12,67 +11,56 @@ namespace Application.System.MasterData.Bank.Commands
     public static class CreateBank
     {
         public record Command(
-            int CompanyId,
-            int? RegUserId,
             CreateBankDto Data) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                var lang = contextService.GetCurrentLanguage();
-
-               
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateBankValidator(localizer, contextService));
+                    .SetValidator(new CreateBankValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IBankRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
-            private readonly ICodeGenerationService _codeGenerationService;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 IBankRepository repo,
-                ICompanyRepository companyRepo,
-                ICodeGenerationService codeGenerationService,
-                IContextService contextService,
-                ILocalizationService localizer)
+                IValidationMessages msg)
             {
                 _repo = repo;
-                _companyRepo = companyRepo;
-                _codeGenerationService = codeGenerationService;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                //var lang = _contextService.GetCurrentLanguage();
 
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
+                //var company = await _companyRepo.GetByIdAsync(request.CompanyId);
           
-                var code = await _codeGenerationService.GenerateCodeAsync(
-                    request.CompanyId,
-                    request.Data.Code,
-                    (companyId, ct) => _repo.GetMaxCodeAsync(companyId, ct),
-                    (code, ct) => _repo.CodeExistsAsync(code),
-                    cancellationToken
-                );
+                //var code = await _codeGenerationService.GenerateCodeAsync(
+                //    request.CompanyId,
+                //    request.Data.Code,
+                //    (companyId, ct) => _repo.GetMaxCodeAsync(companyId, ct),
+                //    (code, ct) => _repo.CodeExistsAsync(code),
+                //    cancellationToken
+                //);
+
+                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
+                if(codeExists)
+                {
+                    throw new ConflictException(_msg.CodeExists("Bank", request.Data.Code));
+                }
 
                 var entity = new Domain.System.MasterData.Bank(
-                    code: code,
+                    code: request.Data.Code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
-                    companyId: request.CompanyId,
-                    remarks: request.Data.Remarks,
-                    regUserId: request.RegUserId,
-                    regComputerId: request.Data.RegComputerId
+                    remarks: request.Data.Remarks
                 );
 
                 await _repo.AddAsync(entity);

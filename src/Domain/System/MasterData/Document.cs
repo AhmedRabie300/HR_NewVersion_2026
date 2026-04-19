@@ -27,8 +27,6 @@ namespace Domain.System.MasterData
             string? arbName4S,
             bool? isForCompany,
             string? remarks,
-            int? regUserId,
-            int? regComputerId,
             int? documentTypesGroupId)
         {
             Code = code;
@@ -37,10 +35,7 @@ namespace Domain.System.MasterData
             ArbName4S = arbName4S;
             IsForCompany = isForCompany;
             Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
             DocumentTypesGroupId = documentTypesGroupId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(

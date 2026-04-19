@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
 using Application.UARbac.Menus.Dtos;
@@ -13,43 +13,30 @@ namespace Application.UARbac.Menus.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Id)
                     .GreaterThan(0)
-                    .WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, MenuDetailsDto>
         {
             private readonly IMenuRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IMenuRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IMenuRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<MenuDetailsDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var menu = await _repo.GetByIdAsync(request.Id);
                 if (menu == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Menu", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Menu", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("Menu", request.Id));
 
                 return new MenuDetailsDto(
                     Id: menu.Id,
@@ -58,7 +45,7 @@ namespace Application.UARbac.Menus.Queries
                     ArbName: menu.ArbName,
                     ArbName4S: menu.ArbName4S,
                     ParentId: menu.ParentId,
-                    ParentName: menu.Parent != null ? (lang == 2 ? menu.Parent.ArbName : menu.Parent.EngName) : null,
+                    ParentName: menu.Parent?.EngName ?? menu.Parent?.ArbName,
                     Shortcut: menu.Shortcut,
                     Rank: menu.Rank,
                     FormId: menu.FormId,

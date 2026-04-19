@@ -20,23 +20,16 @@ namespace Domain.System.MasterData
 
         public DependantType(
             string code,
-            int companyId,
             string? engName,
             string? arbName,
             string? arbName4S,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
-            CompanyId = companyId;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
             Remarks = remarks;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(string? engName, string? arbName, string? arbName4S, string? remarks)

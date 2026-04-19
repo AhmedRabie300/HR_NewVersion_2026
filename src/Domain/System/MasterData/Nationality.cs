@@ -31,8 +31,6 @@ namespace Domain.System.MasterData
             int? travelRoute,
             int? travelClass,
             string? remarks,
-            int? regUserId,
-            int? regComputerId,
             double? ticketAmount)
         {
             Code = code;
@@ -43,10 +41,7 @@ namespace Domain.System.MasterData
             TravelRoute = travelRoute;
             TravelClass = travelClass;
             Remarks = remarks;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
             TicketAmount = ticketAmount;
-            RegDate = DateTime.UtcNow;
         }
 
         // Update methods

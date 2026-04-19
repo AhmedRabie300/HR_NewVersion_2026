@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Sector/Commands/UpdateSector.cs
+// Application/System/MasterData/Sector/Commands/UpdateSector.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
@@ -7,6 +7,7 @@ using Application.System.MasterData.Sector.Validators;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Sector.Commands
 {
@@ -16,68 +17,50 @@ namespace Application.System.MasterData.Sector.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateSectorValidator(_localizer, _ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateSectorValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ISectorRepository _repo;
+                        private readonly IValidationMessages _msg;
             private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(
-                ISectorRepository repo,
-                IContextService ContextService,
-                ILocalizationService localizer)
+public Handler(
+                ISectorRepository repo, IValidationMessages msg, IContextService ContextService)
             {
                 _repo = repo;
+                _msg = msg;
                 _ContextService = ContextService;
-                _localizer = localizer;
             }
-
-
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Sector", lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Sector", request.Data.Id));
 
                  if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Sector does not belong to your company");
 
                 // Update basic info
-             
+
                     entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
                         request.Data.ArbName4S,
                         request.Data.Remarks
                     );
-                
 
                 // Update parent
                 if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new NotFoundException("NotFound", string.Format(
-                            _localizer.GetMessage("NotFound", lang),
-                            _localizer.GetMessage("ParentSector", lang),
-                            request.Data.ParentId));
+                        throw new NotFoundException(_msg.NotFound("ParentSector", request.Data.ParentId));
                     entity.UpdateParent(request.Data.ParentId);
                 }
 

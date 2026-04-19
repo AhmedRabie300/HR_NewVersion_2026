@@ -1,4 +1,5 @@
-﻿using Application.Common;
+﻿using Application.Abstractions;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Bank.Dtos;
@@ -14,51 +15,39 @@ namespace Application.System.MasterData.Bank.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateBankValidator(_localizer, _contextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateBankValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IBankRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 IBankRepository repo,
-                IContextService contextService,
-                ILocalizationService localizer)
+                IValidationMessages msg
+)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+        
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
-                if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Bank", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Bank", lang), request.Data.Id));
+                if (entity is null)
+                    throw new NotFoundException(_msg.NotFound("Branch", request.Data.Id));
+         
 
                 entity.Update(
                     request.Data.EngName,
                     request.Data.ArbName,
                     request.Data.ArbName4S,
-                    null,
                     request.Data.Remarks
                 );
 

@@ -47,6 +47,23 @@ namespace API.Common.Middleware
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(pd, JsonOptions));
             }
+
+            catch (RequiredFieldException ex)
+            {
+                context.Response.ContentType = "application/problem+json";
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                var pd = ProblemDetailsFactory.Create(
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Bad Request",
+                    detail: ex.Message,
+                    traceId: context.TraceIdentifier,
+                    instance: context.Request.Path,
+                    type: "https://httpstatuses.com/400"
+                );
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(pd, JsonOptions));
+            }
             catch (DomainException ex)
             {
                 context.Response.ContentType = "application/problem+json";
@@ -124,19 +141,26 @@ namespace API.Common.Middleware
                 context.Response.ContentType = "application/problem+json";
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-                 var errorDetails = new
-                {
-                    type = "https://httpstatuses.com/500",
-                    title = "Server error",
-                    status = 500,
-                    detail = ex.Message, // <-- رسالة الخطأ الأصلية
-                    stackTrace = ex.StackTrace, // <-- مكان الخطأ بالضبط
-                    innerException = ex.InnerException?.Message, // <-- استثناء داخلي إن وجد
-                    instance = context.Request.Path,
-                    traceId = context.TraceIdentifier
-                };
+                var env = context.RequestServices.GetRequiredService<IHostEnvironment>();
 
-                await context.Response.WriteAsJsonAsync(errorDetails);
+                var pd = ProblemDetailsFactory.Create(
+                    statusCode: StatusCodes.Status500InternalServerError,
+                    title: "Server error",
+                    detail: env.IsDevelopment()
+                        ? ex.Message
+                        : "An unexpected error occurred. Please try again later.",
+                    traceId: context.TraceIdentifier,
+                    instance: context.Request.Path,
+                    type: "https://httpstatuses.com/500"
+                );
+
+                if (env.IsDevelopment())
+                {
+                    pd.Extensions["stackTrace"] = ex.StackTrace;
+                    pd.Extensions["innerException"] = ex.InnerException?.Message;
+                }
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(pd, JsonOptions));
             }
         }
 

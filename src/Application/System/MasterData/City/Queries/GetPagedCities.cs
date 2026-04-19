@@ -1,4 +1,4 @@
-﻿using Application.Common.Models;
+using Application.Common.Models;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.City.Dtos;
@@ -26,7 +26,7 @@ namespace Application.System.MasterData.City.Queries
 
             public async Task<PagedResult<CityDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                var lang = 1;
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,

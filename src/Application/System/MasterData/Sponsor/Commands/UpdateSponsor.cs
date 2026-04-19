@@ -1,68 +1,49 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sponsor.Dtos;
 using Application.System.MasterData.Sponsor.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Sponsor.Commands
 {
     public static class UpdateSponsor
     {
-        public record Command(
-            int CompanyId,
-            UpdateSponsorDto Data) : IRequest<Unit>;
+        public record Command(UpdateSponsorDto Data) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateSponsorValidator(_localizer, _contextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateSponsorValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ISponsorRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
+                        private readonly IValidationMessages _msg;
             private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
             public Handler(
-                ISponsorRepository repo,
-                ICompanyRepository companyRepo,
-                IContextService contextService,
-                ILocalizationService localizer)
+                ISponsorRepository repo, IValidationMessages msg,
+                IContextService contextService)
             {
                 _repo = repo;
-                _companyRepo = companyRepo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
+                                _contextService = contextService;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                                var companyId = _contextService.GetCurrentCompanyId();
 
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-           
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Sponsor", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Sponsor", lang), request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Sponsor", request.Data.Id));
 
-                if (entity.CompanyId != request.CompanyId)
+                if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Sponsor does not belong to your company");
 
                 entity.Update(

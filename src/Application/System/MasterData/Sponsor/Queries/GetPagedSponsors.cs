@@ -1,4 +1,4 @@
-﻿using Application.Common.Abstractions;
+using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sponsor.Dtos;
@@ -30,7 +30,7 @@ namespace Application.System.MasterData.Sponsor.Queries
                     request.PageNumber,
                     request.PageSize,
                     request.SearchTerm,
-                    companyId   
+                    companyId
                 );
 
                 var items = pagedResult.Items.Select(x => new SponsorDto(

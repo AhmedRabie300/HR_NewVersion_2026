@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Region.Dtos;
@@ -11,74 +11,47 @@ namespace Application.System.MasterData.Region.Commands
 {
     public static class CreateRegion
     {
-        public record Command(
-            int CompanyId,
-            int? RegUserId,
-            CreateRegionDto Data) : IRequest<int>;
+        public record Command(CreateRegionDto Data) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                var lang = contextService.GetCurrentLanguage();
-
-            
-                RuleFor(x => x.Data)
-                    .SetValidator(new CreateRegionValidator(localizer, contextService));
+                RuleFor(x => x.Data).SetValidator(new CreateRegionValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IRegionRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
-            private readonly ICountryRepository _countryRepo;
-            private readonly ICodeGenerationService _codeGenerationService;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
+                        private readonly IValidationMessages _msg;
+private readonly ICountryRepository _countryRepo;
             public Handler(
-                IRegionRepository repo,
-                ICompanyRepository companyRepo,
-                ICountryRepository countryRepo,
-                ICodeGenerationService codeGenerationService,
-                IContextService contextService,
-                ILocalizationService localizer)
+                IRegionRepository repo, IValidationMessages msg,
+                ICountryRepository countryRepo)
             {
                 _repo = repo;
-                _companyRepo = companyRepo;
+                _msg = msg;
                 _countryRepo = countryRepo;
-                _codeGenerationService = codeGenerationService;
-                _contextService = contextService;
-                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
+                if (codeExists)
+                {
+                    throw new ConflictException(_msg.CodeExists("Region", request.Data.Code));
+                }
 
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-              
                 var country = await _countryRepo.GetByIdAsync(request.Data.CountryId);
-            
-                var code = await _codeGenerationService.GenerateCodeAsync(
-                    request.CompanyId,
-                    request.Data.Code,
-                    (companyId, ct) => _repo.GetMaxCodeAsync(companyId, ct),
-                    (code, ct) => _repo.CodeExistsAsync(code),
-                    cancellationToken
-                );
 
                 var entity = new Domain.System.MasterData.Region(
-                    code: code,
+                    code: request.Data.Code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
                     countryId: request.Data.CountryId,
-                    companyId: request.CompanyId,
-                    remarks: request.Data.Remarks,
-                    regUserId: request.RegUserId,
-                    regComputerId: request.Data.RegComputerId
+                    remarks: request.Data.Remarks
                 );
 
                 await _repo.AddAsync(entity);

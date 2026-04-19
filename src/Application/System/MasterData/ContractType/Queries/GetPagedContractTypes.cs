@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/ContractType/Queries/GetPagedContractTypes.cs
+// Application/System/MasterData/ContractType/Queries/GetPagedContractTypes.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -22,10 +22,7 @@ namespace Application.System.MasterData.ContractType.Queries
             {
                 _repo = repo;
                 _ContextService = ContextService;
-
             }
-
-       
 
             public async Task<PagedResult<ContractTypeDto>> Handle(Query request, CancellationToken cancellationToken)
             {

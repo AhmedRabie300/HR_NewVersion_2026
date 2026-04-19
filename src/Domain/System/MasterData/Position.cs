@@ -38,9 +38,7 @@ namespace Domain.System.MasterData
             int? employeesNo,
             bool? applyValidation,
             string? positionBudget,
-            int? appraisalTypeGroupId,
-            int? regUserId,
-            int? regComputerId)
+            int? appraisalTypeGroupId)
         {
             Code = code;
             EngName = engName;
@@ -53,9 +51,6 @@ namespace Domain.System.MasterData
             ApplyValidation = applyValidation;
             PositionBudget = positionBudget;
             AppraisalTypeGroupId = appraisalTypeGroupId;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         // Update methods

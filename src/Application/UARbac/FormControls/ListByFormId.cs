@@ -1,4 +1,5 @@
-﻿using Application.UARbac.Abstractions;
+using Application.Common.Abstractions;
+using Application.UARbac.Abstractions;
 using Application.UARbac.FormControls.Dtos;
 using FluentValidation;
 using MediatR;
@@ -11,12 +12,15 @@ public static class ListByFormId
 
     public sealed class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        public Validator(IValidationMessages msg)
         {
-            RuleFor(x => x.FormId).GreaterThan(0);
+            RuleFor(x => x.FormId)
+                .GreaterThan(0)
+                .WithMessage(msg.Get("IdGreaterThanZero"));
+
             RuleFor(x => x.Section)
                 .Must(s => !s.HasValue || s.Value > 0)
-                .WithMessage("Section must be greater than 0.");
+                .WithMessage(msg.Get("IdGreaterThanZero"));
         }
     }
 
@@ -27,7 +31,6 @@ public static class ListByFormId
 
         public async Task<List<GetFormControlDto>> Handle(Query request, CancellationToken ct)
         {
-
             var items = await _repo.ListByFormIdAsync(request.FormId, request.Section, ct);
 
             return items.Select(x => new GetFormControlDto(

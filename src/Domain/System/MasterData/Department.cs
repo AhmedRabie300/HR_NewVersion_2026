@@ -25,27 +25,20 @@ namespace Domain.System.MasterData
 
         public Department(
             string code,
-            int companyId,
             string? engName,
             string? arbName,
             string? arbName4S,
             int? parentId,
             string? remarks,
-            int? regUserId,
-            int? regComputerId,
             string? costCenterCode)
         {
             Code = code;
-            CompanyId = companyId;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
             ParentId = parentId;
             Remarks = remarks;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
             CostCenterCode = costCenterCode;
-            RegDate = DateTime.UtcNow;
         }
 
         // Update methods

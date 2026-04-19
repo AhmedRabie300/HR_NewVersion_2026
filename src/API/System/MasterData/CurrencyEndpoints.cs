@@ -45,13 +45,10 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateCurrencyDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateCurrency.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateCurrency.Command( dto), ct);
                 return Results.Created($"/master-data/currencies/{id}", new { id });
             })
             .WithName("CreateCurrency");
@@ -71,18 +68,17 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteCurrency.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteCurrency.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteCurrency");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteCurrency.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+               await mediator.Send(new DeleteCurrency.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteCurrency");
 

@@ -32,15 +32,19 @@ namespace Application.System.HRS.VacationsType.Commands
             private readonly IVacationsTypeRepository _repo;
             private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 IVacationsTypeRepository repo,
                 IContextService contextService,
-                ILocalizationService localizer)
+                ILocalizationService localizer,
+                IValidationMessages msg
+                )
             {
                 _repo = repo;
                 _contextService = contextService;
                 _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -49,10 +53,8 @@ namespace Application.System.HRS.VacationsType.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("VacationsType", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("VacationsType", lang), request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("VacationsType", request.Data.Id));
+  
 
                  if (request.Data.Code != null && request.Data.Code != entity.Code)
                 {

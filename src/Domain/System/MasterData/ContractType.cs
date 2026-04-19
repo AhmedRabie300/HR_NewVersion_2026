@@ -22,25 +22,18 @@ namespace Domain.System.MasterData
 
         public ContractType(
             string code,
-            int companyId,
             string? engName,
             string? arbName,
             string? arbName4S,
             bool? isSpecial,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
-            CompanyId = companyId;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
             IsSpecial = isSpecial;
             Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(

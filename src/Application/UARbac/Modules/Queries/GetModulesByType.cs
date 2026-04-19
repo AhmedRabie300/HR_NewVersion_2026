@@ -1,5 +1,6 @@
-﻿using Application.UARbac.Modules.Dtos;
+using Application.Common.Abstractions;
 using Application.UARbac.Abstractions;
+using Application.UARbac.Modules.Dtos;
 using FluentValidation;
 using MediatR;
 
@@ -11,13 +12,12 @@ namespace Application.UARbac.Modules.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            public Validator()
+            public Validator(IValidationMessages msg)
             {
                 RuleFor(x => x.ModuleType)
-                    .NotEmpty().WithMessage("Module type is required")
-                    .Must(x => new[] { "HR", "GL", "AR", "AP", "FA", "INV", "MANF", "SYS" }
-                        .Contains(x.ToUpper()))
-                    .WithMessage("Invalid module type. Must be one of: HR, GL, AR, AP, FA, INV, MANF, SYS");
+                    .NotEmpty().WithMessage(msg.Get("Required"))
+                    .Must(x => new[] { "HR", "GL", "AR", "AP", "FA", "INV", "MANF", "SYS" }.Contains(x.ToUpper()))
+                    .WithMessage(msg.Get("InvalidModuleType"));
             }
         }
 
@@ -32,10 +32,9 @@ namespace Application.UARbac.Modules.Queries
 
             public async Task<List<GetModuleDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                
                 var modules = await _repo.GetModulesByTypeAsync(request.ModuleType);
 
-                 return modules.Select(m => new GetModuleDto(
+                return modules.Select(m => new GetModuleDto(
                     Id: m.Id,
                     Code: m.Code,
                     Prefix: m.Prefix,

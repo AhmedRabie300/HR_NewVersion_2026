@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.City.Dtos;
@@ -10,59 +10,40 @@ namespace Application.System.MasterData.City.Commands
 {
     public static class CreateCity
     {
-        public record Command(
-            int CompanyId,
-            int? RegUserId,
-            CreateCityDto Data) : IRequest<int>;
+        public record Command(CreateCityDto Data) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                var lang = contextService.GetCurrentLanguage();
-
-              
-                RuleFor(x => x.Data)
-                    .SetValidator(new CreateCityValidator(localizer, contextService));
+                RuleFor(x => x.Data).SetValidator(new CreateCityValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly ICityRepository _repo;
-            private readonly ICountryRepository _countryRepo;
-            private readonly ICodeGenerationService _codeGenerationService;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
+                        private readonly IValidationMessages _msg;
+private readonly ICountryRepository _countryRepo;
             public Handler(
-                ICityRepository repo,
-                ICountryRepository countryRepo,
-                ICodeGenerationService codeGenerationService,
-                IContextService contextService,
-                ILocalizationService localizer)
+                ICityRepository repo, IValidationMessages msg,
+                ICountryRepository countryRepo)
             {
                 _repo = repo;
+                _msg = msg;
                 _countryRepo = countryRepo;
-                _codeGenerationService = codeGenerationService;
-                _contextService = contextService;
-                _localizer = localizer;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
- 
-                var code = await _codeGenerationService.GenerateCodeAsync(
-                    request.CompanyId,
-                    request.Data.Code,
-                    _repo.GetMaxCodeAsync,
-                    (code, ct) => _repo.CodeExistsAsync(code),
-                    cancellationToken
-                );
+                                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
+                if (codeExists)
+                {
+                    throw new ConflictException(_msg.CodeExists("City", request.Data.Code));
+                }
 
-                var entity = new Domain.System.MasterData.City(
-                    code: code,
+var entity = new Domain.System.MasterData.City(
+                    code: request.Data.Code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
@@ -70,9 +51,7 @@ namespace Application.System.MasterData.City.Commands
                     regionId: request.Data.RegionId,
                     timeZone: request.Data.TimeZone,
                     countryId: request.Data.CountryId,
-                    remarks: request.Data.Remarks,
-                    regUserId: request.RegUserId,
-                    regComputerId: request.Data.RegComputerId
+                    remarks: request.Data.Remarks
                 );
 
                 await _repo.AddAsync(entity);

@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Religion.Dtos;
 using Application.System.MasterData.Religion.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Religion.Commands
 {
@@ -14,36 +15,27 @@ namespace Application.System.MasterData.Religion.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateReligionValidator(localizer, ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateReligionValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IReligionRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(IReligionRepository repo, IContextService ContextService, ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(IReligionRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Religion", lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Religion", request.Data.Id));
 
                 entity.Update(
                     request.Data.EngName,

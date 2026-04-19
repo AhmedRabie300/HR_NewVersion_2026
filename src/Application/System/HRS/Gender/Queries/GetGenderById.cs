@@ -16,6 +16,7 @@ namespace Application.System.HRS.Gender.Queries
             private readonly ILocalizationService _localizer;
             private readonly IContextService _contextService;
 
+
             public Validator(ILocalizationService localizer, IContextService contextService)
             {
                 _localizer = localizer;
@@ -31,12 +32,14 @@ namespace Application.System.HRS.Gender.Queries
             private readonly IGenderRepository _repo;
             private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IGenderRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IGenderRepository repo, IContextService contextService, ILocalizationService localizer, IValidationMessages msg)
             {
                 _repo = repo;
                 _contextService = contextService;
                 _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<GenderDto> Handle(Query request, CancellationToken cancellationToken)
@@ -45,10 +48,8 @@ namespace Application.System.HRS.Gender.Queries
 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Gender", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Gender", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("Gender", request.Id));
+
 
                 return new GenderDto(
                     Id: entity.Id,

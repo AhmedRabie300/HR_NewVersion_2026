@@ -32,27 +32,25 @@ namespace Application.System.HRS.TransactionsGroup.Commands
             private readonly ITransactionsGroupRepository _repo;
             private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 ITransactionsGroupRepository repo,
                 IContextService contextService,
-                ILocalizationService localizer)
+                ILocalizationService localizer,
+                IValidationMessages msg)
             {
                 _repo = repo;
                 _contextService = contextService;
                 _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var lang = _contextService.GetCurrentLanguage();
 
-                var entity = await _repo.GetByIdAsync(request.Data.Id);
-                if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("TransactionsGroup", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("TransactionsGroup", lang), request.Data.Id));
+                var entity = await _repo.GetByIdAsync(request.Data.Id) ?? throw new NotFoundException(_msg.NotFound("TransactionsGroup", request.Data.Id));
 
                 // Check code uniqueness if code is being changed
                 if (request.Data.Code != null && request.Data.Code != entity.Code)

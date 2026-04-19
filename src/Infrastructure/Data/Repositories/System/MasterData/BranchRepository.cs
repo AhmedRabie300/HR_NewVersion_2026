@@ -29,9 +29,9 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<Branch?> GetByCodeAsync(string code, int companyId)
             => await _db.Branches.FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
 
-        public async Task<List<Branch>> GetAllAsync(int companyId)
+        public async Task<List<Branch>> GetAllAsync()
             => await _db.Branches
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .Include(x => x.Company)
                 .Include(x => x.ParentBranch)
                 .OrderBy(x => x.Code)
@@ -73,8 +73,8 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> ExistsAsync(int id)
             => await _db.Branches.AnyAsync(x => x.Id == id);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId)
-            => await _db.Branches.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
+        public async Task<bool> CodeExistsAsync(string code)
+            => await _db.Branches.AnyAsync(x => x.Code == code);
 
         public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
             => await _db.Branches.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);

@@ -32,15 +32,17 @@ namespace Application.System.HRS.VacationsPaidType.Commands
             private readonly IVacationsPaidTypeRepository _repo;
             private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
-
+            private readonly IValidationMessages _msg;
             public Handler(
                 IVacationsPaidTypeRepository repo,
                 IContextService contextService,
-                ILocalizationService localizer)
+                ILocalizationService localizer,
+                IValidationMessages msg)
             {
                 _repo = repo;
                 _contextService = contextService;
                 _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -49,20 +51,16 @@ namespace Application.System.HRS.VacationsPaidType.Commands
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("VacationsPaidType", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("VacationsPaidType", lang), request.Data.Id));
-
+                    throw new NotFoundException(_msg.NotFound("VacationsPaidType", request.Data.Id));
                 // Check code uniqueness if code is being changed
-                if (request.Data.Code != null && request.Data.Code != entity.Code)
-                {
-                    if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.Id))
-                        throw new ConflictException(string.Format(
-                            _localizer.GetMessage("CodeExists", lang),
-                            _localizer.GetMessage("VacationsPaidType", lang),
-                            request.Data.Code));
-                }
+                //if (request.Data.Code != null && request.Data.Code != entity.Code)
+                //{
+                //    if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.Id))
+                //        throw new ConflictException(string.Format(
+                //            _localizer.GetMessage("CodeExists", lang),
+                //            _localizer.GetMessage("VacationsPaidType", lang),
+                //            request.Data.Code));
+                //}
 
                 entity.Update(
                     request.Data.Code,

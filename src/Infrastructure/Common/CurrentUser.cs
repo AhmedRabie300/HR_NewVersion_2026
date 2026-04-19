@@ -1,36 +1,29 @@
 ﻿using Application.Abstractions;
+using Domain.UARbac;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
 namespace Infrastructure.Common.CurrentUser;
 
-public sealed class CurrentUser : ICurrentUser
+public sealed class CurrentUser : ICurrentUser, ICurrentUserInitializer
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    public int? UserId { get; private set; }
+    public int CompanyId { get; private set; }
+    public int Language { get; private set; } = 1;
+    public bool IsAuthenticated => UserId > 0;
 
-    public CurrentUser(IHttpContextAccessor httpContextAccessor)
+
+    void ICurrentUserInitializer.Initialize(int userId, int companyId, int language)
     {
-        _httpContextAccessor = httpContextAccessor;
+        UserId = userId;
+        CompanyId = companyId;
+        Language = language;
     }
 
-    public int? UserId
-    {
-        get
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
 
-            if (user?.Identity?.IsAuthenticated != true)
-                return null;
+}
 
-            var claimValue = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (int.TryParse(claimValue, out var id))
-                return id;
-
-            return null;
-        }
-    }
-
-    public bool IsAuthenticated =>
-        _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
+internal interface ICurrentUserInitializer
+{
+    void Initialize(int userId, int companyId, int language);
 }

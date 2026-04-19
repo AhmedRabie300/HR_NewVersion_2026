@@ -1,11 +1,11 @@
 ﻿using Application.Abstractions;
-using Application.UARbac.FormPermission.Dtos;
 using Domain.Common;
 using Domain.System.HRS;
 using Domain.System.MasterData;
 using Domain.System.Search;
 using Domain.UARbac;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Infrastructure.Data;
@@ -79,9 +79,33 @@ public sealed class ApplicationDbContext : DbContext
         // ✅ Loads all IEntityTypeConfiguration<> (like UserGroupConfiguration)
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(ICompanyScoped).IsAssignableFrom(entityType.ClrType))
+            {
+                ApplyCompanyFilter(modelBuilder, entityType.ClrType);
+            }
+        }
+
         base.OnModelCreating(modelBuilder);
     }
 
+    private void ApplyCompanyFilter(ModelBuilder modelBuilder, Type entityType)
+    {
+        // Builds: entity => entity.CompanyId == _currentUser.CompanyId
+        var parameter = Expression.Parameter(entityType, "e");
+        var companyIdProperty = Expression.Property(parameter, nameof(ICompanyScoped.CompanyId));
+
+        // Reference _currentUser.CompanyId dynamically so it's re-evaluated per query
+        var currentUserExpr = Expression.Constant(this);
+        var currentUserField = Expression.Field(currentUserExpr, nameof(_currentUser));
+        var currentCompanyId = Expression.Property(currentUserField, nameof(ICurrentUser.CompanyId));
+
+        var body = Expression.Equal(companyIdProperty, currentCompanyId);
+        var lambda = Expression.Lambda(body, parameter);
+
+        modelBuilder.Entity(entityType).HasQueryFilter(lambda);
+    }
     public override int SaveChanges()
     {
         ApplyLegacyAudit();
@@ -96,21 +120,33 @@ public sealed class ApplicationDbContext : DbContext
 
     private void ApplyLegacyAudit()
     {
-        var now = DateTime.Now;           // legacy DB typically uses local server time
-        var userId = _currentUser.UserId; // int? (legacy)
+        var now = DateTime.Now;
+        var userId = _currentUser.UserId;
+        var companyId = _currentUser.CompanyId;
 
         foreach (var entry in ChangeTracker.Entries<LegacyEntity>())
         {
             if (entry.State == EntityState.Added)
             {
                 entry.Entity.SetRegistration(now, userId);
+
+                // Auto-set CompanyId if the entity is company-scoped
+                if (entry.Entity is ICompanyScoped companyScoped && companyScoped.CompanyId == 0)
+                {
+                    entry.Property(nameof(ICompanyScoped.CompanyId)).CurrentValue = companyId;
+                }
             }
 
-            // Optional: protect from accidental overwrite on update
             if (entry.State == EntityState.Modified)
             {
                 entry.Property(nameof(LegacyEntity.RegDate)).IsModified = false;
                 entry.Property(nameof(LegacyEntity.RegUserId)).IsModified = false;
+
+                // Prevent CompanyId from being changed on update
+                if (entry.Entity is ICompanyScoped)
+                {
+                    entry.Property(nameof(ICompanyScoped.CompanyId)).IsModified = false;
+                }
             }
         }
     }

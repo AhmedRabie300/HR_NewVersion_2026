@@ -5,7 +5,6 @@
         string? EngName,
         string? ArbName,
         string? ArbName4S,
-        string? Remarks,
-        int? RegComputerId
+        string? Remarks
     );
 }

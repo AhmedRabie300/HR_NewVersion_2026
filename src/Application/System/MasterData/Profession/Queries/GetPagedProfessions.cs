@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Profession/Queries/GetPagedProfessions.cs
+// Application/System/MasterData/Profession/Queries/GetPagedProfessions.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -21,16 +21,12 @@ namespace Application.System.MasterData.Profession.Queries
             public Handler(IProfessionRepository repo, IContextService ContextService)
             {
                 _repo = repo;
-                 _ContextService = ContextService;
+                _ContextService = ContextService;
             }
-
-
 
             public async Task<PagedResult<ProfessionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId(); 
-                var lang = _ContextService.GetCurrentLanguage();
-
+                var companyId = _ContextService.GetCurrentCompanyId();
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,

@@ -1,9 +1,10 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Document.Dtos;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Document.Queries
 {
@@ -13,42 +14,28 @@ namespace Application.System.MasterData.Document.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _contextService;
-
-            public Validator(ILocalizationService localizer, IContextService contextService)
+            public Validator(IValidationMessages msg)
             {
-                _localizer = localizer;
-                _contextService = contextService;
-
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, DocumentDto>
         {
             private readonly IDocumentRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(IDocumentRepository repo, IContextService contextService, ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(IDocumentRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<DocumentDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Document", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Document", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("Document", request.Id));
 
                 return new DocumentDto(
                     Id: entity.Id,

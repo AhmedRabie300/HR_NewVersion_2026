@@ -44,13 +44,11 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateDependantTypeDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateDependantType.Command(companyId, regUserId, dto), ct);
+
+                var id = await mediator.Send(new CreateDependantType.Command( dto), ct);
                 return Results.Created($"/master-data/dependant-types/{id}", new { id });
             })
             .WithName("CreateDependantType");
@@ -70,18 +68,17 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteDependantType.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteDependantType.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteDependantType");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteDependantType.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+               await mediator.Send(new DeleteDependantType.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteDependantType");
 

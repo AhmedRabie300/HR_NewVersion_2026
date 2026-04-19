@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Education/Queries/ListEducations.cs
+// Application/System/MasterData/Education/Queries/ListEducations.cs
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Education.Dtos;
@@ -21,7 +21,7 @@ namespace Application.System.MasterData.Education.Queries
                 _repo = repo;
                 _ContextService = ContextService;
             }
- 
+
             public async Task<List<EducationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();

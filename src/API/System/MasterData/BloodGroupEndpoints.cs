@@ -43,13 +43,10 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateBloodGroupDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateBloodGroup.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateBloodGroup.Command(dto), ct);
                 return Results.Created($"/master-data/blood-groups/{id}", new { id });
             })
             .WithName("CreateBloodGroup");
@@ -69,18 +66,17 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteBloodGroup.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteBloodGroup.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteBloodGroup");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteBloodGroup.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+               await mediator.Send(new DeleteBloodGroup.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteBloodGroup");
 

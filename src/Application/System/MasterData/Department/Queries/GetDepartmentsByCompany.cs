@@ -1,4 +1,5 @@
-﻿using Application.Common;
+using Application.Abstractions;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Department.Dtos;
@@ -13,50 +14,41 @@ namespace Application.System.MasterData.Department.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            public Validator()
-            {
-                
-            }
+ 
         }
 
         public class Handler : IRequestHandler<Query, List<DepartmentDto>>
         {
             private readonly IDepartmentRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly ICurrentUser _currentUser;
 
             public Handler(
                 IDepartmentRepository repo,
-                ICompanyRepository companyRepo,
-                IContextService contextService,
-                ILocalizationService localizer)
+                ICurrentUser currentUser)
             {
                 _repo = repo;
-                _companyRepo = companyRepo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _currentUser = currentUser;
             }
+               
+
+            
 
             public async Task<List<DepartmentDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _contextService.GetCurrentCompanyId();
-                var lang = _contextService.GetCurrentLanguage();
+               
 
-                var company = await _companyRepo.GetByIdAsync(companyId);
-             
-                var departments = await _repo.GetByCompanyIdAsync(companyId);
+                var departments = await _repo.GetByCompanyIdAsync(_currentUser.CompanyId);
 
                 return departments.Select(d => new DepartmentDto(
                     Id: d.Id,
                     Code: d.Code,
                     CompanyId: d.CompanyId,
-                    CompanyName: lang == 2 ? company.ArbName : company.EngName,
+                    CompanyName: _currentUser.Language == 2 ? d.Company.ArbName : d.Company.EngName,
                     EngName: d.EngName,
                     ArbName: d.ArbName,
                     ArbName4S: d.ArbName4S,
                     ParentId: d.ParentId,
-                    ParentDepartmentName: d.ParentDepartment != null ? (lang == 2 ? d.ParentDepartment.ArbName : d.ParentDepartment.EngName) : null,
+                    ParentDepartmentName: d.ParentDepartment != null ? (_currentUser.Language == 2 ? d.ParentDepartment.ArbName : d.ParentDepartment.EngName) : null,
                     Remarks: d.Remarks,
                     CostCenterCode: d.CostCenterCode,
                     RegDate: d.RegDate,

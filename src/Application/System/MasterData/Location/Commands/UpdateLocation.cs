@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Location/Commands/UpdateLocation.cs
+// Application/System/MasterData/Location/Commands/UpdateLocation.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
@@ -7,6 +7,7 @@ using Application.System.MasterData.Location.Validators;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Location.Commands
 {
@@ -16,59 +17,44 @@ namespace Application.System.MasterData.Location.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateLocationValidator(_localizer, _ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateLocationValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ILocationRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
+                        private readonly IValidationMessages _msg;
+            private readonly IContextService _ContextService;
+private readonly ICompanyRepository _companyRepo;
             private readonly IBranchRepository _branchRepo;
             private readonly IDepartmentRepository _departmentRepo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
             public Handler(
-                ILocationRepository repo,
+                ILocationRepository repo, IValidationMessages msg,
                 ICompanyRepository companyRepo,
                 IBranchRepository branchRepo,
-                IDepartmentRepository departmentRepo,
-                IContextService ContextService,
-                ILocalizationService localizer)
+                IDepartmentRepository departmentRepo, IContextService ContextService)
             {
                 _repo = repo;
+                _msg = msg;
                 _companyRepo = companyRepo;
                 _branchRepo = branchRepo;
                 _departmentRepo = departmentRepo;
                 _ContextService = ContextService;
-                _localizer = localizer;
             }
-
-       
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Location", lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Location", request.Data.Id));
 
                  if (entity.CompanyId != companyId)
                     throw new UnauthorizedAccessException("Access denied: Location does not belong to your company");
 
-             
                     entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -79,17 +65,13 @@ namespace Application.System.MasterData.Location.Commands
                         request.Data.CostCenterCode3,
                         request.Data.CostCenterCode4
                     );
-                 
 
                 // Update parent
                 if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new NotFoundException("NotFound", string.Format(
-                            _localizer.GetMessage("NotFound", lang),
-                            _localizer.GetMessage("ParentLocation", lang),
-                            request.Data.ParentId));
+                        throw new NotFoundException(_msg.NotFound("ParentLocation", request.Data.ParentId));
                     // entity.UpdateParent(request.Data.ParentId);
                 }
 
@@ -98,10 +80,7 @@ namespace Application.System.MasterData.Location.Commands
                 {
                     var branch = await _branchRepo.GetByIdAsync(request.Data.BranchId.Value);
                     if (branch == null)
-                        throw new NotFoundException("NotFound", string.Format(
-                            _localizer.GetMessage("NotFound", lang),
-                            _localizer.GetMessage("Branch", lang),
-                            request.Data.BranchId));
+                        throw new NotFoundException(_msg.NotFound("Branch", request.Data.BranchId));
                     // entity.UpdateBranch(request.Data.BranchId);
                 }
 

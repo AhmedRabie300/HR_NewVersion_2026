@@ -43,13 +43,11 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateSponsorDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateSponsor.Command(companyId, regUserId, dto), ct);
+
+                var id = await mediator.Send(new CreateSponsor.Command(dto), ct);
                 return Results.Created($"/master-data/sponsors/{id}", new { id });
             })
             .WithName("CreateSponsor");
@@ -57,12 +55,11 @@ namespace API.System.MasterData
              group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
-                [FromHeader(Name = "CompanyId")] int companyId,  
                 UpdateSponsorDto dto,
                 CancellationToken ct) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateSponsor.Command(companyId, fixedDto), ct);  
+                await mediator.Send(new UpdateSponsor.Command(fixedDto), ct);  
                 return Results.NoContent();
             })
             .WithName("UpdateSponsor");
@@ -70,18 +67,17 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteSponsor.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteSponsor.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteSponsor");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteSponsor.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+                await mediator.Send(new DeleteSponsor.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteSponsor");
 

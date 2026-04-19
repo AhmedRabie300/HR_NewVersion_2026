@@ -32,15 +32,18 @@ namespace Application.System.HRS.Gender.Commands
             private readonly IGenderRepository _repo;
             private readonly IContextService _contextService;
             private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 IGenderRepository repo,
                 IContextService contextService,
-                ILocalizationService localizer)
+                ILocalizationService localizer,
+                IValidationMessages msg)
             {
                 _repo = repo;
                 _contextService = contextService;
                 _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -48,11 +51,9 @@ namespace Application.System.HRS.Gender.Commands
                 var lang = _contextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
-                if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Gender", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Gender", lang), request.Data.Id));
+                if (entity is null)
+                    throw new NotFoundException(_msg.NotFound("Gender", request.Data.Id));
+
 
                  if (request.Data.Code != null && request.Data.Code != entity.Code)
                 {

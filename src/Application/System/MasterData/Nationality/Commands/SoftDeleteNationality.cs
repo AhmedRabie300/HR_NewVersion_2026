@@ -1,28 +1,22 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Nationality.Commands
 {
     public static class SoftDeleteNationality
     {
-        public record Command(int Id, int? RegUserId = null) : IRequest<Unit>;
+        public record Command(int Id) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                var lang = _contextService.GetCurrentLanguage();
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
@@ -37,7 +31,7 @@ namespace Application.System.MasterData.Nationality.Commands
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _repo.SoftDeleteAsync(request.Id, request.RegUserId);
+                await _repo.SoftDeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

@@ -1,12 +1,15 @@
-﻿using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
+using Application.Common.Abstractions;
+using Application.Common;
 
 namespace Application.System.MasterData.Religion.Commands
 {
     public static class DeleteReligion
     {
-        public record Command(int Id) : IRequest<bool>;
+        public record Command(int Id) : IRequest;
 
         public sealed class Validator : AbstractValidator<Command>
         {
@@ -16,24 +19,25 @@ namespace Application.System.MasterData.Religion.Commands
             }
         }
 
-        public class Handler : IRequestHandler<Command, bool>
+        public class Handler : IRequestHandler<Command>
         {
             private readonly IReligionRepository _repo;
 
-            public Handler(IReligionRepository repo)
+                        private readonly IValidationMessages _msg;
+public Handler(IReligionRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
+                _msg = msg;
             }
 
-            public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
+            public async Task Handle(Command request, CancellationToken cancellationToken)
             {
                 if (!await _repo.ExistsAsync(request.Id))
-                    return false;
+                    throw new NotFoundException(_msg.NotFound("Religion", request.Id));
 
                 await _repo.DeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
-                return true;
             }
         }
     }

@@ -13,7 +13,7 @@ namespace Application.System.MasterData.Abstractions
         Task UpdateAsync(Domain.System.MasterData.Currency currency);
         Task DeleteAsync(int id);
         Task<bool> ExistsAsync(int id);
-        Task<bool> CodeExistsAsync(string code, int companyId);
+        Task<bool> CodeExistsAsync(string code);
         Task<bool> CodeExistsAsync(string code, int companyId, int excludeId);
         Task<PagedResult<Domain.System.MasterData.Currency>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId);
         Task SoftDeleteAsync(int id, int? regUserId = null);

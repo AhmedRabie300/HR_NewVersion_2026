@@ -24,20 +24,13 @@ namespace Domain.System.MasterData
             string? engName,
             string? arbName,
             string? arbName4S,
-            string? sponsorNumber,
-            int? regUserId,
-            int? regComputerId,
-            int companyId)
+            string? sponsorNumber)
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
             SponsorNumber = sponsorNumber;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
-            CompanyId = companyId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(

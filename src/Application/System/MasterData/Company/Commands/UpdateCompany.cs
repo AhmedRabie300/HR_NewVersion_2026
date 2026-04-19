@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
 using Application.System.MasterData.Company.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Company.Commands
 {
@@ -14,33 +15,26 @@ namespace Application.System.MasterData.Company.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateCompanyValidator(localizer, ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateCompanyValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ICompanyRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(ICompanyRepository repo, IContextService ContextService, ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(ICompanyRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var company = await _repo.GetByIdAsync(request.Data.Id);
-           
-                
+
                     company.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -48,9 +42,7 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.Remarks,
                         request.Data.DefaultTheme
                     );
-                
 
-                
                     company.UpdateEmployeeNaming(
                         request.Data.EmpFirstName,
                         request.Data.EmpSecondName,
@@ -58,8 +50,7 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.EmpFourthName,
                         request.Data.EmpNameSeparator
                     );
-               
-              
+
                     company.UpdateVacationSettings(
                         request.Data.VacationIsAccum,
                         request.Data.ZeroBalAfterVac,
@@ -68,18 +59,14 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.VacationFromPrepareDay,
                         request.Data.ExecuseRequestHoursallowed
                     );
-                 
 
-                
                     company.UpdateSequenceSettings(
                         request.Data.HasSequence,
                         request.Data.SequenceLength,
                         request.Data.Prefix,
                         request.Data.Separator
                     );
-                
 
-                
                     company.UpdateFlags(
                         request.Data.IsHigry,
                         request.Data.IncludeAbsencDays,
@@ -88,7 +75,6 @@ namespace Application.System.MasterData.Company.Commands
                         request.Data.EmployeeDocumentsAutoSerial,
                         request.Data.UserDepartmentsPermissions
                     );
-                 
 
                  if (request.Data.SalaryCalculation.HasValue)
                 {

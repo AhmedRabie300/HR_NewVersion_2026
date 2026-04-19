@@ -37,10 +37,7 @@ namespace Domain.System.MasterData
             string? decimalArbName,
             decimal? amount,
             int? noDecimalPlaces,
-            int? companyId,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
             EngName = engName;
@@ -53,11 +50,7 @@ namespace Domain.System.MasterData
             DecimalArbName = decimalArbName;
             Amount = amount;
             NoDecimalPlaces = noDecimalPlaces;
-            CompanyId = companyId;
             Remarks = remarks;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(

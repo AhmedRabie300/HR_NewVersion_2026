@@ -30,7 +30,6 @@ namespace Application.System.MasterData.Branch.Queries
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
 
-
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,

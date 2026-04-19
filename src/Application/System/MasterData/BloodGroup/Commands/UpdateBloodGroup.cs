@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.BloodGroup.Dtos;
 using Application.System.MasterData.BloodGroup.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.BloodGroup.Commands
 {
@@ -14,43 +15,28 @@ namespace Application.System.MasterData.BloodGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _ContextService = ContextService;
-                _localizer = localizer;
-
                 // ✅ استخدام SetValidator مباشرة (من غير Custom)
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateBloodGroupValidator(_localizer, _ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateBloodGroupValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IBloodGroupRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(IBloodGroupRepository repo, IContextService ContextService, ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(IBloodGroupRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var bloodGroup = await _repo.GetByIdAsync(request.Data.Id);
                 if (bloodGroup == null)
-                    throw new NotFoundException("Update Blood Group",string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("BloodGroup", lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("BloodGroup", request.Data.Id));
 
                 bloodGroup.Update(
                     request.Data.EngName,

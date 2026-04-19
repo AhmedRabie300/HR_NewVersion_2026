@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Sponsor.Dtos;
@@ -25,13 +25,9 @@ namespace Application.System.MasterData.Sponsor.Queries
                 _ContextService = ContextService;
             }
 
-         
-          
             public async Task<List<SponsorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var items = await _repo.GetAllAsync(companyId);
 
                 return items.Select(x => new SponsorDto(
@@ -45,7 +41,7 @@ namespace Application.System.MasterData.Sponsor.Queries
                     SponsorNumber: x.SponsorNumber,
                     RegDate: x.RegDate,
                     CancelDate: x.CancelDate,
-                    IsActive: x.IsActive()   
+                    IsActive: x.IsActive()
                 )).ToList();
             }
         }

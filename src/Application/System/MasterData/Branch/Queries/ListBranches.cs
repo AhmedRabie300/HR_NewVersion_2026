@@ -12,20 +12,17 @@ namespace Application.System.MasterData.Branch.Queries
         public class Handler : IRequestHandler<Query, List<BranchDto>>
         {
             private readonly IBranchRepository _repo;
-            private readonly IContextService _contextService;
 
-            public Handler(IBranchRepository repo, IContextService contextService)
+            public Handler(IBranchRepository repo)
             {
                 _repo = repo;
-                _contextService = contextService;
             }
 
             public async Task<List<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _contextService.GetCurrentCompanyId();
 
                
-                var branches = await _repo.GetAllAsync(companyId);
+                var branches = await _repo.GetAllAsync();
 
                 return branches.Select(b => new BranchDto(
                     Id: b.Id,

@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Currency/Queries/GetPagedCurrencies.cs
+// Application/System/MasterData/Currency/Queries/GetPagedCurrencies.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -23,8 +23,6 @@ namespace Application.System.MasterData.Currency.Queries
                 _repo = repo;
                 _ContextService = ContextService;
             }
-
-     
 
             public async Task<PagedResult<CurrencyDto>> Handle(Query request, CancellationToken cancellationToken)
             {

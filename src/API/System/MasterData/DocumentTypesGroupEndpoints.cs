@@ -43,13 +43,10 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateDocumentTypesGroupDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateDocumentTypesGroup.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateDocumentTypesGroup.Command(dto), ct);
                 return Results.Created($"/master-data/document-types-groups/{id}", new { id });
             })
             .WithName("CreateDocumentTypesGroup");
@@ -69,18 +66,17 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteDocumentTypesGroup.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteDocumentTypesGroup.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteDocumentTypesGroup");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteDocumentTypesGroup.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+               await mediator.Send(new DeleteDocumentTypesGroup.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteDocumentTypesGroup");
 

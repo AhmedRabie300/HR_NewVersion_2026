@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Location/Queries/GetPagedLocations.cs
+// Application/System/MasterData/Location/Queries/GetPagedLocations.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -24,12 +24,9 @@ namespace Application.System.MasterData.Location.Queries
                 _ContextService = ContextService;
             }
 
-   
             public async Task<PagedResult<LocationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,

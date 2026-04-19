@@ -1,4 +1,5 @@
-﻿using Application.Common;
+﻿using Application.Abstractions;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Branch.Dtos;
@@ -13,54 +14,37 @@ namespace Application.System.MasterData.Branch.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _contextService;
 
-            public Validator(ILocalizationService localizer, IContextService contextService)
+            public Validator(IValidationMessages msg)
             {
-                _localizer = localizer;
-                _contextService = contextService;
-
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, BranchDto>
         {
             private readonly IBranchRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 IBranchRepository repo,
-                IContextService contextService,
-                ILocalizationService localizer)
+                IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<BranchDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _contextService.GetCurrentCompanyId();
-                var lang = _contextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Id);
-                if (entity == null)
-                    throw new NotFoundException("NotFound",string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Branch", lang),
-                        request.Id));
-
-                if (entity.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Branch does not belong to your company");
+                if (entity is null)
+                    throw new NotFoundException(_msg.NotFound("Branch", request.Id));
 
                 return new BranchDto(
                     Id: entity.Id,
                     Code: entity.Code,
-                    CompanyId: companyId,
+                    CompanyId: entity.CompanyId,
                     CompanyName: entity.Company?.EngName ?? entity.Company?.ArbName,
                     EngName: entity.EngName,
                     ArbName: entity.ArbName,

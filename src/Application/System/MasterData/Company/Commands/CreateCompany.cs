@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
 using Application.System.MasterData.Company.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Company.Commands
 {
@@ -14,36 +15,31 @@ namespace Application.System.MasterData.Company.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new CreateCompanyValidator(localizer, ContextService));
+                RuleFor(x => x.Data).SetValidator(new CreateCompanyValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly ICompanyRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(ICompanyRepository repo, IContextService ContextService, ILocalizationService localizer)
+            private readonly IValidationMessages _msg;
+            public Handler(ICompanyRepository repo,IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var exists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (exists)
-                    throw new ConflictException(string.Format(
-                        _localizer.GetMessage("CodeExists", lang),
-                        _localizer.GetMessage("Company", lang),
-                        request.Data.Code));
+                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
+                if (codeExists)
+                {
+                    throw new ConflictException(_msg.CodeExists("Region", request.Data.Code));
+                }
+       
 
                 var company = new Domain.System.MasterData.Company(
                     code: request.Data.Code,

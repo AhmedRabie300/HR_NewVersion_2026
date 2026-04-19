@@ -20,6 +20,7 @@ namespace Application.System.MasterData.Department.Queries
             {
                 _repo = repo;
                 _ContextService = ContextService;
+                _ContextService = ContextService;
             }
 
             public async Task<List<DepartmentDto>> Handle(Query request, CancellationToken cancellationToken)

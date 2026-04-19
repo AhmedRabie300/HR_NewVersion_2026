@@ -1,4 +1,4 @@
-﻿using Application.Common.Abstractions;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Region.Dtos;
 using MediatR;
@@ -22,7 +22,7 @@ namespace Application.System.MasterData.Region.Queries
 
             public async Task<List<RegionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                var lang = 1;
 
                 var items = await _repo.GetByCountryIdAsync(request.CountryId);
 

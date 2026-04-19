@@ -1,45 +1,40 @@
-﻿using Application.System.MasterData.Document.Dtos;
+using Application.System.MasterData.Document.Dtos;
 using Application.Common.Abstractions;
 using FluentValidation;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Document.Validators
 {
     public class UpdateDocumentValidator : AbstractValidator<UpdateDocumentDto>
     {
-        private readonly ILocalizationService _localizer;
-        private readonly IContextService _ContextService;
-
-        public UpdateDocumentValidator(ILocalizationService localizer, IContextService ContextService)
+        public UpdateDocumentValidator(IValidationMessages msg)
         {
-            _localizer = localizer;
-            _ContextService = ContextService;
-
             RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _ContextService.GetCurrentLanguage()));
+                .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
 
             RuleFor(x => x.EngName)
                 .MaximumLength(100).When(x => x.EngName != null)
-                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
+                .WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
                 .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
+                .WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(100).When(x => x.ArbName4S != null)
-                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 100));
+                .WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).When(x => x.Remarks != null)
-                .WithMessage(x => string.Format(_localizer.GetMessage("MaxLength", _ContextService.GetCurrentLanguage()), 2048));
+                .WithMessage(x => msg.Format("MaxLength", 2048));
 
             RuleFor(x => x.DocumentTypesGroupId)
                 .GreaterThan(0).When(x => x.DocumentTypesGroupId.HasValue)
-                .WithMessage(x => _localizer.GetMessage("DocumentTypesGroupRequired", _ContextService.GetCurrentLanguage()));
+                .WithMessage(x => msg.Get("DocumentTypesGroupRequired"));
 
             RuleFor(x => x)
                 .Must(HaveAtLeastOneField)
-                .WithMessage(x => _localizer.GetMessage("AtLeastOneField", _ContextService.GetCurrentLanguage()));
+                .WithMessage(x => msg.Get("AtLeastOneField"));
         }
 
         private bool HaveAtLeastOneField(UpdateDocumentDto dto)

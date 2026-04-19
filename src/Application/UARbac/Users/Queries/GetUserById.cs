@@ -1,7 +1,7 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
-using Application.UARbac.Users.Dtos;
 using Application.UARbac.Abstractions;
+using Application.UARbac.Users.Dtos;
 using FluentValidation;
 using MediatR;
 
@@ -13,43 +13,30 @@ namespace Application.UARbac.Users.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Id)
                     .GreaterThan(0)
-                    .WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, GetUserDto>
         {
             private readonly IUserRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IUserRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IUserRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<GetUserDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var user = await _repo.GetByIdAsync(request.Id);
                 if (user == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("User", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("User", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("User", request.Id));
 
                 return new GetUserDto(
                     Id: user.Id,

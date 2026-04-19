@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Position.Dtos;
@@ -11,70 +11,44 @@ namespace Application.System.MasterData.Position.Commands
 {
     public static class CreatePosition
     {
-        public record Command(
-            int CompanyId,
-            int? RegUserId,
-            CreatePositionDto Data) : IRequest<int>;
+        public record Command(CreatePositionDto Data) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                var lang = contextService.GetCurrentLanguage();
- 
-                RuleFor(x => x.Data)
-                    .SetValidator(new CreatePositionValidator(localizer, contextService));
+                RuleFor(x => x.Data).SetValidator(new CreatePositionValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IPositionRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
-            private readonly ICodeGenerationService _codeGenerationService;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(
-                IPositionRepository repo,
-                ICompanyRepository companyRepo,
-                ICodeGenerationService codeGenerationService,
-                IContextService contextService,
-                ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(
+                IPositionRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _companyRepo = companyRepo;
-                _codeGenerationService = codeGenerationService;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
+                                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
+                if (codeExists)
+                {
+                    throw new ConflictException(_msg.CodeExists("Position", request.Data.Code));
+                }
 
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-         
-                if (request.Data.ParentId.HasValue)
+if (request.Data.ParentId.HasValue)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
-                        throw new NotFoundException(
-                            _localizer.GetMessage("ParentPosition", lang),
-                            request.Data.ParentId.Value,
-                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("ParentPosition", lang), request.Data.ParentId.Value));
+                        throw new NotFoundException(_msg.NotFound("ParentPosition", request.Data.ParentId.Value));
                 }
 
-                var code = await _codeGenerationService.GenerateCodeAsync(
-                    request.CompanyId,
-                    request.Data.Code,
-                    (companyId, ct) => _repo.GetMaxCodeAsync(companyId, ct),
-                    (code, ct) => _repo.CodeExistsAsync(code),
-                    cancellationToken
-                );
-
                 var entity = new Domain.System.MasterData.Position(
-                    code: code,
+                    code: request.Data.Code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
@@ -84,9 +58,7 @@ namespace Application.System.MasterData.Position.Commands
                     employeesNo: request.Data.EmployeesNo,
                     applyValidation: request.Data.ApplyValidation,
                     positionBudget: request.Data.PositionBudget,
-                    appraisalTypeGroupId: request.Data.AppraisalTypeGroupId,
-                    regUserId: request.RegUserId,
-                    regComputerId: request.Data.RegComputerId
+                    appraisalTypeGroupId: request.Data.AppraisalTypeGroupId
                 );
 
                 await _repo.AddAsync(entity);

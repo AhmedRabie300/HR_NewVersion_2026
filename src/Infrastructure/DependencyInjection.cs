@@ -25,7 +25,9 @@ namespace Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
             services.AddHttpContextAccessor();
-            services.AddScoped<ICurrentUser, CurrentUser>();
+            services.AddScoped<CurrentUser>();
+            services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<CurrentUser>());
+            services.AddScoped<ICurrentUserInitializer>(sp => sp.GetRequiredService<CurrentUser>());
             services.AddScoped<IFormControlRepository, FormControlRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

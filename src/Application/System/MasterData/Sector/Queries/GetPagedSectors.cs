@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Sector/Queries/GetPagedSectors.cs
+// Application/System/MasterData/Sector/Queries/GetPagedSectors.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -24,13 +24,9 @@ namespace Application.System.MasterData.Sector.Queries
                 _ContextService = ContextService;
             }
 
-      
-
             public async Task<PagedResult<SectorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,

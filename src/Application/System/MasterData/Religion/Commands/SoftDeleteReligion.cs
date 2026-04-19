@@ -1,12 +1,13 @@
-﻿using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.Abstractions;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Religion.Commands
 {
     public static class SoftDeleteReligion
     {
-        public record Command(int Id, int? RegUserId = null) : IRequest<Unit>;
+        public record Command(int Id) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
@@ -27,7 +28,7 @@ namespace Application.System.MasterData.Religion.Commands
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _repo.SoftDeleteAsync(request.Id, request.RegUserId);
+                await _repo.SoftDeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

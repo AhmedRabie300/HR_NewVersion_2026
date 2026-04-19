@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/DependantType/Queries/GetPagedDependantTypes.cs
+// Application/System/MasterData/DependantType/Queries/GetPagedDependantTypes.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -24,7 +24,6 @@ namespace Application.System.MasterData.DependantType.Queries
                 _ContextService = ContextService;
             }
 
-         
             public async Task<PagedResult<DependantTypeDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();

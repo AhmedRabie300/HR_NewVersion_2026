@@ -34,16 +34,14 @@ namespace API.System.MasterData
             })
             .WithName("GetPagedBanks");
 
-            group.MapGet("/by-company", async (
-                IMediator mediator,
-                [FromServices] IContextService contextService,
-                CancellationToken ct) =>
-            {
-                var companyId = contextService.GetCurrentCompanyId();
-                var result = await mediator.Send(new GetBanksByCompanyId.Query(companyId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetBanksByCompanyId");
+            //group.MapGet("/by-company", async (
+            //    IMediator mediator,
+            //    CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new GetBanksByCompanyId.Query(companyId), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetBanksByCompanyId");
 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
@@ -54,13 +52,10 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateBankDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateBank.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateBank.Command(dto), ct);
                 return Results.Created($"/master-data/banks/{id}", new { id });
             })
             .WithName("CreateBank");
@@ -80,18 +75,17 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteBank.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteBank.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteBank");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteBank.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+                await mediator.Send(new DeleteBank.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteBank");
 

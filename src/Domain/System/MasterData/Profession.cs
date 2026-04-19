@@ -24,9 +24,7 @@ namespace Domain.System.MasterData
             string? engName,
             string? arbName,
             string? arbName4S,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
             CompanyId = companyId;
@@ -34,9 +32,6 @@ namespace Domain.System.MasterData
             ArbName = arbName;
             ArbName4S = arbName4S;
             Remarks = remarks;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(string? engName, string? arbName, string? arbName4S, string? remarks)

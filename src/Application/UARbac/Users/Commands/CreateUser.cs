@@ -1,7 +1,7 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
-using Application.UARbac.Users.Dtos;
 using Application.UARbac.Abstractions;
+using Application.UARbac.Users.Dtos;
 using Domain.UARbac;
 using FluentValidation;
 using MediatR;
@@ -15,59 +15,39 @@ namespace Application.UARbac.Users.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                var lang = _contextService.GetCurrentLanguage();
-
                 RuleFor(x => x.Data.Code)
-                    .NotEmpty()
-                    .MaximumLength(50)
-                    .WithMessage(string.Format(_localizer.GetMessage("CodeRequired", lang)));
+                    .NotEmpty().WithMessage(msg.Get("CodeRequired"))
+                    .MaximumLength(50).WithMessage(msg.Format("MaxLength", 50));
 
                 RuleFor(x => x.Data.Password)
-                    .NotEmpty()
-                    .WithMessage(_localizer.GetMessage("PasswordRequired", lang));
+                    .NotEmpty().WithMessage(msg.Get("PasswordRequired"));
 
                 RuleFor(x => x.Data.EngName)
-                    .MaximumLength(100)
-                    .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 100));
+                    .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
                 RuleFor(x => x.Data.ArbName)
-                    .MaximumLength(100)
-                    .WithMessage(string.Format(_localizer.GetMessage("MaxLength", lang), 100));
+                    .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly IUserRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IUserRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IUserRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var existingUser = await _repo.GetByCodeAsync(request.Data.Code);
                 if (existingUser != null)
-                    throw new ConflictException(
-                        _localizer.GetMessage("User", lang),
-                        "Code",
-                        request.Data.Code,
-                        string.Format(_localizer.GetMessage("CodeExists", lang), _localizer.GetMessage("User", lang), request.Data.Code));
+                    throw new ConflictException(_msg.CodeExists("User", request.Data.Code));
 
                 var user = new UserEntity(
                     code: request.Data.Code,
@@ -99,6 +79,7 @@ namespace Application.UARbac.Users.Commands
                     {
                         await _repo.AddUserToGroupAsync(createdUser.Id, groupId, false);
                     }
+
                     await _repo.SaveChangesAsync(cancellationToken);
                 }
 

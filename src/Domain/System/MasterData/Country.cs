@@ -41,8 +41,6 @@ namespace Domain.System.MasterData
             string? phoneKey,
             bool? isMainCountries,
             string? remarks,
-            int? regUserId,
-            int? regComputerId,
             int? regionId,
             string? isoAlpha2,
             string? isoAlpha3,
@@ -59,15 +57,12 @@ namespace Domain.System.MasterData
             PhoneKey = phoneKey;
             IsMainCountries = isMainCountries;
             Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
             RegionId = regionId;
             ISOAlpha2 = isoAlpha2;
             ISOAlpha3 = isoAlpha3;
             Languages = languages;
             Continent = continent;
             CapitalId = capitalId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(

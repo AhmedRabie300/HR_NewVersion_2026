@@ -2,7 +2,6 @@ using API.Common.Middleware;
 using API.Common.Versioning;
 using API.Endpoints;
 using API.Helpers;
-using API.Middleware;
 using API.System.MasterData;
 using API.System.HRS;
 using API.UARbac;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
+using API.Common.Swagger;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -49,8 +49,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<GlobalHeadersOperationFilter>();
+});
 builder.Services.AddTransient<GlobalExceptionMiddleware>();
+builder.Services.AddTransient<CurrentUserMiddleware>();
 builder.Services.AddApiVersioningSetup();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -69,18 +73,24 @@ var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+        c.RoutePrefix = "swagger";
+        c.UseRequestInterceptor("(req) => { req.headers['CompanyId'] = req.headers['CompanyId'] || '1'; req.headers['Language'] = req.headers['Language'] || 'en'; return req; }");
+    });
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-app.UseLanguageMiddleware();
 app.UseAuthentication();  
-app.UseAuthorization();   
+app.UseAuthorization();
+app.UseMiddleware<CurrentUserMiddleware>();
 app.UsePermissionMiddleware();  
 var apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(1, 0))

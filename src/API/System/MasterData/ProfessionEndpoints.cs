@@ -44,13 +44,10 @@ namespace API.System.MasterData
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateProfessionDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateProfession.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateProfession.Command( dto), ct);
                 return Results.Created($"/master-data/professions/{id}", new { id });
             })
             .WithName("CreateProfession");
@@ -70,18 +67,17 @@ namespace API.System.MasterData
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteProfession.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteProfession.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteProfession");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteProfession.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+                await mediator.Send(new DeleteProfession.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteProfession");
 

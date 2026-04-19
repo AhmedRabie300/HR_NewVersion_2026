@@ -18,17 +18,12 @@ namespace Domain.System.MasterData
             string code,
             string? engName,
             string? arbName,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
             Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         public void Update(

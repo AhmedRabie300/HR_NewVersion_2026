@@ -1,7 +1,7 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
-using Application.UARbac.Groups.Dtos;
 using Application.UARbac.Abstractions;
+using Application.UARbac.Groups.Dtos;
 using FluentValidation;
 using MediatR;
 
@@ -13,43 +13,30 @@ namespace Application.UARbac.Groups.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Id)
                     .GreaterThan(0)
-                    .WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, GroupDto>
         {
             private readonly IGroupRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IGroupRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IGroupRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<GroupDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var group = await _repo.GetByIdAsync(request.Id);
                 if (group == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Group", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Group", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("Group", request.Id));
 
                 return new GroupDto(
                     Id: group.Id,

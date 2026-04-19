@@ -25,25 +25,18 @@ namespace Domain.System.MasterData
 
         public Sector(
             string code,
-            int companyId,
             string? engName,
             string? arbName,
             string? arbName4S,
             int? parentId,
-            string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            string? remarks)
         {
             Code = code;
-            CompanyId = companyId;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
             ParentId = parentId;
             Remarks = remarks;
-            RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
         }
 
         // Update methods

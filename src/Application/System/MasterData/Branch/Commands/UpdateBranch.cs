@@ -15,51 +15,33 @@ namespace Application.System.MasterData.Branch.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateBranchValidator(localizer, ContextService));
+                    .SetValidator(new UpdateBranchValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IBranchRepository _repo;
-            private readonly IHttpContextAccessor _httpContextAccessor;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(
-                IBranchRepository repo,
-                IHttpContextAccessor httpContextAccessor,
-                IContextService ContextService,
-                ILocalizationService localizer)
+            public Handler(IBranchRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _httpContextAccessor = httpContextAccessor;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
           
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
+              
 
                 var branch = await _repo.GetByIdAsync(request.Data.Id);
                 if (branch == null)
-                    throw new NotFoundException("Update Branch", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Branch", lang),
-                        request.Data.Id));
-
-                // ✅ التأكد أن الفرع يتبع الشركة الحالية
-                if (branch.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Branch does not belong to your company");
-
-                // Update basic info
+                    throw new NotFoundException(_msg.NotFound("Branch", request.Data.Id));
             
                     branch.UpdateBasicInfo(
                         request.Data.EngName,
@@ -84,12 +66,8 @@ namespace Application.System.MasterData.Branch.Commands
                     if (request.Data.ParentId != branch.Id)
                     {
                         var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
-                        if (parent == null)
-                            throw new NotFoundException("Update Branch", string.Format(
-                                _localizer.GetMessage("NotFound", lang),
-                                _localizer.GetMessage("ParentBranch", lang),
-                                request.Data.ParentId));
-
+                        if (parent is null)
+                            throw new NotFoundException(_msg.NotFound("ParentBranch", request.Data.Id));
                         branch.UpdateParent(request.Data.ParentId);
                     }
                 }

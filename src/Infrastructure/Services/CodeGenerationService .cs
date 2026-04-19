@@ -26,7 +26,7 @@ namespace Infrastructure.Services
         {
             var company = await _companyRepo.GetByIdAsync(companyId);
             if (company == null)
-                throw new NotFoundException("Company", companyId);
+                throw new NotFoundException("Company");
 
              if (company.HasSequence == true)
             {
@@ -55,7 +55,7 @@ namespace Infrastructure.Services
                     throw new ValidationException(_localizer.GetMessage("CodeRequired", 1));
 
                 if (await codeExistsAsync(providedCode, cancellationToken))
-                    throw new ConflictException("Entity", "Code", providedCode);
+                    throw new ConflictException("Code");
 
                 return providedCode;
             }

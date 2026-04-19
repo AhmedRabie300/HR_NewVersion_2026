@@ -1,37 +1,36 @@
-﻿using Application.Common.Abstractions;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Education.Dtos;
 using FluentValidation;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Education.Validators
 {
     public class CreateEducationValidator : AbstractValidator<CreateEducationDto>
     {
-        public CreateEducationValidator(ILocalizationService localizer, IContextService contextService)
+        public CreateEducationValidator(IValidationMessages msg)
         {
-            var lang = contextService.GetCurrentLanguage();
-
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .MaximumLength(50).WithMessage(msg.Format("MaxLength", 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(msg.Format("MaxLength", 100));
 
             RuleFor(x => x.Level)
                 .InclusiveBetween(1, 10).When(x => x.Level.HasValue)
-                .WithMessage(localizer.GetMessage("EducationLevelRange", lang));
+                .WithMessage(msg.Get("EducationLevelRange"));
 
             RuleFor(x => x.RequiredYears)
                 .InclusiveBetween(0, 20).When(x => x.RequiredYears.HasValue)
-                .WithMessage(localizer.GetMessage("RequiredYearsRange", lang));
+                .WithMessage(msg.Get("RequiredYearsRange"));
 
             RuleFor(x => x.Remarks)
-                .MaximumLength(2048).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 2048));
+                .MaximumLength(2048).WithMessage(msg.Format("MaxLength", 2048));
         }
     }
 }

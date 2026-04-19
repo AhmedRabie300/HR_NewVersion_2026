@@ -8,7 +8,7 @@ namespace Application.System.MasterData.Branch.Queries
 {
     public static class GetBranchesByCompany
     {
-        public record Query(int CompanyId) : IRequest<List<BranchDto>>;
+        public record Query() : IRequest<List<BranchDto>>;
 
         public sealed class Validator : AbstractValidator<Query>
         {
@@ -31,15 +31,14 @@ namespace Application.System.MasterData.Branch.Queries
 
             public async Task<List<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
                  
-                var branches = await _repo.GetByCompanyIdAsync(request.CompanyId);
+                var branches = await _repo.GetAllAsync();
 
                 return branches.Select(b => new BranchDto(
                     Id: b.Id,
                     Code: b.Code,
                     CompanyId: b.CompanyId,
-                    CompanyName: company.EngName ?? company.ArbName,
+                    CompanyName:b.Company.EngName,
                     EngName: b.EngName,
                     ArbName: b.ArbName,
                     ArbName4S: b.ArbName4S,

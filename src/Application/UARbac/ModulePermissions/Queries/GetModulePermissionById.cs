@@ -1,7 +1,7 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
-using Application.UARbac.ModulePermissions.Dtos;
 using Application.UARbac.Abstractions;
+using Application.UARbac.ModulePermissions.Dtos;
 using FluentValidation;
 using MediatR;
 
@@ -13,55 +13,42 @@ namespace Application.UARbac.ModulePermissions.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Id)
                     .GreaterThan(0)
-                    .WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
+                    .WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, ModulePermissionDto>
         {
             private readonly IModulePermissionRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
-            public Handler(IModulePermissionRepository repo, IContextService contextService, ILocalizationService localizer)
+            public Handler(IModulePermissionRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<ModulePermissionDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var permission = await _repo.GetByIdAsync(request.Id);
                 if (permission == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("ModulePermission", lang),
-                        request.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("ModulePermission", lang), request.Id));
+                    throw new NotFoundException(_msg.NotFound("ModulePermission", request.Id));
 
                 return new ModulePermissionDto(
                     Id: permission.Id,
                     ModuleId: permission.ModuleId,
                     ModuleCode: permission.Module?.Code,
-                    ModuleName: lang == 2 ? (permission.Module?.ArbName ?? permission.Module?.EngName) : (permission.Module?.EngName ?? permission.Module?.ArbName),
+                    ModuleName: permission.Module?.EngName ?? permission.Module?.ArbName,
                     GroupId: permission.GroupId,
                     GroupCode: permission.Group?.Code,
-                    GroupName: lang == 2 ? (permission.Group?.ArbName ?? permission.Group?.EngName) : (permission.Group?.EngName ?? permission.Group?.ArbName),
+                    GroupName: permission.Group?.EngName ?? permission.Group?.ArbName,
                     UserId: permission.UserId,
                     UserCode: permission.User?.Code,
-                    UserName: lang == 2 ? (permission.User?.ArbName ?? permission.User?.EngName) : (permission.User?.EngName ?? permission.User?.ArbName),
+                    UserName: permission.User?.EngName ?? permission.User?.ArbName,
                     CanView: permission.CanView,
                     RegDate: permission.RegDate,
                     CancelDate: permission.CancelDate,

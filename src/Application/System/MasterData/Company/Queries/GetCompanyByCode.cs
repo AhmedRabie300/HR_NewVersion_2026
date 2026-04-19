@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Company.Dtos;
 using MediatR;
@@ -8,8 +8,6 @@ namespace Application.System.MasterData.Company.Queries
     public static class GetCompanyByCode
     {
         public record Query(string Code) : IRequest<CompanyDto>;
-
- 
 
         public class Handler : IRequestHandler<Query, CompanyDto>
         {
@@ -23,7 +21,7 @@ namespace Application.System.MasterData.Company.Queries
             public async Task<CompanyDto> Handle(Query request, CancellationToken cancellationToken)
             {
                 var company = await _repo.GetByCodeAsync(request.Code);
-               
+
                 return new CompanyDto(
                     Id: company.Id,
                     Code: company.Code,

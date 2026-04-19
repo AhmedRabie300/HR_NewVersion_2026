@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Location/Queries/ListLocations.cs
+// Application/System/MasterData/Location/Queries/ListLocations.cs
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Location.Dtos;
@@ -22,12 +22,9 @@ namespace Application.System.MasterData.Location.Queries
                 _ContextService = ContextService;
             }
 
-
             public async Task<List<LocationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var items = await _repo.GetAllAsync(companyId);
 
                 return items.Select(x => new LocationDto(

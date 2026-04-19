@@ -1,11 +1,10 @@
-﻿// Application/System/MasterData/Location/Queries/GetLocationById.cs
+// Application/System/MasterData/Location/Queries/GetLocationById.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Location.Dtos;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Location.Queries
 {
@@ -15,47 +14,31 @@ namespace Application.System.MasterData.Location.Queries
 
         public sealed class Validator : AbstractValidator<Query>
         {
-            private readonly ILocalizationService _localizer;
-            private readonly IContextService _ContextService;
-
-            public Validator(ILocalizationService localizer, IContextService ContextService)
+            public Validator(IValidationMessages msg)
             {
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _ContextService.GetCurrentLanguage()));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
             }
         }
 
         public class Handler : IRequestHandler<Query, LocationDto>
         {
             private readonly ILocationRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IValidationMessages _msg;
 
             public Handler(
                 ILocationRepository repo,
-                IContextService ContextService,
-                ILocalizationService localizer)
+                IValidationMessages msg)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
+                _msg = msg;
             }
 
-  
             public async Task<LocationDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var lang = _ContextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound", string.Format(
-                        _localizer.GetMessage("NotFound", lang),
-                        _localizer.GetMessage("Location", lang),
-                        request.Id));
-
-                if (entity.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Location does not belong to your company");
+                    throw new NotFoundException(_msg.NotFound("Location", request.Id));
 
                 return new LocationDto(
                     Id: entity.Id,

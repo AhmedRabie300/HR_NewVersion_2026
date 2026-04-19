@@ -1,10 +1,11 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Region.Dtos;
 using Application.System.MasterData.Region.Validators;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Region.Commands
 {
@@ -14,57 +15,37 @@ namespace Application.System.MasterData.Region.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateRegionValidator(_localizer, _contextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateRegionValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IRegionRepository _repo;
-            private readonly ICountryRepository _countryRepo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
+                        private readonly IValidationMessages _msg;
+private readonly ICountryRepository _countryRepo;
             public Handler(
-                IRegionRepository repo,
-                ICountryRepository countryRepo,
-                IContextService contextService,
-                ILocalizationService localizer)
+                IRegionRepository repo, IValidationMessages msg,
+                ICountryRepository countryRepo)
             {
                 _repo = repo;
+                _msg = msg;
                 _countryRepo = countryRepo;
-                _contextService = contextService;
-                _localizer = localizer;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException(
-                        _localizer.GetMessage("Region", lang),
-                        request.Data.Id,
-                        string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Region", lang), request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("Region", request.Data.Id));
 
                 if (request.Data.CountryId.HasValue)
                 {
                     var country = await _countryRepo.GetByIdAsync(request.Data.CountryId.Value);
                     if (country == null)
-                        throw new NotFoundException(
-                            _localizer.GetMessage("Country", lang),
-                            request.Data.CountryId.Value,
-                            string.Format(_localizer.GetMessage("NotFound", lang), _localizer.GetMessage("Country", lang), request.Data.CountryId.Value));
+                        throw new NotFoundException(_msg.NotFound("Country", request.Data.CountryId.Value));
                 }
 
                 entity.Update(

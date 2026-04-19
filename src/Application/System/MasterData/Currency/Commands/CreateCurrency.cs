@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Currency.Dtos;
@@ -6,67 +6,46 @@ using Application.System.MasterData.Currency.Validators;
 using Domain.System.MasterData;
 using FluentValidation;
 using MediatR;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.Currency.Commands
 {
     public static class CreateCurrency
     {
-        public record Command(
-            int CompanyId,
-            int? RegUserId,
-            CreateCurrencyDto Data) : IRequest<int>;
+        public record Command(CreateCurrencyDto Data) : IRequest<int>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                var lang = contextService.GetCurrentLanguage();
-
-                
-                RuleFor(x => x.Data)
-                    .SetValidator(new CreateCurrencyValidator(localizer, contextService));
+                RuleFor(x => x.Data).SetValidator(new CreateCurrencyValidator(msg));
             }
         }
 
         public class Handler : IRequestHandler<Command, int>
         {
             private readonly ICurrencyRepository _repo;
-            private readonly ICompanyRepository _companyRepo;
-            private readonly ICodeGenerationService _codeGenerationService;
+             private readonly IValidationMessages _msg;
             private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
             public Handler(
-                ICurrencyRepository repo,
-                ICompanyRepository companyRepo,
-                ICodeGenerationService codeGenerationService,
-                IContextService contextService,
-                ILocalizationService localizer)
+                ICurrencyRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _companyRepo = companyRepo;
-                _codeGenerationService = codeGenerationService;
-                _contextService = contextService;
-                _localizer = localizer;
+                _msg = msg;
+
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
 
-                var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-             
-                var code = await _codeGenerationService.GenerateCodeAsync(
-                    request.CompanyId,
-                    request.Data.Code,
-                    (companyId, ct) => _repo.GetMaxCodeAsync(companyId, ct),
-                    (code, ct) => _repo.CodeExistsAsync(code,request.CompanyId),
-                    cancellationToken
-                );
+                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
+                if (codeExists)
+                {
+                    throw new ConflictException(_msg.CodeExists("Currency", request.Data.Code));
+                }
 
-                var entity = new Domain.System.MasterData.Currency(
-                    code: code,
-                    companyId: request.CompanyId,
+var entity = new Domain.System.MasterData.Currency(
+                    code: request.Data.Code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
@@ -77,9 +56,7 @@ namespace Application.System.MasterData.Currency.Commands
                     decimalArbName: request.Data.DecimalArbName,
                     amount: request.Data.Amount,
                     noDecimalPlaces: request.Data.NoDecimalPlaces,
-                    remarks: request.Data.Remarks,
-                    regUserId: request.RegUserId,
-                    regComputerId: request.Data.regComputerId
+                    remarks: request.Data.Remarks
                 );
 
                 await _repo.AddAsync(entity);

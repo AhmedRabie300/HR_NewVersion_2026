@@ -1,10 +1,11 @@
-﻿using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.DocumentTypesGroup.Dtos;
 using Application.System.MasterData.DocumentTypesGroup.Validators;
 using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
 using Application.Common;
+using Application.Abstractions;
 
 namespace Application.System.MasterData.DocumentTypesGroup.Commands
 {
@@ -14,31 +15,26 @@ namespace Application.System.MasterData.DocumentTypesGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IContextService ContextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Data)
-                    .SetValidator(new UpdateDocumentTypesGroupValidator(localizer, ContextService));
+                RuleFor(x => x.Data).SetValidator(new UpdateDocumentTypesGroupValidator(msg));
             }
         }
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IDocumentTypesGroupRepository _repo;
-            private readonly ILocalizationService _localizer;
-
-            public Handler(IDocumentTypesGroupRepository repo, ILocalizationService localizer)
+                        private readonly IValidationMessages _msg;
+public Handler(IDocumentTypesGroupRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
-                _localizer = localizer;
+                _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
-                    throw new NotFoundException("NotFound",string.Format(
-                        _localizer.GetMessage("NotFound", request.Lang),
-                        _localizer.GetMessage("DocumentTypesGroup", request.Lang),
-                        request.Data.Id));
+                    throw new NotFoundException(_msg.NotFound("DocumentTypesGroup", request.Data.Id));
 
                 entity.Update(
                     request.Data.EngName,

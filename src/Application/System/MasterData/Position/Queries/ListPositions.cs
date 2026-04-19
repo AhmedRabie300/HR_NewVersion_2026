@@ -1,4 +1,5 @@
-﻿using Application.Common;
+using Application.Abstractions;
+using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Position.Dtos;
@@ -13,19 +14,17 @@ namespace Application.System.MasterData.Position.Queries
         public class Handler : IRequestHandler<Query, List<PositionDto>>
         {
             private readonly IPositionRepository _repo;
-            private readonly IContextService _ContextService;
-            private readonly ILocalizationService _localizer;
+            private readonly ICurrentUser _currentUser;
 
-            public Handler(IPositionRepository repo, IContextService ContextService, ILocalizationService localizer)
+            public Handler(IPositionRepository repo, ICurrentUser currentUser)
             {
                 _repo = repo;
-                _ContextService = ContextService;
-                _localizer = localizer;
-            }
+                _currentUser = currentUser;
+            }   
+          
 
             public async Task<List<PositionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _ContextService.GetCurrentLanguage();
                 var positions = await _repo.GetAllAsync();
 
                 return positions.Select(p => new PositionDto(
@@ -35,7 +34,7 @@ namespace Application.System.MasterData.Position.Queries
                     ArbName: p.ArbName,
                     ArbName4S: p.ArbName4S,
                     ParentId: p.ParentId,
-                    ParentPositionName: lang == 2 ? p.ParentPosition?.ArbName : p.ParentPosition?.EngName,
+                    ParentPositionName: _currentUser.Language == 2 ? p.ParentPosition?.ArbName : p.ParentPosition?.EngName,
                     PositionLevelId: p.PositionLevelId,
                     PositionLevelName: null,
                     EvalEvaluationId: p.EvalEvaluationID,

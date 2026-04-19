@@ -1,4 +1,4 @@
-﻿// Application/System/MasterData/Department/Queries/GetPagedDepartments.cs
+// Application/System/MasterData/Department/Queries/GetPagedDepartments.cs
 using Application.Common.Abstractions;
 using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
@@ -24,12 +24,9 @@ namespace Application.System.MasterData.Department.Queries
                 _ContextService = ContextService;
             }
 
-       
-
             public async Task<PagedResult<DepartmentDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                  var companyId = _ContextService.GetCurrentCompanyId();
-
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,

@@ -1,4 +1,6 @@
-﻿using Application.Common.Validation;
+﻿using Application.Common;
+using Application.Common.Abstractions;
+using Application.Common.Validation;
 using Application.System.MasterData.Company.Commands;
 using FluentValidation;
 using MediatR;
@@ -15,6 +17,7 @@ namespace Application
  
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            services.AddScoped<IValidationMessages, ValidationMessages>();
             return services;
         }
     }
