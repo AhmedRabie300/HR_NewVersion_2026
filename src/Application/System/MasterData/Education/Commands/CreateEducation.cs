@@ -37,11 +37,7 @@ namespace Application.System.MasterData.Education.Commands
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Education", request.Data.Code));
-                }
+             
 
 var entity = new Domain.System.MasterData.Education(
                     code: request.Data.Code,

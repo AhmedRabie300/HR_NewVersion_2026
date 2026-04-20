@@ -12,8 +12,15 @@ namespace Application.System.MasterData.Location.Validators
         public CreateLocationValidator(IValidationMessages msg,ILocationRepository repo)
         {
             _repo = repo;
+
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(msg.Format("MaxLength", 50));
+.NotEmpty().WithMessage(x => msg.Get("CodeRequired"))
+.MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+.MustAsync(async (code, cancellation) =>
+{
+return !await _repo.CodeExistsAsync(code);
+})
+.WithMessage(x => msg.Format("CodeExists", msg.Get("Location"), x.Code));
 
 
             RuleFor(x => x.EngName)
@@ -21,7 +28,7 @@ namespace Application.System.MasterData.Location.Validators
        .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
        .MustAsync(async (engName, cancellation) =>
        {
-           return await _repo.IsEngNameUniqueAsync(engName, cancellation);
+           return await _repo.IsEngNameUniqueAsync(engName, null, cancellation);
        })
        .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
@@ -30,7 +37,7 @@ namespace Application.System.MasterData.Location.Validators
                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
                .MustAsync(async (arbname, cancellation) =>
                {
-                   return await _repo.IsArbNameUniqueAsync(arbname, cancellation);
+                   return await _repo.IsArbNameUniqueAsync(arbname, null, cancellation);
                })
                .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 

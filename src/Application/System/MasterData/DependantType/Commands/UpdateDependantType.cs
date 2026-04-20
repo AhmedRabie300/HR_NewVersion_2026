@@ -15,35 +15,28 @@ namespace Application.System.MasterData.DependantType.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IDependantTypeRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateDependantTypeValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateDependantTypeValidator(msg, repo));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IDependantTypeRepository _repo;
-                        private readonly IValidationMessages _msg;
-            private readonly IContextService _contextService;
-public Handler(
-                IDependantTypeRepository repo, IValidationMessages msg, IContextService contextService)
+            private readonly IValidationMessages _msg;
+
+            public Handler(IDependantTypeRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
                 _msg = msg;
-                _contextService = contextService;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                //var companyId = _contextService.GetCurrentCompanyId();
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
                     throw new NotFoundException(_msg.NotFound("DependantType", request.Data.Id));
-
-                //if (entity.CompanyId != companyId)
-                //    throw new UnauthorizedAccessException("Access denied: Dependant type does not belong to your company");
 
                 entity.Update(
                     request.Data.EngName,

@@ -17,9 +17,9 @@ namespace Application.System.MasterData.Profession.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IProfessionRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateProfessionValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateProfessionValidator(msg,repo));
             }
         }
 
@@ -39,9 +39,7 @@ public Handler(
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                  var entity = await _repo.GetByIdAsync(request.Data.Id);
-                if (entity == null)
-                    throw new NotFoundException(_msg.NotFound("Profession", request.Data.Id));
-
+           
                  
                 entity.Update(
                     request.Data.EngName,

@@ -34,12 +34,7 @@ public Handler(
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("MaritalStatus", request.Data.Code));
-                }
-
+               
                 var entity = new Domain.System.MasterData.MaritalStatus(
                     code: request.Data.Code,
                     engName: request.Data.EngName,

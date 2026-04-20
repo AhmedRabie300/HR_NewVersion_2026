@@ -5,7 +5,6 @@ using Application.System.MasterData.Branch.Dtos;
 using Application.System.MasterData.Branch.Validators;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.System.MasterData.Branch.Commands
 {
@@ -15,10 +14,10 @@ namespace Application.System.MasterData.Branch.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IBranchRepository repo)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateBranchValidator(msg));
+                    .SetValidator(new UpdateBranchValidator(msg, repo));
             }
         }
 
@@ -33,23 +32,19 @@ namespace Application.System.MasterData.Branch.Commands
                 _msg = msg;
             }
 
-          
-
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-              
-
                 var branch = await _repo.GetByIdAsync(request.Data.Id);
                 if (branch == null)
                     throw new NotFoundException(_msg.NotFound("Branch", request.Data.Id));
-            
-                    branch.UpdateBasicInfo(
-                        request.Data.EngName,
-                        request.Data.ArbName,
-                        request.Data.ArbName4S,
-                        request.Data.Remarks
-                    );
-              
+
+                branch.UpdateBasicInfo(
+                   
+                    request.Data.EngName,
+                    request.Data.ArbName,
+                    request.Data.ArbName4S,
+                    request.Data.Remarks
+                );
 
                 // Update location
                 if (request.Data.CountryId.HasValue || request.Data.CityId.HasValue)
@@ -67,7 +62,7 @@ namespace Application.System.MasterData.Branch.Commands
                     {
                         var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                         if (parent is null)
-                            throw new NotFoundException(_msg.NotFound("ParentBranch", request.Data.Id));
+                            throw new NotFoundException(_msg.NotFound("ParentBranch", request.Data.ParentId.Value));
                         branch.UpdateParent(request.Data.ParentId);
                     }
                 }

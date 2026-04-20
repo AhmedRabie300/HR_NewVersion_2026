@@ -49,12 +49,7 @@ private readonly IBranchRepository _branchRepo;
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code );
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Location", request.Data.Code));
-                }
-
+          
                 if (request.Data.BranchId.HasValue)
                 {
                     var branch = await _branchRepo.GetByIdAsync(request.Data.BranchId.Value);

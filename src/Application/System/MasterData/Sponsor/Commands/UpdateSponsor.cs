@@ -15,9 +15,9 @@ namespace Application.System.MasterData.Sponsor.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,ISponsorRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateSponsorValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateSponsorValidator(msg,repo));
             }
         }
 
@@ -39,9 +39,7 @@ namespace Application.System.MasterData.Sponsor.Commands
             {
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
-                if (entity == null)
-                    throw new NotFoundException(_msg.NotFound("Sponsor", request.Data.Id));
-
+              
      
                 entity.Update(
                     request.Data.EngName,

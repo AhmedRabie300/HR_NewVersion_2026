@@ -14,53 +14,31 @@ namespace Application.System.HRS.TransactionsGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
-
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg, ITransactionsGroupRepository repo)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-
                 RuleFor(x => x.Data)
-                    .SetValidator(new UpdateTransactionsGroupValidator(_localizer, _contextService));
+                    .SetValidator(new UpdateTransactionsGroupValidator(msg, repo));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ITransactionsGroupRepository _repo;
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
             private readonly IValidationMessages _msg;
 
             public Handler(
                 ITransactionsGroupRepository repo,
-                IContextService contextService,
-                ILocalizationService localizer,
                 IValidationMessages msg)
             {
                 _repo = repo;
-                _contextService = contextService;
-                _localizer = localizer;
                 _msg = msg;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
-                var entity = await _repo.GetByIdAsync(request.Data.Id) ?? throw new NotFoundException(_msg.NotFound("TransactionsGroup", request.Data.Id));
-
-                // Check code uniqueness if code is being changed
-                if (request.Data.Code != null && request.Data.Code != entity.Code)
-                {
-                    if (await _repo.CodeExistsAsync(request.Data.Code, request.Data.Id))
-                        throw new ConflictException(string.Format(
-                            _localizer.GetMessage("CodeExists", lang),
-                            _localizer.GetMessage("TransactionsGroup", lang),
-                            request.Data.Code));
-                }
+                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                if (entity == null)
+                    throw new NotFoundException(_msg.NotFound("TransactionsGroup", request.Data.Id));
 
                 entity.Update(
                     request.Data.Code,

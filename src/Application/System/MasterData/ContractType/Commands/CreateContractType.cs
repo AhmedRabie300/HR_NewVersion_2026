@@ -34,14 +34,6 @@ namespace Application.System.MasterData.ContractType.Commands
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-
-
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("ContractType", request.Data.Code));
-                }
-
                     var entity = new Domain.System.MasterData.ContractType(
                     code: request.Data.Code,
                     engName: request.Data.EngName,

@@ -2,23 +2,40 @@ using Application.System.MasterData.Religion.Dtos;
 using Application.Common.Abstractions;
 using FluentValidation;
 using Application.Abstractions;
+using Application.System.MasterData.Abstractions;
 
 namespace Application.System.MasterData.Religion.Validators
 {
     public class UpdateReligionValidator : AbstractValidator<UpdateReligionDto>
     {
-        public UpdateReligionValidator(IValidationMessages msg)
+        private readonly IReligionRepository _repo;
+        public UpdateReligionValidator(IValidationMessages msg,IReligionRepository repo)
         {
+            _repo = repo;
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).When(x => x.EngName != null)
-                .WithMessage(x => msg.Format("MaxLength", 100));
+        .MaximumLength(100).When(x => x.EngName != null)
+        .WithMessage(x => msg.Format("MaxLength", 100))
+        .MustAsync(async (dto, engName, cancellation) =>
+        {
+            if (string.IsNullOrWhiteSpace(engName)) return true;
+            return await _repo.IsEngNameUniqueAsync(engName, dto.Id, cancellation);
+        })
+        .When(x => x.EngName != null)
+        .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(x => msg.Format("MaxLength", 100));
+               .MaximumLength(100).When(x => x.ArbName != null)
+               .WithMessage(x => msg.Format("MaxLength", 100))
+               .MustAsync(async (dto, arbName, cancellation) =>
+               {
+                   if (string.IsNullOrWhiteSpace(arbName)) return true;
+                   return await _repo.IsArbNameUniqueAsync(arbName, dto.Id, cancellation);
+               })
+               .When(x => x.ArbName != null)
+               .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(100).When(x => x.ArbName4S != null)

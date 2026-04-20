@@ -12,14 +12,21 @@ namespace Application.System.MasterData.MaritalStatus.Validators
         public CreateMaritalStatusValidator(IValidationMessages msg,IMaritalStatusRepository repo)
         {
             _repo = repo;
+
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(msg.Format("MaxLength", 50));
+.NotEmpty().WithMessage(x => msg.Get("CodeRequired"))
+.MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+.MustAsync(async (code, cancellation) =>
+{
+return !await _repo.CodeExistsAsync(code);
+})
+.WithMessage(x => msg.Format("CodeExists", msg.Get("MaritalStatus"), x.Code));
 
             RuleFor(x => x.EngName)
         .MustAsync(async (engName, cancellation) =>
         {
             if (string.IsNullOrWhiteSpace(engName)) return true;
-            return await _repo.IsEngNameUniqueAsync(engName, cancellation);
+            return await _repo.IsEngNameUniqueAsync(engName, null, cancellation);
         })
        .When(x => !string.IsNullOrWhiteSpace(x.EngName))
        .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName))
@@ -29,7 +36,7 @@ namespace Application.System.MasterData.MaritalStatus.Validators
                    .MustAsync(async (arbname, cancellation) =>
                    {
                        if (string.IsNullOrWhiteSpace(arbname)) return true;
-                       return await _repo.IsArbNameUniqueAsync(arbname, cancellation);
+                       return await _repo.IsArbNameUniqueAsync(arbname, null, cancellation);
                    })
                 .When(x => !string.IsNullOrWhiteSpace(x.ArbName))
                 .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName))

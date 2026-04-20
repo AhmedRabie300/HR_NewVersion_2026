@@ -17,9 +17,9 @@ namespace Application.System.MasterData.Location.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, ILocationRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateLocationValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateLocationValidator(msg, repo));
             }
         }
 
@@ -66,23 +66,19 @@ private readonly ICompanyRepository _companyRepo;
                         request.Data.CostCenterCode4
                     );
 
-                // Update parent
-                if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
+                 if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)
                         throw new NotFoundException(_msg.NotFound("ParentLocation", request.Data.ParentId));
-                    // entity.UpdateParent(request.Data.ParentId);
-                }
+                 }
 
-                // Update relations
-                if (request.Data.BranchId.HasValue)
+                 if (request.Data.BranchId.HasValue)
                 {
                     var branch = await _branchRepo.GetByIdAsync(request.Data.BranchId.Value);
                     if (branch == null)
                         throw new NotFoundException(_msg.NotFound("Branch", request.Data.BranchId));
-                    // entity.UpdateBranch(request.Data.BranchId);
-                }
+                 }
 
                 await _repo.UpdateAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

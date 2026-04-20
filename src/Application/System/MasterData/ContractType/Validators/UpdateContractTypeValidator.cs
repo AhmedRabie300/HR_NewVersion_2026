@@ -1,24 +1,45 @@
-using Application.System.MasterData.ContractType.Dtos;
+﻿using Application.Abstractions;
 using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.ContractType.Dtos;
 using FluentValidation;
-using Application.Abstractions;
 
 namespace Application.System.MasterData.ContractType.Validators
 {
     public class UpdateContractTypeValidator : AbstractValidator<UpdateContractTypeDto>
     {
-        public UpdateContractTypeValidator(IValidationMessages msg)
+        private readonly IContractTypeRepository _repo;
+
+        public UpdateContractTypeValidator(IValidationMessages msg, IContractTypeRepository repo)
         {
+            _repo = repo;
+
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
 
+            // ✅ EngName - مع excludeId
             RuleFor(x => x.EngName)
                 .MaximumLength(100).When(x => x.EngName != null)
-                .WithMessage(x => msg.Format("MaxLength", 100));
+                .WithMessage(x => msg.Format("MaxLength", 100))
+                .MustAsync(async (dto, engName, cancellation) =>
+                {
+                    if (string.IsNullOrWhiteSpace(engName)) return true;
+                    return await _repo.IsEngNameUniqueAsync(engName, dto.Id, cancellation);
+                })
+                .When(x => x.EngName != null)
+                .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
+            // ✅ ArbName - مع excludeId
             RuleFor(x => x.ArbName)
                 .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(x => msg.Format("MaxLength", 100));
+                .WithMessage(x => msg.Format("MaxLength", 100))
+                .MustAsync(async (dto, arbName, cancellation) =>
+                {
+                    if (string.IsNullOrWhiteSpace(arbName)) return true;
+                    return await _repo.IsArbNameUniqueAsync(arbName, dto.Id, cancellation);
+                })
+                .When(x => x.ArbName != null)
+                .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(100).When(x => x.ArbName4S != null)

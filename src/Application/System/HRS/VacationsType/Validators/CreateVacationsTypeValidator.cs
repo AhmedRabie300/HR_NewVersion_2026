@@ -13,16 +13,21 @@ namespace Application.System.HRS.VacationsType.Validators
         public CreateVacationsTypeValidator(IValidationMessages msg, IVacationsTypeRepository repo)
         {
             _repo = repo;
-
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));
+                .NotEmpty().WithMessage(x => msg.Get("CodeRequired"))   
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+                .MustAsync(async (code, cancellation) =>
+                {
+                    return !await _repo.CodeExistsAsync(code);
+                })
+                .WithMessage(x => msg.Format("CodeExists", msg.Get("VacationsType"), x.Code));
 
             RuleFor(x => x.EngName)
                 .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                 .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
                 .MustAsync(async (engName, cancellation) =>
                 {
-                    return await _repo.IsEngNameUniqueAsync(engName, cancellation);
+                    return await _repo.IsEngNameUniqueAsync(engName,null, cancellation);
                 })
                 .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
@@ -31,7 +36,7 @@ namespace Application.System.HRS.VacationsType.Validators
                 .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
                 .MustAsync(async (arbName, cancellation) =>
                 {
-                    return await _repo.IsArbNameUniqueAsync(arbName, cancellation);
+                    return await _repo.IsArbNameUniqueAsync(arbName, null,cancellation);
                 })
                 .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 

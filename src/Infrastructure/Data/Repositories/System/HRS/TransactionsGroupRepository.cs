@@ -140,8 +140,7 @@ namespace Infrastructure.Data.Repositories.System.HRS
 
         public Task SaveChangesAsync(CancellationToken ct)
             => _db.SaveChangesAsync(ct);
-
-        public async Task<bool> IsEngNameUniqueAsync(string engName, CancellationToken ct = default)
+        public async Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(engName))
                 return true;
@@ -150,13 +149,14 @@ namespace Infrastructure.Data.Repositories.System.HRS
                 .Where(x => x.CancelDate == null
                     && x.EngName != null
                     && x.EngName.ToLower() == engName.ToLower());
-
+            if (excludeId.HasValue)
+                query = query.Where(x => x.Id != excludeId.Value);
 
 
             return !await query.AnyAsync(ct);
         }
 
-        public async Task<bool> IsArbNameUniqueAsync(string arbName, CancellationToken ct = default)
+        public async Task<bool> IsArbNameUniqueAsync(string arbName, int? excludeId = null, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(arbName))
                 return true;
@@ -166,7 +166,8 @@ namespace Infrastructure.Data.Repositories.System.HRS
                     && x.ArbName != null
                     && x.ArbName == arbName);
 
-
+            if (excludeId.HasValue)
+                query = query.Where(x => x.Id != excludeId.Value);
 
             return !await query.AnyAsync(ct);
         }

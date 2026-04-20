@@ -17,20 +17,17 @@ namespace Application.System.MasterData.Abstractions
         Task<bool> CodeExistsAsync(string code);
         Task<bool> CodeExistsAsync(string code, int excludeId);
 
-        // Specific queries
-        Task<List<Domain.System.MasterData.Position>> GetByParentIdAsync(int parentId);
+         Task<List<Domain.System.MasterData.Position>> GetByParentIdAsync(int parentId);
         Task<List<Domain.System.MasterData.Position>> GetByPositionLevelIdAsync(int positionLevelId);
         Task<List<Domain.System.MasterData.Position>> GetActivePositionsAsync();
         Task<PagedResult<Domain.System.MasterData.Position>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm);
 
-        // Soft delete
-        Task SoftDeleteAsync(int id, int? regUserId = null);
+         Task SoftDeleteAsync(int id, int? regUserId = null);
 
-        // Save changes
-        Task SaveChangesAsync(CancellationToken ct);
+         Task SaveChangesAsync(CancellationToken ct);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
-        Task<bool> IsEngNameUniqueAsync(string engName, CancellationToken ct = default);
-        Task<bool> IsArbNameUniqueAsync(string arbName, CancellationToken ct = default);
+        Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default);
+        Task<bool> IsArbNameUniqueAsync(string arbName, int? excludeId = null, CancellationToken ct = default);
 
     }
 }

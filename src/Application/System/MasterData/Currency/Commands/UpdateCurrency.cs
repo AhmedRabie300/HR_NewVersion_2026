@@ -1,4 +1,3 @@
-// Application/System/MasterData/Currency/Commands/UpdateCurrency.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
@@ -6,7 +5,6 @@ using Application.System.MasterData.Currency.Dtos;
 using Application.System.MasterData.Currency.Validators;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Application.Abstractions;
 
 namespace Application.System.MasterData.Currency.Commands
@@ -17,37 +15,28 @@ namespace Application.System.MasterData.Currency.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, ICurrencyRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateCurrencyValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateCurrencyValidator(msg, repo));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ICurrencyRepository _repo;
-                        private readonly IValidationMessages _msg;
-            private readonly IContextService _ContextService;
-private readonly IHttpContextAccessor _httpContextAccessor;
-            public Handler(
-                ICurrencyRepository repo, IValidationMessages msg,
-                IHttpContextAccessor httpContextAccessor, IContextService ContextService)
+            private readonly IValidationMessages _msg;
+
+            public Handler(ICurrencyRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
                 _msg = msg;
-                _httpContextAccessor = httpContextAccessor;
-                _ContextService = ContextService;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                //var companyId = _ContextService.GetCurrentCompanyId();
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
-                //if (entity == null)
-                //    throw new NotFoundException(_msg.NotFound("Currency", request.Data.Id));
-
-                 //if (entity.CompanyId != companyId)
-                 //   throw new UnauthorizedAccessException("Access denied: Currency does not belong to your company");
+                if (entity == null)
+                    throw new NotFoundException(_msg.NotFound("Currency", request.Data.Id));
 
                 entity.Update(
                     request.Data.EngName,

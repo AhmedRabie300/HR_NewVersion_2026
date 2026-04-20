@@ -15,19 +15,21 @@ namespace Application.System.MasterData.City.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, ICityRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateCityValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateCityValidator(msg, repo));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ICityRepository _repo;
-                        private readonly IValidationMessages _msg;
-private readonly ICountryRepository _countryRepo;
+            private readonly IValidationMessages _msg;
+            private readonly ICountryRepository _countryRepo;
+
             public Handler(
-                ICityRepository repo, IValidationMessages msg,
+                ICityRepository repo,
+                IValidationMessages msg,
                 ICountryRepository countryRepo)
             {
                 _repo = repo;

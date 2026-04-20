@@ -33,19 +33,9 @@ public Handler(
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
-            {
-                                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Position", request.Data.Code));
-                }
+            { 
 
-if (request.Data.ParentId.HasValue)
-                {
-                    var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
-                    if (parent == null)
-                        throw new NotFoundException(_msg.NotFound("ParentPosition", request.Data.ParentId.Value));
-                }
+ 
 
                 var entity = new Domain.System.MasterData.Position(
                     code: request.Data.Code,

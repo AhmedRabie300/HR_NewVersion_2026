@@ -15,18 +15,18 @@ namespace Application.System.MasterData.ContractType.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IContractTypeRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateContractTypeValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateContractTypeValidator(msg, repo));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IContractTypeRepository _repo;
-                        private readonly IValidationMessages _msg;
-public Handler(
-                IContractTypeRepository repo, IValidationMessages msg)
+            private readonly IValidationMessages _msg;
+
+            public Handler(IContractTypeRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
                 _msg = msg;

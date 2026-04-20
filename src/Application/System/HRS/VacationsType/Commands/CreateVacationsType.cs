@@ -41,11 +41,7 @@ namespace Application.System.HRS.VacationsType.Commands
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("VacationsType", request.Data.Code));
-                }
+                
 
                 var entity = new Domain.System.HRS.VacationsType(
                     code: request.Data.Code,

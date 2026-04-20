@@ -36,18 +36,7 @@ namespace Application.System.MasterData.Bank.Commands
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
-            {
-                //var lang = _contextService.GetCurrentLanguage();
-
-                //var company = await _companyRepo.GetByIdAsync(request.CompanyId);
-          
-              
-
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if(codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Bank", request.Data.Code));
-                }
+            {                              
 
                 var entity = new Domain.System.MasterData.Bank(
                     code: request.Data.Code,

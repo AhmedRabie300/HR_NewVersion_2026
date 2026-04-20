@@ -36,11 +36,7 @@ private readonly ICountryRepository _countryRepo;
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("City", request.Data.Code));
-                }
+             
 
 var entity = new Domain.System.MasterData.City(
                     code: request.Data.Code,

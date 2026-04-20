@@ -1,5 +1,4 @@
-﻿using Application.Abstractions;
-using Application.Common;
+﻿using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Bank.Dtos;
@@ -15,9 +14,10 @@ namespace Application.System.MasterData.Bank.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IBankRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateBankValidator(msg));
+                RuleFor(x => x.Data)
+                    .SetValidator(new UpdateBankValidator(msg, repo));
             }
         }
 
@@ -26,10 +26,7 @@ namespace Application.System.MasterData.Bank.Commands
             private readonly IBankRepository _repo;
             private readonly IValidationMessages _msg;
 
-            public Handler(
-                IBankRepository repo,
-                IValidationMessages msg
-)
+            public Handler(IBankRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
                 _msg = msg;
@@ -37,12 +34,9 @@ namespace Application.System.MasterData.Bank.Commands
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-        
-
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity is null)
-                    throw new NotFoundException(_msg.NotFound("Branch", request.Data.Id));
-         
+                    throw new NotFoundException(_msg.NotFound("Bank", request.Data.Id));
 
                 entity.Update(
                     request.Data.EngName,

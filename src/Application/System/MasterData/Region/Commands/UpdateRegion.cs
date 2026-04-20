@@ -15,9 +15,9 @@ namespace Application.System.MasterData.Region.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IRegionRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateRegionValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateRegionValidator(msg,repo));
             }
         }
 

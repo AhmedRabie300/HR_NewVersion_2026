@@ -141,6 +141,8 @@ public class LocalizationService : ILocalizationService
         Add("Gender", "Gender", "النوع");
         Add("TransactionsGroup", "Transactions Group", "مجموعة المعاملات");
         Add("Region", "Region", "المنطقة");
+        Add("VacationsPaidType", "Vacations Paid Type", "نوع الدفع الإجازة");
+
     }
 
     private void RegisterFieldMessages()

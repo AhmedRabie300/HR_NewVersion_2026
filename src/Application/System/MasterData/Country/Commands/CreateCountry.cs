@@ -46,11 +46,7 @@ private readonly ICurrencyRepository _currencyRepo;
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Country", request.Data.Code));
-                }
+              
 
                 if (request.Data.CurrencyId.HasValue)
                 {

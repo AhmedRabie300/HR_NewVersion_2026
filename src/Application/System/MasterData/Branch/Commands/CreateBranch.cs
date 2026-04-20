@@ -33,12 +33,7 @@ namespace Application.System.MasterData.Branch.Commands
             }
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
-            {
-                var code = await _repo.CodeExistsAsync(request.Data.Code);
-                if(code)
-                {
-                    throw new ConflictException(_msg.CodeExists("Branch", request.Data.Code));
-                }
+            { 
 
                 var entity = new Domain.System.MasterData.Branch(
                     code: request.Data.Code,

@@ -15,22 +15,24 @@ namespace Application.System.MasterData.Country.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, ICountryRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateCountryValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateCountryValidator(msg, repo));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly ICountryRepository _repo;
-                        private readonly IValidationMessages _msg;
-private readonly ICurrencyRepository _currencyRepo;
+            private readonly IValidationMessages _msg;
+            private readonly ICurrencyRepository _currencyRepo;
             private readonly INationalityRepository _nationalityRepo;
             private readonly IRegionRepository _regionRepo;
             private readonly ICityRepository _cityRepo;
+
             public Handler(
-                ICountryRepository repo, IValidationMessages msg,
+                ICountryRepository repo,
+                IValidationMessages msg,
                 ICurrencyRepository currencyRepo,
                 INationalityRepository nationalityRepo,
                 IRegionRepository regionRepo,

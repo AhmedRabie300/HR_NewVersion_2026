@@ -38,12 +38,6 @@ namespace Application.System.MasterData.Currency.Commands
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Currency", request.Data.Code));
-                }
-
 var entity = new Domain.System.MasterData.Currency(
                     code: request.Data.Code,
                     engName: request.Data.EngName,

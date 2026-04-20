@@ -15,9 +15,9 @@ namespace Application.System.MasterData.Religion.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IReligionRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateReligionValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateReligionValidator(msg,repo));
             }
         }
 

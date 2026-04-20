@@ -1,4 +1,3 @@
-// Application/System/MasterData/Education/Commands/UpdateEducation.cs
 using Application.Common;
 using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
@@ -6,7 +5,6 @@ using Application.System.MasterData.Education.Dtos;
 using Application.System.MasterData.Education.Validators;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Application.Abstractions;
 
 namespace Application.System.MasterData.Education.Commands
@@ -17,34 +15,28 @@ namespace Application.System.MasterData.Education.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IEducationRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateEducationValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateEducationValidator(msg, repo));
             }
         }
 
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IEducationRepository _repo;
-                        private readonly IValidationMessages _msg;
-            private readonly IContextService _ContextService;
-public Handler(
-                IEducationRepository repo, IValidationMessages msg, IContextService ContextService)
+            private readonly IValidationMessages _msg;
+
+            public Handler(IEducationRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
                 _msg = msg;
-                _ContextService = ContextService;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-              //  var companyId = _ContextService.GetCurrentCompanyId();
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
                     throw new NotFoundException(_msg.NotFound("Education", request.Data.Id));
-
-                //if (entity.CompanyId != companyId)
-                //    throw new UnauthorizedAccessException("Access denied: Education does not belong to your company");
 
                 entity.Update(
                     request.Data.EngName,

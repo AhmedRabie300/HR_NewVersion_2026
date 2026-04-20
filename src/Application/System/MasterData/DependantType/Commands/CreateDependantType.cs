@@ -34,11 +34,7 @@ namespace Application.System.MasterData.DependantType.Commands
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("DependantType", request.Data.Code));
-                }
+           
 
 var entity = new Domain.System.MasterData.DependantType(
                     code: request.Data.Code,

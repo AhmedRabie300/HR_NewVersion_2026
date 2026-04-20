@@ -1,30 +1,32 @@
+using Application.Abstractions;
+using Application.Common;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.DocumentTypesGroup.Dtos;
 using Application.System.MasterData.DocumentTypesGroup.Validators;
-using Application.Common.Abstractions;
 using FluentValidation;
 using MediatR;
-using Application.Common;
-using Application.Abstractions;
 
 namespace Application.System.MasterData.DocumentTypesGroup.Commands
 {
     public static class UpdateDocumentTypesGroup
     {
-        public record Command(UpdateDocumentTypesGroupDto Data, int Lang = 1) : IRequest<Unit>;
+        public record Command(UpdateDocumentTypesGroupDto Data) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IDocumentTypesGroupRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateDocumentTypesGroupValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateDocumentTypesGroupValidator(msg, repo));
             }
         }
+
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IDocumentTypesGroupRepository _repo;
-                        private readonly IValidationMessages _msg;
-public Handler(IDocumentTypesGroupRepository repo, IValidationMessages msg)
+            private readonly IValidationMessages _msg;
+
+            public Handler(IDocumentTypesGroupRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
                 _msg = msg;

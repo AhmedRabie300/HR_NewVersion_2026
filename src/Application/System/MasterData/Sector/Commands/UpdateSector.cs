@@ -17,9 +17,9 @@ namespace Application.System.MasterData.Sector.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,ISectorRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateSectorValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateSectorValidator(msg,repo));
             }
         }
 
@@ -29,22 +29,18 @@ namespace Application.System.MasterData.Sector.Commands
                         private readonly IValidationMessages _msg;
             private readonly IContextService _ContextService;
 public Handler(
-                ISectorRepository repo, IValidationMessages msg, IContextService ContextService)
+                ISectorRepository repo, IValidationMessages msg )
             {
                 _repo = repo;
                 _msg = msg;
-                _ContextService = ContextService;
+                
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                  var entity = await _repo.GetByIdAsync(request.Data.Id);
-                if (entity == null)
-                    throw new NotFoundException(_msg.NotFound("Sector", request.Data.Id));
-
-                 
-                // Update basic info
-
+             
+ 
                     entity.UpdateBasicInfo(
                         request.Data.EngName,
                         request.Data.ArbName,
@@ -52,8 +48,7 @@ public Handler(
                         request.Data.Remarks
                     );
 
-                // Update parent
-                if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
+                 if (request.Data.ParentId.HasValue && request.Data.ParentId != entity.Id)
                 {
                     var parent = await _repo.GetByIdAsync(request.Data.ParentId.Value);
                     if (parent == null)

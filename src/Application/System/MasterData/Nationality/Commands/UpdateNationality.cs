@@ -15,9 +15,9 @@ namespace Application.System.MasterData.Nationality.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, INationalityRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new UpdateNationalityValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new UpdateNationalityValidator(msg,repo));
             }
         }
 

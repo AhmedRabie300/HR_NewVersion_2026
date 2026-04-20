@@ -40,11 +40,7 @@ public Handler(
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
  
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Sector", request.Data.Code));
-                }
+            
 
 if (request.Data.ParentId.HasValue)
                 {

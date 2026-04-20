@@ -15,9 +15,9 @@ namespace Application.System.MasterData.BloodGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg,IBloodGroupRepository repo)
+            public Validator(IValidationMessages msg, IBloodGroupRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateBloodGroupValidator(msg,repo));
+                RuleFor(x => x.Data).SetValidator(new CreateBloodGroupValidator(msg, repo));
             }
         }
 
@@ -25,8 +25,8 @@ namespace Application.System.MasterData.BloodGroup.Commands
         {
             private readonly IBloodGroupRepository _repo;
             private readonly IValidationMessages _msg;
-            public Handler(
-                IBloodGroupRepository repo, IValidationMessages msg)
+
+            public Handler(IBloodGroupRepository repo, IValidationMessages msg)
             {
                 _repo = repo;
                 _msg = msg;
@@ -34,13 +34,7 @@ namespace Application.System.MasterData.BloodGroup.Commands
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("BloodGroup", request.Data.Code));
-                }
-
-                    var bloodGroup = new Domain.System.MasterData.BloodGroup(
+                 var bloodGroup = new Domain.System.MasterData.BloodGroup(
                     code: request.Data.Code,
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,

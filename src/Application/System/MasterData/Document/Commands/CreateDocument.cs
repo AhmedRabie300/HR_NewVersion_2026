@@ -37,12 +37,7 @@ namespace Application.System.MasterData.Document.Commands
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
-                if (codeExists)
-                {
-                    throw new ConflictException(_msg.CodeExists("Document", request.Data.Code));
-                }
-
+              
                 if (request.Data.DocumentTypesGroupId.HasValue)
                 {
                     var docTypeGroup = await _docTypeGroupRepo.GetByIdAsync(request.Data.DocumentTypesGroupId.Value);

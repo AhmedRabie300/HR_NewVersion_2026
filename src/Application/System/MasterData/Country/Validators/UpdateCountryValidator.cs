@@ -1,16 +1,23 @@
+using Application.Abstractions;
 using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
 using Application.System.MasterData.Country.Dtos;
 using FluentValidation;
-using Application.Abstractions;
 
 namespace Application.System.MasterData.Country.Validators
 {
     public class UpdateCountryValidator : AbstractValidator<UpdateCountryDto>
     {
-        public UpdateCountryValidator(IValidationMessages msg)
+        private readonly ICountryRepository _repo;
+
+        public UpdateCountryValidator(IValidationMessages msg, ICountryRepository repo)
         {
+            _repo = repo;
+
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+
+    
 
             RuleFor(x => x.EngName)
                 .MaximumLength(255).When(x => x.EngName != null)
