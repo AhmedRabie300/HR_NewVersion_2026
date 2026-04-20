@@ -140,5 +140,36 @@ namespace Infrastructure.Data.Repositories.System.HRS
 
         public Task SaveChangesAsync(CancellationToken ct)
             => _db.SaveChangesAsync(ct);
+
+
+        public async Task<bool> IsEngNameUniqueAsync(string engName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(engName))
+                return true;
+
+            var query = _db.VacationsTypes
+                .Where(x => x.CancelDate == null
+                    && x.EngName != null
+                    && x.EngName.ToLower() == engName.ToLower());
+
+
+
+            return !await query.AnyAsync(ct);
+        }
+
+        public async Task<bool> IsArbNameUniqueAsync(string arbName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(arbName))
+                return true;
+
+            var query = _db.VacationsTypes
+                .Where(x => x.CancelDate == null
+                    && x.ArbName != null
+                    && x.ArbName == arbName);
+
+
+
+            return !await query.AnyAsync(ct);
+        }
     }
 }

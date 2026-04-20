@@ -37,15 +37,12 @@ namespace Application.System.MasterData.Sponsor.Commands
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                                var companyId = _contextService.GetCurrentCompanyId();
 
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
                     throw new NotFoundException(_msg.NotFound("Sponsor", request.Data.Id));
 
-                if (entity.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Sponsor does not belong to your company");
-
+     
                 entity.Update(
                     request.Data.EngName,
                     request.Data.ArbName,

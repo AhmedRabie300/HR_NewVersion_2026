@@ -2,14 +2,14 @@
 
 namespace Domain.System.MasterData
 {
-    public class Education : LegacyEntity
+    public class Education : LegacyEntity, ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
         public string? ArbName { get; private set; }
         public string? ArbName4S { get; private set; }
         public int? Level { get; private set; }
-        public double? RequiredYears { get; private set; }
+        public float? RequiredYears { get; private set; }
         public int CompanyId { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
@@ -26,7 +26,7 @@ namespace Domain.System.MasterData
             string? arbName,
             string? arbName4S,
             int? level,
-            double? requiredYears,
+            float? requiredYears,
             string? remarks)
         {
             Code = code;
@@ -43,7 +43,7 @@ namespace Domain.System.MasterData
             string? arbName,
             string? arbName4S,
             int? level,
-            double? requiredYears,
+            float? requiredYears,
             string? remarks)
         {
             if (engName != null) EngName = engName;
@@ -56,7 +56,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

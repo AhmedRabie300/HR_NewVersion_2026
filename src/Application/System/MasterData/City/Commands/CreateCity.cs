@@ -14,9 +14,9 @@ namespace Application.System.MasterData.City.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,ICityRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateCityValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateCityValidator(msg,repo));
             }
         }
 

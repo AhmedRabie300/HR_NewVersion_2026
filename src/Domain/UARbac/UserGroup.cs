@@ -21,7 +21,7 @@ namespace Domain.UARbac
             GroupId = groupId;
           
             RegUserId = regUserId;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void SetPrimary(bool isPrimary)

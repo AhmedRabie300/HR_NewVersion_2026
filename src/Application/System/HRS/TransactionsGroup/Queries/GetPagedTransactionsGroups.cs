@@ -24,8 +24,7 @@ namespace Application.System.HRS.TransactionsGroup.Queries
 
             public async Task<PagedResult<TransactionsGroupDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
+ 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
@@ -41,7 +40,6 @@ namespace Application.System.HRS.TransactionsGroup.Queries
                     CompanyId: x.CompanyId,
                     CompanyName: x.Company?.EngName,
                     Remarks: x.Remarks,
-                    RegUserId: x.RegUserId,
                     RegComputerId: x.RegComputerId,
                     RegDate: x.RegDate,
                     CancelDate: x.CancelDate,

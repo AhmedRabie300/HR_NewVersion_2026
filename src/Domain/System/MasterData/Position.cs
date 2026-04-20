@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Position : LegacyEntity
+    public class Position : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -24,7 +24,8 @@ namespace Domain.System.MasterData
 
          public Position? ParentPosition { get; private set; }
         public ICollection<Position>? ChildPositions { get; private set; }
- 
+        public int CompanyId { get; private set; }
+
         private Position() { } 
 
         public Position(
@@ -89,7 +90,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
         // Domain/System/MasterData/Position.cs

@@ -24,14 +24,12 @@ namespace Application.System.MasterData.Sector.Queries
 
             public async Task<List<SectorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var items = await _repo.GetAllAsync(companyId);
+                 var items = await _repo.GetAllAsync();
 
                 return items.Select(x => new SectorDto(
                     Id: x.Id,
                     Code: x.Code,
                     CompanyId: x.CompanyId,
-                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
                     EngName: x.EngName,
                     ArbName: x.ArbName,
                     ArbName4S: x.ArbName4S,

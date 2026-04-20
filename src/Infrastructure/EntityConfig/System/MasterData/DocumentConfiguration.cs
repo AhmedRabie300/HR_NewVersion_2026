@@ -8,6 +8,8 @@ namespace Infrastructure.EntityConfig.System.MasterData
     {
         public void Configure(EntityTypeBuilder<Document> builder)
         {
+            builder.ToTable("sys_Documents", tb => tb.UseSqlOutputClause(false));
+
             builder.ToTable("sys_Documents");
 
             builder.HasKey(x => x.Id);

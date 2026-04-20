@@ -40,7 +40,7 @@ namespace Domain.UARbac
             CanView = canView;
             RegUserId = regUserId;
             regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
          public void UpdatePermission(bool? canView)
@@ -51,7 +51,7 @@ namespace Domain.UARbac
 
          public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue)
                 RegUserId = regUserId;
         }

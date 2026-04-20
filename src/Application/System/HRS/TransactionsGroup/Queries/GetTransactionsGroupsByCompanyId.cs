@@ -22,9 +22,8 @@ namespace Application.System.HRS.TransactionsGroup.Queries
 
             public async Task<List<TransactionsGroupDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
-                var items = await _repo.GetByCompanyIdAsync(request.CompanyId);
+ 
+                var items = await _repo.GetByCompanyIdAsync();
 
                 return items.Select(x => new TransactionsGroupDto(
                     Id: x.Id,
@@ -35,7 +34,6 @@ namespace Application.System.HRS.TransactionsGroup.Queries
                     CompanyId: x.CompanyId,
                     CompanyName: x.Company?.EngName,
                     Remarks: x.Remarks,
-                    RegUserId: x.RegUserId,
                     RegComputerId: x.RegComputerId,
                     RegDate: x.RegDate,
                     CancelDate: x.CancelDate,

@@ -14,6 +14,7 @@ namespace API.System.HRS
             var group = routes.MapGroup("/hrs/vacations-types")
                 .WithTags("Vacations Types");
 
+            // ✅ GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListVacationsTypes.Query(), ct);
@@ -21,6 +22,7 @@ namespace API.System.HRS
             })
             .WithName("GetAllVacationsTypes");
 
+            // ✅ GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -34,6 +36,7 @@ namespace API.System.HRS
             })
             .WithName("GetPagedVacationsTypes");
 
+            // ✅ GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetVacationsTypeById.Query(id), ct);
@@ -41,20 +44,18 @@ namespace API.System.HRS
             })
             .WithName("GetVacationsTypeById");
 
-            // ✅ تصحيح الـ POST - إضافة CompanyId و contextService
+            // ✅ POST create - بدون CompanyId وبدون RegUserId (زي BankEndpoints)
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateVacationsTypeDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateVacationsType.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateVacationsType.Command(dto), ct);
                 return Results.Created($"/hrs/vacations-types/{id}", new { id });
             })
             .WithName("CreateVacationsType");
 
+            // ✅ PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -67,24 +68,23 @@ namespace API.System.HRS
             })
             .WithName("UpdateVacationsType");
 
-            group.MapDelete("/{id:int}/soft", async (
+             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteVacationsType.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteVacationsType.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteVacationsType");
 
-            group.MapDelete("/{id:int}", async (
+             group.MapDelete("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteVacationsType.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+                await mediator.Send(new DeleteVacationsType.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteVacationsType");
 

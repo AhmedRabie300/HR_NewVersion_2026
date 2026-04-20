@@ -1,20 +1,36 @@
-﻿using Application.System.MasterData.Branch.Dtos;
+﻿using Application.Abstractions;
 using Application.Common.Abstractions;
+using Application.System.MasterData.Abstractions;
+using Application.System.MasterData.Branch.Dtos;
 using FluentValidation;
-using Application.Abstractions;
 
 namespace Application.System.MasterData.Branch.Validators
 {
     public class CreateBranchValidator : AbstractValidator<CreateBranchDto>
     {
-        public CreateBranchValidator(IValidationMessages msg)
+        private readonly IBranchRepository _repo;
+
+        public CreateBranchValidator(IValidationMessages msg, IBranchRepository repo)
         {
+            _repo = repo;
+
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
+       .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+       .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+       .MustAsync(async (engName, cancellation) =>
+       {
+           return await _repo.IsEngNameUniqueAsync(engName, cancellation);
+       })
+       .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
+
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
-            RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
+               .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+               .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+               .MustAsync(async (arbname, cancellation) =>
+               {
+                   return await _repo.IsArbNameUniqueAsync(arbname, cancellation);
+               })
+               .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
             RuleFor(x => x.ParentId)
                 .GreaterThan(0).When(x => x.ParentId.HasValue)
                 .WithMessage(x => msg.Get("ParentBranchRequired"));
@@ -29,6 +45,7 @@ namespace Application.System.MasterData.Branch.Validators
                 .WithMessage(x => msg.Get("PrepareDayRange"));
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).WithMessage(x => msg.Format("MaxLength", 2048));
+             
         }
     }
 }

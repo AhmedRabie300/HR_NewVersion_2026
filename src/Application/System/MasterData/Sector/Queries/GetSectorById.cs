@@ -44,7 +44,6 @@ namespace Application.System.MasterData.Sector.Queries
                     Id: entity.Id,
                     Code: entity.Code,
                     CompanyId: entity.CompanyId,
-                    CompanyName: entity.Company?.EngName ?? entity.Company?.ArbName,
                     EngName: entity.EngName,
                     ArbName: entity.ArbName,
                     ArbName4S: entity.ArbName4S,

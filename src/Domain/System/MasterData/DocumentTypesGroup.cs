@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class DocumentTypesGroup : LegacyEntity
+    public class DocumentTypesGroup : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -11,6 +11,7 @@ namespace Domain.System.MasterData
         public int? RegUserId { get; private set; }
         public int? RegComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
+        public int CompanyId { get; private set; }
 
         private DocumentTypesGroup() { }
 
@@ -38,7 +39,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

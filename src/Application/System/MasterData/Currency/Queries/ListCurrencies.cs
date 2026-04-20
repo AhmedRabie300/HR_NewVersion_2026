@@ -24,9 +24,9 @@ namespace Application.System.MasterData.Currency.Queries
 
             public async Task<List<CurrencyDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
+                //var companyId = _ContextService.GetCurrentCompanyId();
 
-                var items = await _repo.GetAllAsync(companyId);
+                var items = await _repo.GetAllAsync();
 
                 return items.Select(x => new CurrencyDto(
                     Id: x.Id,

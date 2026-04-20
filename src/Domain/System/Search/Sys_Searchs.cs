@@ -33,7 +33,7 @@ namespace Domain.System.Search
             ObjectID = objectID;
             RegUserID = regUserID;
             RegComputerID = regComputerID;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void Update(string? engName, string? arbName)
@@ -50,7 +50,7 @@ namespace Domain.System.Search
 
         public void Cancel(int? regUserID = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserID.HasValue) RegUserID = regUserID;
         }
 

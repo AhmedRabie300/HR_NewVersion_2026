@@ -16,9 +16,9 @@ namespace Application.System.MasterData.ContractType.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IContractTypeRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateContractTypeValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateContractTypeValidator(msg,repo));
             }
         }
 

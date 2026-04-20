@@ -15,10 +15,10 @@ namespace Application.System.MasterData.Bank.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IBankRepository repo)
             {
                 RuleFor(x => x.Data)
-                    .SetValidator(new CreateBankValidator(msg));
+                    .SetValidator(new CreateBankValidator(msg, repo));
             }
         }
 
@@ -41,13 +41,7 @@ namespace Application.System.MasterData.Bank.Commands
 
                 //var company = await _companyRepo.GetByIdAsync(request.CompanyId);
           
-                //var code = await _codeGenerationService.GenerateCodeAsync(
-                //    request.CompanyId,
-                //    request.Data.Code,
-                //    (companyId, ct) => _repo.GetMaxCodeAsync(companyId, ct),
-                //    (code, ct) => _repo.CodeExistsAsync(code),
-                //    cancellationToken
-                //);
+              
 
                 var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
                 if(codeExists)

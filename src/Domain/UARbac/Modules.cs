@@ -61,7 +61,7 @@ namespace Domain.UARbac
             Remarks = remarks;
             RegUserId = regUserId;
             regComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
 
              IsAR = false;
             IsAP = false;
@@ -120,7 +120,7 @@ namespace Domain.UARbac
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

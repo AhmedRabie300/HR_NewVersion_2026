@@ -15,9 +15,9 @@ namespace Application.System.MasterData.BloodGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IBloodGroupRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateBloodGroupValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateBloodGroupValidator(msg,repo));
             }
         }
 

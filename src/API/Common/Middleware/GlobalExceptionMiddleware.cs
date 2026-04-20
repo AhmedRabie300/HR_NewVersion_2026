@@ -122,7 +122,7 @@ namespace API.Common.Middleware
                 context.Response.ContentType = "application/problem+json";
                 context.Response.StatusCode = StatusCodes.Status409Conflict;
 
-                var pd = ProblemDetailsFactory.Create(
+                    var pd = ProblemDetailsFactory.Create(
                     statusCode: StatusCodes.Status409Conflict,
                     title: "Conflict",
                     detail: ex.Message,

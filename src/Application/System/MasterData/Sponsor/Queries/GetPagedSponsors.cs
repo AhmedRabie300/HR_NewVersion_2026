@@ -24,20 +24,16 @@ namespace Application.System.MasterData.Sponsor.Queries
 
             public async Task<PagedResult<SponsorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                 var companyId = _contextService.GetCurrentCompanyId();
-
+ 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
-                    request.SearchTerm,
-                    companyId
+                    request.SearchTerm 
                 );
 
                 var items = pagedResult.Items.Select(x => new SponsorDto(
                     Id: x.Id,
                     Code: x.Code,
-                    CompanyId: x.CompanyId,
-                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
                     EngName: x.EngName,
                     ArbName: x.ArbName,
                     ArbName4S: x.ArbName4S,

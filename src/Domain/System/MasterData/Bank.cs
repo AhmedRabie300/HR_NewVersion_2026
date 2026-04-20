@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Bank : LegacyEntity
+    public class Bank : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -47,7 +47,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

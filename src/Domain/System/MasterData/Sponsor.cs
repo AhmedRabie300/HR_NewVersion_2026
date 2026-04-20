@@ -2,13 +2,13 @@
 
 namespace Domain.System.MasterData
 {
-    public class Sponsor : LegacyEntity
+    public class Sponsor : LegacyEntity, ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
         public string? ArbName { get; private set; }
         public string? ArbName4S { get; private set; }
-        public string? SponsorNumber { get; private set; }
+        public int? SponsorNumber { get; private set; }
         public int? RegUserId { get; private set; }
         public int? RegComputerId { get; private set; }
         public int CompanyId { get; private set; }
@@ -24,7 +24,7 @@ namespace Domain.System.MasterData
             string? engName,
             string? arbName,
             string? arbName4S,
-            string? sponsorNumber)
+            int? sponsorNumber)
         {
             Code = code;
             EngName = engName;
@@ -37,7 +37,7 @@ namespace Domain.System.MasterData
             string? engName,
             string? arbName,
             string? arbName4S,
-            string? sponsorNumber)
+            int? sponsorNumber)
         {
             if (engName != null) EngName = engName;
             if (arbName != null) ArbName = arbName;
@@ -52,7 +52,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

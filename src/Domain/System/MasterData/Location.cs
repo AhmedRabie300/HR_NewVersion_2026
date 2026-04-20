@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Location : LegacyEntity
+    public class Location : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -13,7 +13,7 @@ namespace Domain.System.MasterData
         public int? StoreId { get; private set; }
         public int? InventoryCostLedgerId { get; private set; }
         public int? InventoryAdjustmentLedgerId { get; private set; }
-        public int? CompanyId { get; private set; }
+        public int CompanyId { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
         public int? regComputerId { get; private set; }
@@ -37,8 +37,7 @@ namespace Domain.System.MasterData
 
         public Location(
             string code,
-            int? companyId,
-            string? engName,
+             string? engName,
             string? arbName,
             string? arbName4S,
             int? cityId,
@@ -52,8 +51,7 @@ namespace Domain.System.MasterData
             string? costCenterCode4)
         {
             Code = code;
-            CompanyId = companyId;
-            EngName = engName;
+             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
             CityId = cityId;
@@ -127,7 +125,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

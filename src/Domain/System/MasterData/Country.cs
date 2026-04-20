@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Country : LegacyEntity
+    public class Country : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -28,6 +28,7 @@ namespace Domain.System.MasterData
         public Nationality? Nationality { get; private set; }
         public Region? Region { get; private set; }
         public City? Capital { get; private set; }
+        public int CompanyId { get; private set; }
 
         private Country() { }
 
@@ -99,7 +100,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

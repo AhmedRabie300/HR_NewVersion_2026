@@ -16,9 +16,9 @@ namespace Application.System.MasterData.Location.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,ILocationRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateLocationValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateLocationValidator(msg,repo));
             }
         }
 
@@ -48,9 +48,8 @@ private readonly IBranchRepository _branchRepo;
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                                var companyId = _contextService.GetCurrentCompanyId();
 
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code, companyId);
+                var codeExists = await _repo.CodeExistsAsync(request.Data.Code );
                 if (codeExists)
                 {
                     throw new ConflictException(_msg.CodeExists("Location", request.Data.Code));
@@ -79,7 +78,7 @@ private readonly IBranchRepository _branchRepo;
 
                 var entity = new Domain.System.MasterData.Location(
                     code: request.Data.Code,
-                    companyId: companyId,
+                     
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,

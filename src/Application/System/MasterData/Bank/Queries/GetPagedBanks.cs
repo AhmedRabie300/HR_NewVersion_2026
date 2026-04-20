@@ -14,17 +14,14 @@ namespace Application.System.MasterData.Bank.Queries
         public class Handler : IRequestHandler<Query, PagedResult<BankDto>>
         {
             private readonly IBankRepository _repo;
-            private readonly IContextService _contextService;
 
-            public Handler(IBankRepository repo, IContextService contextService)
+            public Handler(IBankRepository repo)
             {
                 _repo = repo;
-                _contextService = contextService;
             }
 
             public async Task<PagedResult<BankDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,

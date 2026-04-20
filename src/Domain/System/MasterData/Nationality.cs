@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Nationality : LegacyEntity
+    public class Nationality : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -16,6 +16,7 @@ namespace Domain.System.MasterData
         public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
         public double? TicketAmount { get; private set; }
+        public int CompanyId { get; private set; }
 
         // Navigation properties
         // public TicketRoute? TicketRoute { get; private set; } // هتضاف بعدين
@@ -75,7 +76,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Currency : LegacyEntity
+    public class Currency : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -15,13 +15,15 @@ namespace Domain.System.MasterData
         public string? DecimalArbName { get; private set; }
         public decimal? Amount { get; private set; }
         public int? NoDecimalPlaces { get; private set; }
-        public int? CompanyId { get; private set; }
+        public int CompanyId { get; private set; }
+
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
         public int? regComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
 
         public Company? Company { get; private set; }
+
 
         private Currency() { }
 
@@ -81,7 +83,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

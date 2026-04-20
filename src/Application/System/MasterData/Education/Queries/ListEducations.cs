@@ -24,9 +24,9 @@ namespace Application.System.MasterData.Education.Queries
 
             public async Task<List<EducationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
+                //var companyId = _ContextService.GetCurrentCompanyId();
 
-                var items = await _repo.GetAllAsync(companyId);
+                var items = await _repo.GetAllAsync();
 
                 return items.Select(x => new EducationDto(
                     Id: x.Id,

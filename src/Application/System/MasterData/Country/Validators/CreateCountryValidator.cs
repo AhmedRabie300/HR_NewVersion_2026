@@ -2,21 +2,37 @@ using Application.Common.Abstractions;
 using Application.System.MasterData.Country.Dtos;
 using FluentValidation;
 using Application.Abstractions;
+using Application.System.MasterData.Abstractions;
 
 namespace Application.System.MasterData.Country.Validators
 {
     public class CreateCountryValidator : AbstractValidator<CreateCountryDto>
     {
-        public CreateCountryValidator(IValidationMessages msg)
+        private readonly ICountryRepository _repo;
+        public CreateCountryValidator(IValidationMessages msg,ICountryRepository repo)
         {
+            _repo = repo;
             RuleFor(x => x.Code)
                 .MaximumLength(50).WithMessage(msg.Format("MaxLength", 50));
 
+
             RuleFor(x => x.EngName)
-                .MaximumLength(255).WithMessage(msg.Format("MaxLength", 255));
+       .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+       .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+       .MustAsync(async (engName, cancellation) =>
+       {
+           return await _repo.IsEngNameUniqueAsync(engName, cancellation);
+       })
+       .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(255).WithMessage(msg.Format("MaxLength", 255));
+               .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+               .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+               .MustAsync(async (arbname, cancellation) =>
+               {
+                   return await _repo.IsArbNameUniqueAsync(arbname, cancellation);
+               })
+               .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(255).WithMessage(msg.Format("MaxLength", 255));
@@ -44,9 +60,9 @@ namespace Application.System.MasterData.Country.Validators
                 .GreaterThan(0).When(x => x.NationalityId.HasValue)
                 .WithMessage(msg.Get("NationalityRequired"));
 
-            RuleFor(x => x.RegionId)
-                .GreaterThan(0).When(x => x.RegionId.HasValue)
-                .WithMessage(msg.Get("RegionRequired"));
+            //RuleFor(x => x.RegionId)
+            //    .GreaterThan(0).When(x => x.RegionId.HasValue)
+            //    .WithMessage(msg.Get("RegionRequired"));
 
             RuleFor(x => x.CapitalId)
                 .GreaterThan(0).When(x => x.CapitalId.HasValue)

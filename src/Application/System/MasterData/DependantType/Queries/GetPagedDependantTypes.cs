@@ -26,13 +26,12 @@ namespace Application.System.MasterData.DependantType.Queries
 
             public async Task<PagedResult<DependantTypeDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
+               // var companyId = _ContextService.GetCurrentCompanyId();
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
-                    request.SearchTerm,
-                    companyId
+                    request.SearchTerm
                 );
 
                 var items = pagedResult.Items.Select(x => new DependantTypeDto(

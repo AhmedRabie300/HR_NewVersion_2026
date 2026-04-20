@@ -16,9 +16,9 @@ namespace Application.System.MasterData.Profession.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IProfessionRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateProfessionValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateProfessionValidator(msg,repo));
             }
         }
 
@@ -39,9 +39,8 @@ public Handler(
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                                var companyId = _contextService.GetCurrentCompanyId();
 
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code, companyId);
+                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
                 if (codeExists)
                 {
                     throw new ConflictException(_msg.CodeExists("Profession", request.Data.Code));
@@ -49,8 +48,7 @@ public Handler(
 
 var entity = new Domain.System.MasterData.Profession(
                     code: request.Data.Code,
-                    companyId: companyId,
-                    engName: request.Data.EngName,
+                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
                     remarks: request.Data.Remarks

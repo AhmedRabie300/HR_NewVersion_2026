@@ -24,27 +24,25 @@ namespace Application.System.MasterData.Location.Queries
 
             public async Task<List<LocationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var items = await _repo.GetAllAsync(companyId);
+                var items = await _repo.GetAllAsync();
 
                 return items.Select(x => new LocationDto(
                     Id: x.Id,
                     Code: x.Code,
                     CompanyId: x.CompanyId,
-                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
                     EngName: x.EngName,
                     ArbName: x.ArbName,
                     ArbName4S: x.ArbName4S,
                     CityId: x.CityId,
-                    CityName: null,  // CityName - سيتم لاحقاً
+                    CityName: null,  
                     BranchId: x.BranchId,
                     BranchName: x.Branch?.EngName ?? x.Branch?.ArbName,
                     StoreId: x.StoreId,
-                    StoreName: null,  // StoreName - سيتم لاحقاً
+                    StoreName: null,   
                     InventoryCostLedgerId: x.InventoryCostLedgerId,
-                    InventoryCostLedgerName: null,  // سيتم لاحقاً
+                    InventoryCostLedgerName: null,   
                     InventoryAdjustmentLedgerId: x.InventoryAdjustmentLedgerId,
-                    InventoryAdjustmentLedgerName: null,  // سيتم لاحقاً
+                    InventoryAdjustmentLedgerName: null,   
                     DepartmentId: x.DepartmentId,
                     DepartmentName: x.Department?.EngName ?? x.Department?.ArbName,
                     Remarks: x.Remarks,

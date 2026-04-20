@@ -15,9 +15,9 @@ namespace Application.System.MasterData.MaritalStatus.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IMaritalStatusRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateMaritalStatusValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateMaritalStatusValidator(msg,repo));
             }
         }
 

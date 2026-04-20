@@ -35,7 +35,6 @@ namespace Application.System.HRS.TransactionsGroup.Queries
                     CompanyId: x.CompanyId,
                     CompanyName: x.Company?.EngName,
                     Remarks: x.Remarks,
-                    RegUserId: x.RegUserId,
                     RegComputerId: x.RegComputerId,
                     RegDate: x.RegDate,
                     CancelDate: x.CancelDate,

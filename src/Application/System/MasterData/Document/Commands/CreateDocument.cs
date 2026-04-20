@@ -15,9 +15,9 @@ namespace Application.System.MasterData.Document.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IDocumentRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateDocumentValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateDocumentValidator(msg,repo));
             }
         }
 

@@ -36,16 +36,13 @@ namespace Application.System.MasterData.Location.Queries
 
             public async Task<List<LocationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _contextService.GetCurrentCompanyId();
-                var company = await _companyRepo.GetByIdAsync(companyId);
-
-                var locations = await _repo.GetByCompanyIdAsync(companyId);
+ 
+                var locations = await _repo.GetByCompanyIdAsync();
 
                 return locations.Select(l => new LocationDto(
                     Id: l.Id,
                     Code: l.Code,
                     CompanyId: l.CompanyId,
-                    CompanyName: _currentUser.Language == 2 ? company.ArbName : company.EngName,
                     EngName: l.EngName,
                     ArbName: l.ArbName,
                     ArbName4S: l.ArbName4S,

@@ -1,5 +1,4 @@
-﻿// Infrastructure/Data/Repositories/System/MasterData/ContractTypeRepository.cs
-using Application.Common.Models;
+﻿using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -22,21 +21,21 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.Company)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<ContractType?> GetByCodeAsync(string code, int companyId)
+        public async Task<ContractType?> GetByCodeAsync(string code)
             => await _db.ContractTypes
-                .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
+                .FirstOrDefaultAsync(x => x.Code == code);
 
-        public async Task<List<ContractType>> GetAllAsync(int companyId)
+        public async Task<List<ContractType>> GetAllAsync()
             => await _db.ContractTypes
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null )
                 .Include(x => x.Company)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<List<ContractType>> GetByCompanyIdAsync(int companyId)
+        public async Task<List<ContractType>> GetByCompanyIdAsync()
             => await _db.ContractTypes
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
@@ -75,7 +74,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<PagedResult<ContractType>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
+        public async Task<PagedResult<ContractType>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
@@ -85,8 +84,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.Company)
                 .AsNoTracking();
 
-            if (companyId.HasValue)
-                query = query.Where(x => x.CompanyId == companyId.Value);
+      
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -156,6 +154,36 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 return directNumber;
 
             return 0;
+        }
+
+        public async Task<bool> IsEngNameUniqueAsync(string engName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(engName))
+                return true;
+
+            var query = _db.ContractTypes
+                .Where(x => x.CancelDate == null
+                    && x.EngName != null
+                    && x.EngName.ToLower() == engName.ToLower());
+
+
+
+            return !await query.AnyAsync(ct);
+        }
+
+        public async Task<bool> IsArbNameUniqueAsync(string arbName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(arbName))
+                return true;
+
+            var query = _db.ContractTypes
+                .Where(x => x.CancelDate == null
+                    && x.ArbName != null
+                    && x.ArbName == arbName);
+
+
+
+            return !await query.AnyAsync(ct);
         }
     }
 }

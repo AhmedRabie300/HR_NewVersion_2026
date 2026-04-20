@@ -6,7 +6,7 @@
         string? ArbName,
         string? ArbName4S,
         int? Level,
-        double? RequiredYears,
+        float? RequiredYears,
         string? Remarks
     );
 }

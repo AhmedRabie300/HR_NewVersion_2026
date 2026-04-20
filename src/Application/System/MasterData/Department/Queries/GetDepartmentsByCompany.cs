@@ -37,13 +37,12 @@ namespace Application.System.MasterData.Department.Queries
             {
                
 
-                var departments = await _repo.GetByCompanyIdAsync(_currentUser.CompanyId);
+                var departments = await _repo.GetByCompanyIdAsync();
 
                 return departments.Select(d => new DepartmentDto(
                     Id: d.Id,
                     Code: d.Code,
                     CompanyId: d.CompanyId,
-                    CompanyName: _currentUser.Language == 2 ? d.Company.ArbName : d.Company.EngName,
                     EngName: d.EngName,
                     ArbName: d.ArbName,
                     ArbName4S: d.ArbName4S,

@@ -37,13 +37,12 @@ namespace API.System.HRS
 
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
                 [FromServices] IContextService contextService,
                 CreateGenderDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateGender.Command(companyId, regUserId, dto), ct);
+             
+                var id = await mediator.Send(new CreateGender.Command(  dto), ct);
                 return Results.Created($"/hrs/genders/{id}", new { id });
             })
             .WithName("CreateGender");

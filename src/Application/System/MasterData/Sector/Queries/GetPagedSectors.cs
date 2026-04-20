@@ -26,19 +26,16 @@ namespace Application.System.MasterData.Sector.Queries
 
             public async Task<PagedResult<SectorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var pagedResult = await _repo.GetPagedAsync(
+                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
-                    request.SearchTerm,
-                    companyId
+                    request.SearchTerm 
                 );
 
                 var items = pagedResult.Items.Select(x => new SectorDto(
                     Id: x.Id,
                     Code: x.Code,
                     CompanyId: x.CompanyId,
-                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
                     EngName: x.EngName,
                     ArbName: x.ArbName,
                     ArbName4S: x.ArbName4S,

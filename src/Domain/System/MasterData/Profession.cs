@@ -2,7 +2,7 @@
 
 namespace Domain.System.MasterData
 {
-    public class Profession : LegacyEntity
+    public class Profession : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -20,14 +20,12 @@ namespace Domain.System.MasterData
 
         public Profession(
             string code,
-            int companyId,
             string? engName,
             string? arbName,
             string? arbName4S,
             string? remarks)
         {
             Code = code;
-            CompanyId = companyId;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
@@ -44,7 +42,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

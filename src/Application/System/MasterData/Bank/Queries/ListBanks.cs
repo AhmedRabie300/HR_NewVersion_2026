@@ -12,18 +12,15 @@ namespace Application.System.MasterData.Bank.Queries
         public class Handler : IRequestHandler<Query, List<BankDto>>
         {
             private readonly IBankRepository _repo;
-            private readonly IContextService _contextService;
-
-            public Handler(IBankRepository repo, IContextService contextService)
+ 
+            public Handler(IBankRepository repo )
             {
                 _repo = repo;
-                _contextService = contextService;
-            }
+             }
 
             public async Task<List<BankDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
+ 
                 var items = await _repo.GetAllAsync();
 
                 return items.Select(x => new BankDto(

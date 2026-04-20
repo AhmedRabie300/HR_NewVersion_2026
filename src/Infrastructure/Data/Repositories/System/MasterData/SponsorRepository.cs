@@ -22,20 +22,27 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.Company)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<Sponsor?> GetByCodeAsync(string code, int companyId)
-            => await _db.Sponsors.FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
+        public async Task<Sponsor?> GetByCodeAsync(string code)
+            => await _db.Sponsors.FirstOrDefaultAsync(x => x.Code == code );
 
-        public async Task<List<Sponsor>> GetAllAsync(int companyId)
-            => await _db.Sponsors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
-                .Include(x => x.Company)
-                .OrderBy(x => x.Code)
-                .AsNoTracking()
-                .ToListAsync();
+        public async Task<List<Sponsor>> GetAllAsync()
+        {
+             
+                var sponsors = await _db.Sponsors
+                    .Where(x => x.CancelDate == null)
+                    .Include(x => x.Company)
+                    .OrderBy(x => x.Code)
+                    .AsNoTracking()
+                    .ToListAsync();
 
-        public async Task<List<Sponsor>> GetByCompanyIdAsync(int companyId)
+                return sponsors;
+             
+           
+        }
+
+        public async Task<List<Sponsor>> GetByCompanyIdAsync()
             => await _db.Sponsors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
@@ -61,19 +68,17 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> ExistsAsync(int id)
             => await _db.Sponsors.AnyAsync(x => x.Id == id);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId)
-            => await _db.Sponsors.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
+        public async Task<bool> CodeExistsAsync(string code)
+            => await _db.Sponsors.AnyAsync(x => x.Code == code);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
-            => await _db.Sponsors.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
-
-        public async Task<PagedResult<Sponsor>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
+         
+        public async Task<PagedResult<Sponsor>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
 
             IQueryable<Sponsor> query = _db.Sponsors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null )
                 .Include(x => x.Company)
                 .AsNoTracking();
 
@@ -147,6 +152,36 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 return directNumber;
 
             return 0;
+        }
+
+        public async Task<bool> IsEngNameUniqueAsync(string engName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(engName))
+                return true;
+
+            var query = _db.Sponsors
+                .Where(x => x.CancelDate == null
+                    && x.EngName != null
+                    && x.EngName.ToLower() == engName.ToLower());
+
+
+
+            return !await query.AnyAsync(ct);
+        }
+
+        public async Task<bool> IsArbNameUniqueAsync(string arbName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(arbName))
+                return true;
+
+            var query = _db.Sponsors
+                .Where(x => x.CancelDate == null
+                    && x.ArbName != null
+                    && x.ArbName == arbName);
+
+
+
+            return !await query.AnyAsync(ct);
         }
     }
 }

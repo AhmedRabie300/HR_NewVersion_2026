@@ -14,9 +14,9 @@ namespace Application.System.MasterData.DependantType.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg, IDependantTypeRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateDependantTypeValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateDependantTypeValidator(msg,repo));
             }
         }
 

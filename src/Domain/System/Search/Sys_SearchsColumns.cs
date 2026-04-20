@@ -66,7 +66,7 @@ namespace Domain.System.Search
             RankCriteria = rankCriteria;
             RankView = rankView;
             IsTarget = isTarget;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void Update(
@@ -101,7 +101,7 @@ namespace Domain.System.Search
 
         public void Cancel(int? regUserID = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserID.HasValue) RegUserID = regUserID;
         }
 

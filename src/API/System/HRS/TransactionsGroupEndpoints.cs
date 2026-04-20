@@ -14,6 +14,7 @@ namespace API.System.HRS
             var group = routes.MapGroup("/hrs/transactions-groups")
                 .WithTags("Transactions Groups");
 
+            // ✅ GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListTransactionsGroups.Query(), ct);
@@ -21,6 +22,7 @@ namespace API.System.HRS
             })
             .WithName("GetAllTransactionsGroups");
 
+            // ✅ GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -34,26 +36,26 @@ namespace API.System.HRS
             })
             .WithName("GetPagedTransactionsGroups");
 
+            // ✅ GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetTransactionsGroupById.Query(id), ct);
                 return Results.Ok(result);
             })
             .WithName("GetTransactionsGroupById");
- 
+
+            // ✅ POST create - بدون CompanyId وبدون RegUserId (زي BankEndpoints)
             group.MapPost("/", async (
                 IMediator mediator,
-                [FromHeader(Name = "CompanyId")] int companyId,
-                [FromServices] IContextService contextService,
                 CreateTransactionsGroupDto dto,
                 CancellationToken ct) =>
             {
-                var regUserId = contextService.GetCurrentUserId();
-                var id = await mediator.Send(new CreateTransactionsGroup.Command(companyId, regUserId, dto), ct);
+                var id = await mediator.Send(new CreateTransactionsGroup.Command(dto), ct);
                 return Results.Created($"/hrs/transactions-groups/{id}", new { id });
             })
             .WithName("CreateTransactionsGroup");
 
+            // ✅ PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -66,24 +68,25 @@ namespace API.System.HRS
             })
             .WithName("UpdateTransactionsGroup");
 
+            // ✅ DELETE soft - بدون regUserId (زي BankEndpoints)
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteTransactionsGroup.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteTransactionsGroup.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteTransactionsGroup");
 
+            // ✅ DELETE hard
             group.MapDelete("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteTransactionsGroup.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
+                await mediator.Send(new DeleteTransactionsGroup.Command(id), ct);
+                return Results.NoContent();
             })
             .WithName("DeleteTransactionsGroup");
 

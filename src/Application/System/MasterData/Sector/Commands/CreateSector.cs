@@ -16,9 +16,9 @@ namespace Application.System.MasterData.Sector.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,ISectorRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateSectorValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateSectorValidator(msg,repo));
             }
         }
 
@@ -39,9 +39,8 @@ public Handler(
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                                var companyId = _contextService.GetCurrentCompanyId();
-
-                var codeExists = await _repo.CodeExistsAsync(request.Data.Code, companyId);
+ 
+                var codeExists = await _repo.CodeExistsAsync(request.Data.Code);
                 if (codeExists)
                 {
                     throw new ConflictException(_msg.CodeExists("Sector", request.Data.Code));

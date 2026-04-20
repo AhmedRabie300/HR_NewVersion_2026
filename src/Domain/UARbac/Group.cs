@@ -21,7 +21,7 @@ namespace Domain.UARbac
             EngName = engName;
             ArbName = arbName;
             RegUserId = regUserId;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void Update(string? engName, string? arbName)
@@ -32,7 +32,7 @@ namespace Domain.UARbac
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

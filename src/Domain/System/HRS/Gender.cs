@@ -2,13 +2,14 @@
 
 namespace Domain.System.HRS
 {
-    public class Gender : LegacyEntity
+    public class Gender : LegacyEntity,ICompanyScoped
     {
         public string? Code { get; private set; }
         public string? EngName { get; private set; }
         public string? ArbName { get; private set; }
         public int? RegUserId { get; private set; }
         public DateTime? CancelDate { get; private set; }
+        public int CompanyId { get; private set; }
 
         private Gender() { }
 
@@ -22,7 +23,7 @@ namespace Domain.System.HRS
             EngName = engName;
             ArbName = arbName;
             RegUserId = regUserId;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void Update(
@@ -37,7 +38,7 @@ namespace Domain.System.HRS
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

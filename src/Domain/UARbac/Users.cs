@@ -61,13 +61,13 @@ namespace Domain.UARbac
             SessionIdleTime = sessionIdleTime;
             EnforceAlphaNumericPwd = enforceAlphaNumericPwd;
             PasswordExpiry = passwordExpiry;
-            PasswordChangedOn = DateTime.UtcNow;
+            PasswordChangedOn = DateTime.Now;
             Remarks = remarks;
             RelEmployee = relEmployee;
             LevelId = levelId;
             DeviceToken = deviceToken;
             IsActive = isActive;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         // Update methods
@@ -82,8 +82,8 @@ namespace Domain.UARbac
         public void SetPassword(string newPassword)
         {
             Password = newPassword;
-            PasswordChangedOn = DateTime.UtcNow;
-            PasswordExpiry = DateTime.UtcNow.AddDays(90);
+            PasswordChangedOn = DateTime.Now;
+            PasswordExpiry = DateTime.Now.AddDays(90);
         }
 
         public void UpdateSettings(bool? isArabic, bool? canChangePassword, byte? sessionIdleTime, bool? enforceAlphaNumericPwd)
@@ -125,7 +125,7 @@ namespace Domain.UARbac
         public void Deactivate(DateTime? cancelDate = null)
         {
             IsActive = false;
-            CancelDate = cancelDate ?? DateTime.UtcNow;
+            CancelDate = cancelDate ?? DateTime.Now;
         }
     }
 }

@@ -5,7 +5,7 @@
         string? EngName,
         string? ArbName,
         string? ArbName4S,
-        string? SponsorNumber,
+        int? SponsorNumber,
         string? Remarks,
         int? RegComputerId
     );

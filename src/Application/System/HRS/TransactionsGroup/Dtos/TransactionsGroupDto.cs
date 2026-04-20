@@ -9,7 +9,6 @@
         int CompanyId,
         string? CompanyName,
         string? Remarks,
-        int RegUserId,
         int? RegComputerId,
         DateTime RegDate,
         DateTime? CancelDate,

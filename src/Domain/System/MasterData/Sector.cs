@@ -3,7 +3,7 @@ using Domain.Common;
 
 namespace Domain.System.MasterData
 {
-    public class Sector : LegacyEntity
+    public class Sector : LegacyEntity, ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -59,7 +59,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

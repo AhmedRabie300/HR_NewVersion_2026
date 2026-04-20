@@ -1,4 +1,6 @@
-﻿using Application.Common.Abstractions;
+﻿using Application.Abstractions;
+using Application.Common.Abstractions;
+using Application.System.HRS.Abstractions;
 using Application.System.HRS.VacationsType.Dtos;
 using FluentValidation;
 
@@ -6,51 +8,64 @@ namespace Application.System.HRS.VacationsType.Validators
 {
     public class CreateVacationsTypeValidator : AbstractValidator<CreateVacationsTypeDto>
     {
-        public CreateVacationsTypeValidator(ILocalizationService localizer, IContextService contextService)
-        {
-            var lang = contextService.GetCurrentLanguage();
+        private readonly IVacationsTypeRepository _repo;
 
-            // ✅ فقط التحقق من الطول وليس الـ Required
+        public CreateVacationsTypeValidator(IValidationMessages msg, IVacationsTypeRepository repo)
+        {
+            _repo = repo;
+
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+                .MustAsync(async (engName, cancellation) =>
+                {
+                    return await _repo.IsEngNameUniqueAsync(engName, cancellation);
+                })
+                .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+                .MustAsync(async (arbName, cancellation) =>
+                {
+                    return await _repo.IsArbNameUniqueAsync(arbName, cancellation);
+                })
+                .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 
             RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 100));
+                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.Sex)
-                .MaximumLength(1).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 1));
+                .MaximumLength(1).WithMessage(x => msg.Format("MaxLength", 1));
 
             RuleFor(x => x.Religion)
-                .MaximumLength(10).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 10));
+                .MaximumLength(10).WithMessage(x => msg.Format("MaxLength", 10));
 
             RuleFor(x => x.TimesNoInYear)
                 .GreaterThan(0).When(x => x.TimesNoInYear.HasValue)
-                .WithMessage(localizer.GetMessage("TimesNoInYearGreaterThanZero", lang));
+                .WithMessage(x => msg.Get("TimesNoInYearGreaterThanZero"));
 
             RuleFor(x => x.AllowedDaysNo)
                 .GreaterThan(0).When(x => x.AllowedDaysNo.HasValue)
-                .WithMessage(localizer.GetMessage("AllowedDaysNoGreaterThanZero", lang));
+                .WithMessage(x => msg.Get("AllowedDaysNoGreaterThanZero"));
 
             RuleFor(x => x.Stage1Pct)
                 .InclusiveBetween(0, 100).When(x => x.Stage1Pct.HasValue)
-                .WithMessage(localizer.GetMessage("PercentageBetween0And100", lang));
+                .WithMessage(x => msg.Get("PercentageBetween0And100"));
 
             RuleFor(x => x.Stage2Pct)
                 .InclusiveBetween(0, 100).When(x => x.Stage2Pct.HasValue)
-                .WithMessage(localizer.GetMessage("PercentageBetween0And100", lang));
+                .WithMessage(x => msg.Get("PercentageBetween0And100"));
 
             RuleFor(x => x.Stage3Pct)
                 .InclusiveBetween(0, 100).When(x => x.Stage3Pct.HasValue)
-                .WithMessage(localizer.GetMessage("PercentageBetween0And100", lang));
+                .WithMessage(x => msg.Get("PercentageBetween0And100"));
 
             RuleFor(x => x.Remarks)
-                .MaximumLength(2048).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 2048));
+                .MaximumLength(2048).WithMessage(x => msg.Format("MaxLength", 2048));
         }
     }
 }

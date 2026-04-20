@@ -44,8 +44,6 @@ namespace Application.System.MasterData.Sponsor.Queries
                 return new SponsorDto(
                     Id: entity.Id,
                     Code: entity.Code,
-                    CompanyId: entity.CompanyId,
-                    CompanyName: entity.Company?.EngName ?? entity.Company?.ArbName,
                     EngName: entity.EngName,
                     ArbName: entity.ArbName,
                     ArbName4S: entity.ArbName4S,

@@ -17,9 +17,9 @@ namespace Application.System.MasterData.Department.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,IDepartmentRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateDepartmentValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateDepartmentValidator(msg,repo));
             }
         }
 

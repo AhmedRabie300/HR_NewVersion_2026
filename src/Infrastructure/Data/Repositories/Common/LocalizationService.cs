@@ -171,5 +171,7 @@ public class LocalizationService : ILocalizationService
         Add("TimesNoInYearGreaterThanZero", "Times number in year must be greater than 0", "عدد المرات في السنة يجب أن يكون أكبر من 0");
         Add("AllowedDaysNoGreaterThanZero", "Allowed days number must be greater than 0", "عدد الأيام المسموحة يجب أن يكون أكبر من 0");
         Add("PercentageBetween0And100", "Percentage must be between 0 and 100", "النسبة المئوية يجب أن تكون بين 0 و 100");
+        Add("EngNameAlreadyExists", "English name '{0}' already exists", "الاسم الإنجليزي '{0}' موجود بالفعل");
+        Add("ArbNameAlreadyExists", "Arabic name '{0}' already exists", "الاسم العربي '{0}' موجود بالفعل");
     }
 }

@@ -1,4 +1,6 @@
-﻿using Application.Common.Abstractions;
+﻿using Application.Abstractions;
+using Application.Common.Abstractions;
+using Application.System.HRS.Abstractions;
 using Application.System.HRS.Gender.Dtos;
 using FluentValidation;
 
@@ -6,18 +8,32 @@ namespace Application.System.HRS.Gender.Validators
 {
     public class CreateGenderValidator : AbstractValidator<CreateGenderDto>
     {
-        public CreateGenderValidator(ILocalizationService localizer, IContextService contextService)
+        private readonly IGenderRepository _repo;
+
+        public CreateGenderValidator(IValidationMessages msg, IGenderRepository repo)
         {
-            var lang = contextService.GetCurrentLanguage();
+            _repo = repo;
 
             RuleFor(x => x.Code)
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+                .MustAsync(async (engName, cancellation) =>
+                {
+                    return await _repo.IsEngNameUniqueAsync(engName, cancellation);
+                })
+                .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(50).WithMessage(string.Format(localizer.GetMessage("MaxLength", lang), 50));
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+                .MustAsync(async (arbName, cancellation) =>
+                {
+                    return await _repo.IsArbNameUniqueAsync(arbName, cancellation);
+                })
+                .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
         }
     }
 }

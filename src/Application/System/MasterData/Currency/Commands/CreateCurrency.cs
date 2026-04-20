@@ -16,9 +16,9 @@ namespace Application.System.MasterData.Currency.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            public Validator(IValidationMessages msg,ICurrencyRepository repo)
             {
-                RuleFor(x => x.Data).SetValidator(new CreateCurrencyValidator(msg));
+                RuleFor(x => x.Data).SetValidator(new CreateCurrencyValidator(msg,repo));
             }
         }
 

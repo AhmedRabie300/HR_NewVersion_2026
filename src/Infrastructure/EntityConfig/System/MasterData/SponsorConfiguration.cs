@@ -33,7 +33,6 @@ namespace Infrastructure.EntityConfig.System.MasterData
                 .HasColumnName("SponsorNumber");
 
             builder.Property(x => x.RegUserId)
-                .IsRequired()
                 .HasColumnName("RegUserID");
 
             builder.Property(x => x.RegComputerId)

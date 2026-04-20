@@ -108,7 +108,7 @@ namespace Domain.System.MasterData
             ExecuseRequestHoursallowed = execuseRequestHoursallowed;
             EmployeeDocumentsAutoSerial = employeeDocumentsAutoSerial;
             UserDepartmentsPermissions = userDepartmentsPermissions;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         // Update methods
@@ -196,7 +196,7 @@ namespace Domain.System.MasterData
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

@@ -24,8 +24,7 @@ namespace Application.System.MasterData.Profession.Queries
 
             public async Task<List<ProfessionDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var items = await _repo.GetAllAsync(companyId);
+                var items = await _repo.GetAllAsync();
 
                 return items.Select(x => new ProfessionDto(
                     Id: x.Id,

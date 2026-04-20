@@ -3,7 +3,7 @@ using Domain.System.MasterData;
 
 namespace Domain.System.HRS
 {
-    public class VacationsType : LegacyEntity
+    public class VacationsType : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -55,9 +55,7 @@ namespace Domain.System.HRS
             bool? isSickVacation,
             bool? isFromAnnual,
             int? forSalaryTransaction,
-            int companyId,
             string? remarks,
-            int? regUserId,
             int? regComputerId,
             int? oBalanceTransactionId,
             int? overDueVacationId,
@@ -88,9 +86,7 @@ namespace Domain.System.HRS
             IsSickVacation = isSickVacation;
             IsFromAnnual = isFromAnnual;
             ForSalaryTransaction = forSalaryTransaction;
-            CompanyId = companyId;
             Remarks = remarks;
-            RegUserId = regUserId;
             RegComputerId = regComputerId;
             OBalanceTransactionId = oBalanceTransactionId;
             OverDueVacationId = overDueVacationId;
@@ -110,7 +106,7 @@ namespace Domain.System.HRS
             TimesNoInYear = timesNoInYear;
             AllowedDaysNo = allowedDaysNo;
             ExcludedFromSsRequests = excludedFromSsRequests;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void Update(
@@ -177,7 +173,7 @@ namespace Domain.System.HRS
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

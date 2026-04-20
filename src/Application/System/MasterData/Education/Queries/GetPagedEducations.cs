@@ -26,13 +26,12 @@ namespace Application.System.MasterData.Education.Queries
 
             public async Task<PagedResult<EducationDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
+              //  var companyId = _ContextService.GetCurrentCompanyId();
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
-                    request.SearchTerm,
-                    companyId
+                    request.SearchTerm 
                 );
 
                 var items = pagedResult.Items.Select(x => new EducationDto(

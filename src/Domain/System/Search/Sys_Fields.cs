@@ -41,7 +41,7 @@ namespace Domain.System.Search
             ViewObjectID = viewObjectID;
             ViewEngFieldID = viewEngFieldID;
             ViewArbFieldID = viewArbFieldID;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
             RegUserId = regUserId;
         }
 

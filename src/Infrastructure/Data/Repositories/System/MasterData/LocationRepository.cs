@@ -24,13 +24,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.Department)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<Location?> GetByCodeAsync(string code, int companyId)
+        public async Task<Location?> GetByCodeAsync(string code )
             => await _db.Locations
-                .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
+                .FirstOrDefaultAsync(x => x.Code == code );
 
-        public async Task<List<Location>> GetAllAsync(int companyId)
+        public async Task<List<Location>> GetAllAsync()
             => await _db.Locations
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null )
                 .Include(x => x.Company)
                 .Include(x => x.Branch)
                 .Include(x => x.Department)
@@ -59,15 +59,15 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> ExistsAsync(int id)
             => await _db.Locations.AnyAsync(x => x.Id == id);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId)
-            => await _db.Locations.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
+        public async Task<bool> CodeExistsAsync(string code )
+            => await _db.Locations.AnyAsync(x => x.Code == code);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
-            => await _db.Locations.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
+        public async Task<bool> CodeExistsAsync(string code,  int excludeId)
+            => await _db.Locations.AnyAsync(x => x.Code == code && x.Id != excludeId);
 
-        public async Task<List<Location>> GetByCompanyIdAsync(int companyId)
+        public async Task<List<Location>> GetByCompanyIdAsync()
             => await _db.Locations
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
@@ -93,20 +93,20 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<List<Location>> GetActiveLocationsAsync(int companyId)
+        public async Task<List<Location>> GetActiveLocationsAsync()
             => await _db.Locations
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<PagedResult<Location>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId, int? branchId = null)
+        public async Task<PagedResult<Location>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm,  int? branchId = null)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
 
             IQueryable<Location> query = _db.Locations
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .Include(x => x.Company)
                 .Include(x => x.Branch)
                 .Include(x => x.Department)
@@ -183,6 +183,35 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 return directNumber;
 
             return 0;
+        }
+        public async Task<bool> IsEngNameUniqueAsync(string engName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(engName))
+                return true;
+
+            var query = _db.Locations
+                .Where(x => x.CancelDate == null
+                    && x.EngName != null
+                    && x.EngName.ToLower() == engName.ToLower());
+
+
+
+            return !await query.AnyAsync(ct);
+        }
+
+        public async Task<bool> IsArbNameUniqueAsync(string arbName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(arbName))
+                return true;
+
+            var query = _db.Locations
+                .Where(x => x.CancelDate == null
+                    && x.ArbName != null
+                    && x.ArbName == arbName);
+
+
+
+            return !await query.AnyAsync(ct);
         }
     }
 }

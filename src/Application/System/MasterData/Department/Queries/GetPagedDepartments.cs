@@ -26,20 +26,19 @@ namespace Application.System.MasterData.Department.Queries
 
             public async Task<PagedResult<DepartmentDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                 var companyId = _ContextService.GetCurrentCompanyId();
+               //  var companyId = _ContextService.GetCurrentCompanyId();
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
-                    request.SearchTerm,
-                    companyId
+                    request.SearchTerm
                 );
 
                 var items = pagedResult.Items.Select(x => new DepartmentDto(
                     Id: x.Id,
                     Code: x.Code,
                     CompanyId: x.CompanyId,
-                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
+                    //CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
                     EngName: x.EngName,
                     ArbName: x.ArbName,
                     ArbName4S: x.ArbName4S,

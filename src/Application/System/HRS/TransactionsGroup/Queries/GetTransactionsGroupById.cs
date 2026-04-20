@@ -43,8 +43,7 @@ namespace Application.System.HRS.TransactionsGroup.Queries
 
             public async Task<TransactionsGroupDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-
+ 
                 var entity = await _repo.GetByIdAsync(request.Id);
                 if (entity is null)
                     throw new NotFoundException(_msg.NotFound("TransactionsGroup", request.Id));
@@ -59,7 +58,6 @@ namespace Application.System.HRS.TransactionsGroup.Queries
                     CompanyId: entity.CompanyId,
                     CompanyName: entity.Company?.EngName,
                     Remarks: entity.Remarks,
-                    RegUserId: entity.RegUserId,
                     RegComputerId: entity.RegComputerId,
                     RegDate: entity.RegDate,
                     CancelDate: entity.CancelDate,

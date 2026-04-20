@@ -27,14 +27,11 @@ namespace Application.System.MasterData.Sponsor.Queries
 
             public async Task<List<SponsorDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var items = await _repo.GetAllAsync(companyId);
+                 var items = await _repo.GetAllAsync();
 
                 return items.Select(x => new SponsorDto(
                     Id: x.Id,
                     Code: x.Code,
-                    CompanyId: x.CompanyId,
-                    CompanyName: x.Company?.EngName ?? x.Company?.ArbName,
                     EngName: x.EngName,
                     ArbName: x.ArbName,
                     ArbName4S: x.ArbName4S,

@@ -53,7 +53,6 @@ private readonly ICountryRepository _countryRepo;
                     request.Data.ArbName,
                     request.Data.ArbName4S,
                     request.Data.CountryId,
-                    request.Data.CompanyId,
                     request.Data.Remarks
                 );
 

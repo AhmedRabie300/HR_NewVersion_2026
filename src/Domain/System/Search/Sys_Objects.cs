@@ -25,7 +25,7 @@ namespace Domain.System.Search
             EngName = engName;
             ArbName = arbName;
             IsFiscalYearClosable = isFiscalYearClosable;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void Update(string? engName, string? arbName, bool? isFiscalYearClosable)
@@ -43,7 +43,7 @@ namespace Domain.System.Search
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 

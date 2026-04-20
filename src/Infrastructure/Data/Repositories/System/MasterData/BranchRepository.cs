@@ -1,5 +1,4 @@
-﻿// Infrastructure/Data/Repositories/System/MasterData/BranchRepository.cs
-using Application.Common.Models;
+﻿using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -86,7 +85,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<PagedResult<Branch>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId)
+        public async Task<PagedResult<Branch>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
@@ -97,8 +96,8 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.ParentBranch)
                 .AsNoTracking();
 
-            if (companyId.HasValue)
-                query = query.Where(x => x.CompanyId == companyId.Value);
+           // if (companyId.HasValue)
+             //   query = query.Where(x => x.CompanyId == companyId.Value);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -125,6 +124,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             if (item != null)
             {
                 item.Cancel(regUserId);
+
                 _db.Branches.Update(item);
             }
         }
@@ -168,6 +168,36 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 return directNumber;
 
             return 0;
+        }
+
+        public async Task<bool> IsEngNameUniqueAsync(string engName,  CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(engName))
+                return true; 
+
+            var query = _db.Branches
+                .Where(x =>  x.CancelDate == null
+                    && x.EngName != null
+                    && x.EngName.ToLower() == engName.ToLower());
+
+ 
+
+            return !await query.AnyAsync(ct);
+        }
+
+        public async Task<bool> IsArbNameUniqueAsync(string arbName,  CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(arbName))
+                return true;  
+
+            var query = _db.Branches
+                .Where(x =>  x.CancelDate == null
+                    && x.ArbName != null
+                    && x.ArbName == arbName);
+
+ 
+
+            return !await query.AnyAsync(ct);
         }
     }
 }

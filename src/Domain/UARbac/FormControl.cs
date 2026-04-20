@@ -27,7 +27,7 @@ public sealed class FormControl : LegacyEntity
     internal FormControl(int formId, string name, string fieldName, int section)
     {
         SetRequired(formId, name, fieldName, section);
-        RegDate = DateTime.UtcNow;
+        RegDate = DateTime.Now;
     }
 
     public void UpdateUiSettings(string? engCaption, string? arbCaption, bool? isDisabled, bool? isHide, bool? isCompulsory)

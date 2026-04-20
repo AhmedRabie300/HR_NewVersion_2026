@@ -3,7 +3,7 @@ using Domain.System.MasterData;
 
 namespace Domain.System.HRS
 {
-    public class TransactionsGroup : LegacyEntity
+    public class TransactionsGroup : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -11,7 +11,6 @@ namespace Domain.System.HRS
         public string? ArbName4S { get; private set; }
         public int CompanyId { get; private set; }
         public string? Remarks { get; private set; }
-        public int RegUserId { get; private set; }
         public int? RegComputerId { get; private set; }
         public DateTime? CancelDate { get; private set; }
 
@@ -25,20 +24,15 @@ namespace Domain.System.HRS
             string? engName,
             string? arbName,
             string? arbName4S,
-            int companyId,
-            string? remarks,
-            int regUserId,
-            int? regComputerId)
+            string? remarks
+            )
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
-            CompanyId = companyId;
             Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+            RegDate = DateTime.Now;
         }
 
         public void Update(
@@ -57,7 +51,7 @@ namespace Domain.System.HRS
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId.Value;
         }
 

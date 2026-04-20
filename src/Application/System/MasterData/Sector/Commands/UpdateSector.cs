@@ -38,14 +38,11 @@ public Handler(
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
-                var entity = await _repo.GetByIdAsync(request.Data.Id);
+                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
                     throw new NotFoundException(_msg.NotFound("Sector", request.Data.Id));
 
-                 if (entity.CompanyId != companyId)
-                    throw new UnauthorizedAccessException("Access denied: Sector does not belong to your company");
-
+                 
                 // Update basic info
 
                     entity.UpdateBasicInfo(

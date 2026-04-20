@@ -28,13 +28,12 @@ namespace Application.System.MasterData.Branch.Queries
 
             public async Task<PagedResult<BranchDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
+               // var companyId = _ContextService.GetCurrentCompanyId();
 
                 var pagedResult = await _repo.GetPagedAsync(
                     request.PageNumber,
                     request.PageSize,
-                    request.SearchTerm,
-                    companyId
+                    request.SearchTerm
                 );
 
                 var items = pagedResult.Items.Select(b => new BranchDto(

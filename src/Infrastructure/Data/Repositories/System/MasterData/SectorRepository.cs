@@ -1,5 +1,4 @@
-﻿// Infrastructure/Data/Repositories/System/MasterData/SectorRepository.cs
-using Application.Common.Models;
+﻿using Application.Common.Models;
 using Application.System.MasterData.Abstractions;
 using Domain.System.MasterData;
 using Infrastructure.Data;
@@ -23,13 +22,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .Include(x => x.ParentSector)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<Sector?> GetByCodeAsync(string code, int companyId)
+        public async Task<Sector?> GetByCodeAsync(string code)
             => await _db.Sectors
-                .FirstOrDefaultAsync(x => x.Code == code && x.CompanyId == companyId);
+                .FirstOrDefaultAsync(x => x.Code == code);
 
-        public async Task<List<Sector>> GetAllAsync(int companyId)
+        public async Task<List<Sector>> GetAllAsync()
             => await _db.Sectors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .Include(x => x.Company)
                 .Include(x => x.ParentSector)
                 .OrderBy(x => x.Code)
@@ -57,15 +56,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
         public async Task<bool> ExistsAsync(int id)
             => await _db.Sectors.AnyAsync(x => x.Id == id);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId)
-            => await _db.Sectors.AnyAsync(x => x.Code == code && x.CompanyId == companyId);
+        public async Task<bool> CodeExistsAsync(string code)
+            => await _db.Sectors.AnyAsync(x => x.Code == code);
 
-        public async Task<bool> CodeExistsAsync(string code, int companyId, int excludeId)
-            => await _db.Sectors.AnyAsync(x => x.Code == code && x.CompanyId == companyId && x.Id != excludeId);
-
-        public async Task<List<Sector>> GetByCompanyIdAsync(int companyId)
+        
+        public async Task<List<Sector>> GetByCompanyIdAsync()
             => await _db.Sectors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
@@ -77,20 +74,20 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<List<Sector>> GetActiveSectorsAsync(int companyId)
+        public async Task<List<Sector>> GetActiveSectorsAsync()
             => await _db.Sectors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<PagedResult<Sector>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int companyId)
+        public async Task<PagedResult<Sector>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm)
         {
             pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             pageSize = pageSize <= 0 ? 20 : pageSize;
 
             IQueryable<Sector> query = _db.Sectors
-                .Where(x => x.CancelDate == null && x.CompanyId == companyId)
+                .Where(x => x.CancelDate == null)
                 .Include(x => x.Company)
                 .Include(x => x.ParentSector)
                 .AsNoTracking();
@@ -163,6 +160,35 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 return directNumber;
 
             return 0;
+        }
+        public async Task<bool> IsEngNameUniqueAsync(string engName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(engName))
+                return true;
+
+            var query = _db.Sectors
+                .Where(x => x.CancelDate == null
+                    && x.EngName != null
+                    && x.EngName.ToLower() == engName.ToLower());
+
+
+
+            return !await query.AnyAsync(ct);
+        }
+
+        public async Task<bool> IsArbNameUniqueAsync(string arbName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(arbName))
+                return true;
+
+            var query = _db.Sectors
+                .Where(x => x.CancelDate == null
+                    && x.ArbName != null
+                    && x.ArbName == arbName);
+
+
+
+            return !await query.AnyAsync(ct);
         }
     }
 }

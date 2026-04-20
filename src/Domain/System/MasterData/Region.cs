@@ -2,14 +2,14 @@
 
 namespace Domain.System.MasterData
 {
-    public class Region : LegacyEntity
+    public class Region : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
         public string? ArbName { get; private set; }
         public string? ArbName4S { get; private set; }
         public int CountryId { get; private set; }
-        public int? CompanyId { get; private set; }
+        public int CompanyId { get; private set; }
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
         public int? RegComputerId { get; private set; }
@@ -42,20 +42,18 @@ namespace Domain.System.MasterData
             string? arbName,
             string? arbName4S,
             int? countryId,
-            int? companyId,
             string? remarks)
         {
             if (engName != null) EngName = engName;
             if (arbName != null) ArbName = arbName;
             if (arbName4S != null) ArbName4S = arbName4S;
             if (countryId.HasValue) CountryId = countryId.Value;
-            if (companyId.HasValue) CompanyId = companyId;
             if (remarks != null) Remarks = remarks;
         }
 
         public void Cancel(int? regUserId = null)
         {
-            CancelDate = DateTime.UtcNow;
+            CancelDate = DateTime.Now;
             if (regUserId.HasValue) RegUserId = regUserId;
         }
 
