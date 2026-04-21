@@ -1,6 +1,8 @@
 ﻿using Application.Abstractions;
 using Domain.Common;
 using Domain.System.HRS;
+using Domain.System.HRS.Basics.FiscalTransactions;
+using Domain.System.HRS.VacationAndEndOfService;
 using Domain.System.MasterData;
 using Domain.System.Search;
 using Domain.UARbac;
@@ -61,13 +63,18 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Region> Regions => Set<Region>();
 
     public DbSet<Bank> Banks => Set<Bank>();
+    public DbSet<Project> Projects => Set<Project>();
+
     //HRS
     public DbSet<VacationsPaidType> VacationsPaidTypes => Set<VacationsPaidType>();
     public DbSet<VacationsType> VacationsTypes => Set<VacationsType>();
     public DbSet<Gender> Genders => Set<Gender>();
     public DbSet<TransactionsGroup> TransactionsGroups => Set<TransactionsGroup>();
+    public DbSet<Interval> Intervals => Set<Interval>();
+    public DbSet<TransactionsType> TransactionsTypes => Set<TransactionsType>();
 
-
+    public DbSet<EndOfService> EndOfServices => Set<EndOfService>();
+    public DbSet<EndOfServiceRule> EndOfServiceRules => Set<EndOfServiceRule>();
 
 
 
@@ -88,6 +95,7 @@ public sealed class ApplicationDbContext : DbContext
         }
 
         base.OnModelCreating(modelBuilder);
+
     }
 
     private void ApplyCompanyFilter(ModelBuilder modelBuilder, Type entityType)

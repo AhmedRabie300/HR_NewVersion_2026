@@ -1,7 +1,7 @@
 ﻿using Application.Common.Abstractions;
-using Application.System.HRS.Gender.Commands;
-using Application.System.HRS.Gender.Dtos;
-using Application.System.HRS.Gender.Queries;
+using Application.System.HRS.Basics.Gender.Commands;
+using Application.System.HRS.Basics.Gender.Dtos;
+using Application.System.HRS.Basics.Gender.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

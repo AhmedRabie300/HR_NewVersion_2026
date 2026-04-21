@@ -1,9 +1,12 @@
 using API.Common.Middleware;
+using API.Common.Swagger;
 using API.Common.Versioning;
 using API.Endpoints;
 using API.Helpers;
-using API.System.MasterData;
 using API.System.HRS;
+using API.System.HRS.Basics.FiscalTransactions;
+using API.System.HRS.VacationAndEndOfService;
+using API.System.MasterData;
 using API.UARbac;
 using Application;
 using Asp.Versioning;
@@ -12,7 +15,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
-using API.Common.Swagger;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -137,5 +139,9 @@ v1Api.MapVacationsPaidTypeEndpoints();
 v1Api.MapVacationsTypeEndpoints();
 v1Api.MapGenderEndpoints();
 v1Api.MapTransactionsGroupEndpoints();
+v1Api.MapProjectEndpoints();
+v1Api.MapIntervalEndpoints();
+v1Api.MapTransactionsTypeEndpoints();
+v1Api.MapEndOfServiceEndpoints();
 
 app.Run();

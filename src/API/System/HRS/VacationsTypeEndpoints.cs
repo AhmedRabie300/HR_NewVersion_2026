@@ -1,7 +1,7 @@
 ﻿using Application.Common.Abstractions;
-using Application.System.HRS.VacationsType.Commands;
-using Application.System.HRS.VacationsType.Dtos;
-using Application.System.HRS.VacationsType.Queries;
+using Application.System.HRS.VacationAndEndOfService.VacationsType.Commands;
+using Application.System.HRS.VacationAndEndOfService.VacationsType.Dtos;
+using Application.System.HRS.VacationAndEndOfService.VacationsType.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,16 +14,14 @@ namespace API.System.HRS
             var group = routes.MapGroup("/hrs/vacations-types")
                 .WithTags("Vacations Types");
 
-            // ✅ GET all
-            group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
+             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new ListVacationsTypes.Query(), ct);
                 return Results.Ok(result);
             })
             .WithName("GetAllVacationsTypes");
 
-            // ✅ GET paged
-            group.MapGet("/paged", async (
+             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
@@ -36,16 +34,14 @@ namespace API.System.HRS
             })
             .WithName("GetPagedVacationsTypes");
 
-            // ✅ GET by id
-            group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetVacationsTypeById.Query(id), ct);
                 return Results.Ok(result);
             })
             .WithName("GetVacationsTypeById");
 
-            // ✅ POST create - بدون CompanyId وبدون RegUserId (زي BankEndpoints)
-            group.MapPost("/", async (
+             group.MapPost("/", async (
                 IMediator mediator,
                 CreateVacationsTypeDto dto,
                 CancellationToken ct) =>
@@ -55,8 +51,7 @@ namespace API.System.HRS
             })
             .WithName("CreateVacationsType");
 
-            // ✅ PUT update
-            group.MapPut("/{id:int}", async (
+             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 UpdateVacationsTypeDto dto,

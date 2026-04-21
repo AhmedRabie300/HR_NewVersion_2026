@@ -1,0 +1,43 @@
+﻿using Domain.System.HRS.VacationAndEndOfService;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Infrastructure.EntityConfig.System.HRS.VacationAndEndOfService
+{
+    public class VacationsPaidTypeConfiguration : IEntityTypeConfiguration<VacationsPaidType>
+    {
+        public void Configure(EntityTypeBuilder<VacationsPaidType> builder)
+        {
+            builder.ToTable("hrs_VacationsPaidTypes");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Code)
+                .HasMaxLength(50)
+                .HasColumnName("Code");
+
+            builder.Property(x => x.EngName)
+                .HasMaxLength(50)
+                .HasColumnName("EngName");
+
+            builder.Property(x => x.ArbName)
+                .HasMaxLength(50)
+                .HasColumnName("ArbName");
+
+            builder.Property(x => x.RegUserId)
+                .HasColumnName("RegUserID");
+
+            builder.Property(x => x.RegDate)
+                .HasColumnName("RegDate");
+
+            builder.Property(x => x.CancelDate)
+                .HasColumnName("CancelDate");
+
+            // Indexes
+            builder.HasIndex(x => x.Code)
+                .IsUnique()
+                .HasDatabaseName("IX_VacationsPaidTypes_Code")
+                .HasFilter("[Code] IS NOT NULL");
+        }
+    }
+}

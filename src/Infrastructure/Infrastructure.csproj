@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Common\Services\" />
+    <Folder Include="EntityConfig\System\HRS\Employee\" />
   </ItemGroup>
 
 </Project>

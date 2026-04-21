@@ -1,7 +1,7 @@
 ﻿using Application.Common.Abstractions;
-using Application.System.HRS.VacationsPaidType.Commands;
-using Application.System.HRS.VacationsPaidType.Dtos;
-using Application.System.HRS.VacationsPaidType.Queries;
+using Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Commands;
+using Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Dtos;
+using Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

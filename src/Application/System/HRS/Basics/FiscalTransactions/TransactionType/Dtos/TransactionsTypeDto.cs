@@ -1,0 +1,38 @@
+﻿namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Dtos
+{
+    public sealed record TransactionsTypeDto(
+        int Id,
+        string Code,
+        string? EngName,
+        string? ArbName,
+        string? ArbName4S,
+        string? ShortEngName,
+        string? ShortArbName,
+        string? ShortArbName4S,
+        int TransactionGroupId,
+        string? TransactionGroupName,
+        short Sign,
+        string? DebitAccountCode,
+        string? CreditAccountCode,
+        bool? IsPaid,
+        string? Formula,
+        string? BeginContractFormula,
+        string? EndContractFormula,
+        bool? InputIsNumeric,
+        bool? IsEndOfService,
+        bool? IsSalaryEOSExeclude,
+        bool? IsProjectRelatedItem,
+        bool? IsBasicSalary,
+        bool? IsDistributable,
+        bool? IsAllowPosting,
+        int CompanyId,
+        string? CompanyName,
+        string? Remarks,
+        int RegUserId,
+        int? RegComputerId,
+        bool? HasInsuranceTiers,
+        DateTime RegDate,
+        DateTime? CancelDate,
+        bool IsActive
+    );
+}

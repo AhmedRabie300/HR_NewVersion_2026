@@ -96,10 +96,10 @@ namespace Infrastructure.Data.Repositories.System.HRS
             }
         }
 
-        public async Task<string?> GetMaxCodeAsync(CancellationToken ct)
+        public async Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct)
         {
             var allCodes = await _db.Genders
-                .Where(x => x.CancelDate == null && x.Code != null)
+                .Where(x => x.CancelDate == null && x.Code != null && x.CompanyId==companyId)
                 .Select(x => x.Code)
                 .ToListAsync(ct);
 
@@ -140,7 +140,7 @@ namespace Infrastructure.Data.Repositories.System.HRS
             var query = _db.Genders
                 .Where(x => x.CancelDate == null
                     && x.EngName != null
-                    && x.EngName.ToLower() == engName.ToLower());
+                    && x.EngName.Trim().ToLower() == engName.Trim().ToLower());
             if (excludeId.HasValue)
                 query = query.Where(x => x.Id != excludeId.Value);
 
@@ -156,12 +156,14 @@ namespace Infrastructure.Data.Repositories.System.HRS
             var query = _db.Genders
                 .Where(x => x.CancelDate == null
                     && x.ArbName != null
-                    && x.ArbName == arbName);
+                    && x.ArbName.Trim() == arbName.Trim());
             if (excludeId.HasValue)
                 query = query.Where(x => x.Id != excludeId.Value);
 
 
             return !await query.AnyAsync(ct);
         }
+
+     
     }
 }

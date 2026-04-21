@@ -1,7 +1,7 @@
 ﻿using Application.Common.Abstractions;
-using Application.System.HRS.TransactionsGroup.Commands;
-using Application.System.HRS.TransactionsGroup.Dtos;
-using Application.System.HRS.TransactionsGroup.Queries;
+using Application.System.HRS.Basics.FiscalTransactions.TransactionsGroup.Commands;
+using Application.System.HRS.Basics.FiscalTransactions.TransactionsGroup.Dtos;
+using Application.System.HRS.Basics.FiscalTransactions.TransactionsGroup.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -71,6 +71,8 @@ namespace Infrastructure
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<IRegionRepository, RegionRepository>();
             services.AddScoped<IBankRepository, BankRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
+
             services.AddScoped<ICodeGenerationService, CodeGenerationService>();
 
             //HRS
@@ -79,6 +81,10 @@ namespace Infrastructure
             services.AddScoped<IGenderRepository, GenderRepository>();
 
             services.AddScoped<ITransactionsGroupRepository, TransactionsGroupRepository>();
+            services.AddScoped<IIntervalRepository, IntervalRepository>();
+            services.AddScoped<ITransactionsTypeRepository, TransactionsTypeRepository>();
+            services.AddScoped<IEndOfServiceRepository, EndOfServiceRepository>();
+            services.AddScoped<IEndOfServiceRepository, EndOfServiceRepository>();
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             {

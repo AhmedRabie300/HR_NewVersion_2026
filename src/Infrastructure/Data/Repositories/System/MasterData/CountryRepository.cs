@@ -181,7 +181,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             var query = _db.Countries
                 .Where(x => x.CancelDate == null
                     && x.EngName != null
-                    && x.EngName.ToLower() == engName.ToLower());
+                    && x.EngName.Trim().ToLower() == engName.Trim().ToLower());
 
             if (excludeId.HasValue)
                 query = query.Where(x => x.Id != excludeId.Value);
@@ -197,7 +197,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             var query = _db.Countries
                 .Where(x => x.CancelDate == null
                     && x.ArbName != null
-                    && x.ArbName == arbName);
+                    && x.ArbName.Trim() == arbName.Trim());
             if (excludeId.HasValue)
                 query = query.Where(x => x.Id != excludeId.Value);
 

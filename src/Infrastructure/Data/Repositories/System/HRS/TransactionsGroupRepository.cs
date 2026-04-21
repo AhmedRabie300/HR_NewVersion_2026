@@ -4,6 +4,7 @@ using Domain.System.HRS;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using Domain.System.HRS.Basics.FiscalTransactions;
 
 namespace Infrastructure.Data.Repositories.System.HRS
 {
@@ -16,15 +17,15 @@ namespace Infrastructure.Data.Repositories.System.HRS
             _db = db;
         }
 
-        public async Task<TransactionsGroup?> GetByIdAsync(int id)
+        public async Task<Domain.System.HRS.Basics.FiscalTransactions.TransactionsGroup?> GetByIdAsync(int id)
             => await _db.TransactionsGroups
                 .Include(x => x.Company)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<TransactionsGroup?> GetByCodeAsync(string code)
+        public async Task<Domain.System.HRS.Basics.FiscalTransactions.TransactionsGroup?> GetByCodeAsync(string code)
             => await _db.TransactionsGroups.FirstOrDefaultAsync(x => x.Code == code);
 
-        public async Task<List<TransactionsGroup>> GetAllAsync()
+        public async Task<List<Domain.System.HRS.Basics.FiscalTransactions.TransactionsGroup>> GetAllAsync()
             => await _db.TransactionsGroups
                 .Where(x => x.CancelDate == null)
                 .Include(x => x.Company)
@@ -32,20 +33,20 @@ namespace Infrastructure.Data.Repositories.System.HRS
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<List<TransactionsGroup>> GetByCompanyIdAsync()
+        public async Task<List<Domain.System.HRS.Basics.FiscalTransactions.TransactionsGroup>> GetByCompanyIdAsync()
             => await _db.TransactionsGroups
                 .Where(x => x.CancelDate == null )
                 .OrderBy(x => x.Code)
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<TransactionsGroup> AddAsync(TransactionsGroup entity)
+        public async Task<Domain.System.HRS.Basics.FiscalTransactions.TransactionsGroup> AddAsync(Domain.System.HRS.Basics.FiscalTransactions.TransactionsGroup entity)
         {
             await _db.TransactionsGroups.AddAsync(entity);
             return entity;
         }
 
-        public Task UpdateAsync(TransactionsGroup entity)
+        public Task UpdateAsync(Domain.System.HRS.Basics.FiscalTransactions.TransactionsGroup entity)
         {
             _db.TransactionsGroups.Update(entity);
             return Task.CompletedTask;
@@ -148,7 +149,7 @@ namespace Infrastructure.Data.Repositories.System.HRS
             var query = _db.TransactionsGroups
                 .Where(x => x.CancelDate == null
                     && x.EngName != null
-                    && x.EngName.ToLower() == engName.ToLower());
+                    && x.EngName.Trim().ToLower() == engName.Trim().ToLower());
             if (excludeId.HasValue)
                 query = query.Where(x => x.Id != excludeId.Value);
 
@@ -164,7 +165,7 @@ namespace Infrastructure.Data.Repositories.System.HRS
             var query = _db.TransactionsGroups
                 .Where(x => x.CancelDate == null
                     && x.ArbName != null
-                    && x.ArbName == arbName);
+                    && x.ArbName.Trim() == arbName.Trim());
 
             if (excludeId.HasValue)
                 query = query.Where(x => x.Id != excludeId.Value);

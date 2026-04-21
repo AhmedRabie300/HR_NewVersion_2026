@@ -17,7 +17,7 @@ namespace Application.System.HRS.Abstractions
         Task<PagedResult<Domain.System.HRS.Gender>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm);
         Task SoftDeleteAsync(int id, int? regUserId = null);
         Task SaveChangesAsync(CancellationToken ct);
-        Task<string?> GetMaxCodeAsync(CancellationToken ct);
+        Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
         Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default);
         Task<bool> IsArbNameUniqueAsync(string arbName, int? excludeId = null, CancellationToken ct = default);
     }

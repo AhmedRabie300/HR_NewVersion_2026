@@ -41,8 +41,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
                 if (!ids.Any())
                     return new List<Company>();
 
-                // جيب البيانات كاملة
-                return await _db.Companies
+                 return await _db.Companies
                     .Where(x => ids.Contains(x.Id))
                     .OrderBy(x => x.Code)
                     .AsNoTracking()
