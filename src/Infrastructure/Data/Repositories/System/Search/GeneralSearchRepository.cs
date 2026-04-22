@@ -1,6 +1,5 @@
 ﻿using Application.System.Search.Abstractions;
 using Application.System.Search.Dtos;
-using Application.Common.Abstractions;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,12 +9,10 @@ namespace Infrastructure.Data.Repositories.System.Search
     public sealed class GeneralSearchRepository : IGeneralSearchRepository
     {
         private readonly ApplicationDbContext _db;
-        private readonly IContextService _contextService;
 
-        public GeneralSearchRepository(ApplicationDbContext db, IContextService contextService)
+        public GeneralSearchRepository(ApplicationDbContext db)
         {
             _db = db;
-            _contextService = contextService;
         }
 
         public async Task<List<SearchColumnResponseDto>> GetSearchColumnsAsync(int searchID, int lang, CancellationToken ct)
@@ -40,11 +37,11 @@ namespace Infrastructure.Data.Repositories.System.Search
             )).ToList();
         }
 
-        public async Task<SearchExecuteResultDto> ExecuteSearchAsync(SearchExecuteRequestDto request, int lang, int companyId, CancellationToken ct)
+        public async Task<SearchExecuteResultDto> ExecuteSearchAsync(SearchExecuteRequestDto request, int companyId, int language, CancellationToken ct)
         {
             try
             {
-                 var search = await _db.Sys_Searchs
+                var search = await _db.Sys_Searchs
                     .Include(x => x.Object)
                     .FirstOrDefaultAsync(x => x.Id == request.SearchID && x.CancelDate == null, ct);
 
@@ -53,13 +50,13 @@ namespace Infrastructure.Data.Repositories.System.Search
                     return new SearchExecuteResultDto(request.SearchID, "", 0, request.PageNumber, request.PageSize, new List<Dictionary<string, object>>());
                 }
 
-                 var allColumns = await GetSearchColumnsAsync(request.SearchID, lang, ct);
+                var allColumns = await GetSearchColumnsAsync(request.SearchID, language, ct);
                 var viewColumns = allColumns.Where(x => x.IsView).ToList();
                 var criteriaColumns = allColumns.Where(x => x.IsCriteria).ToList();
 
-                 var tableName =  search.Object.Code;
+                var tableName = search.Object.Code;
 
-                 var (sqlQuery, parameters) = BuildDynamicSqlQuery(
+                var (sqlQuery, parameters) = BuildDynamicSqlQuery(
                     tableName,
                     search.Object?.Code ?? "",
                     request.SearchTerm,
@@ -70,44 +67,88 @@ namespace Infrastructure.Data.Repositories.System.Search
                     request.AnotherCriteria
                 );
 
-                 if (string.IsNullOrEmpty(sqlQuery))
+                if (string.IsNullOrEmpty(sqlQuery))
                 {
                     return new SearchExecuteResultDto(request.SearchID, "", 0, request.PageNumber, request.PageSize, new List<Dictionary<string, object>>());
                 }
 
-                 var totalCount = await GetTotalCountAsync(sqlQuery, parameters, ct);
-                var pagedSqlQuery = BuildPagedSqlQuery(sqlQuery, request, parameters);
-                var items = await ExecuteQueryAsync(pagedSqlQuery, parameters, ct);
+                 List<Dictionary<string, object>> items;
+                int totalCount;
 
-                 var translatedItems = items.Select(item =>
+                if (request.LoadAll)
+                {
+                    var allItemsQuery = BuildPagedSqlQuery(sqlQuery, request, parameters);
+                    items = await ExecuteQueryAsync(allItemsQuery, parameters, ct);
+                    totalCount = items.Count;
+                }
+                else
+                {
+                    totalCount = await GetTotalCountAsync(sqlQuery, parameters, ct);
+                    var pagedSqlQuery = BuildPagedSqlQuery(sqlQuery, request, parameters);
+                    items = await ExecuteQueryAsync(pagedSqlQuery, parameters, ct);
+                }
+
+                var translatedItems = items.Select(item =>
                 {
                     var translatedItem = new Dictionary<string, object>();
+                    var nameParts = new List<string>();
+
+                    var idKey = item.Keys.FirstOrDefault(k => k.Equals("ID", StringComparison.OrdinalIgnoreCase));
+                    if (idKey != null)
+                        translatedItem["ID"] = item[idKey];
+
+                    if (item.ContainsKey("Code"))
+                        translatedItem["Code"] = item["Code"];
+
+                    var engName = item.ContainsKey("EngName") ? item["EngName"]?.ToString() : null;
+                    var arbName = item.ContainsKey("ArbName") ? item["ArbName"]?.ToString() : null;
+
+                    if (language == 2)
+                    {
+                        if (!string.IsNullOrEmpty(arbName))
+                            nameParts.Add(arbName);
+                        else if (!string.IsNullOrEmpty(engName))
+                            nameParts.Add(engName);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(engName))
+                            nameParts.Add(engName);
+                        else if (!string.IsNullOrEmpty(arbName))
+                            nameParts.Add(arbName);
+                    }
+
                     foreach (var kv in item)
                     {
-                        var column = viewColumns.FirstOrDefault(c => c.FieldName == kv.Key);
-                        if (column != null)
+                        var key = kv.Key;
+
+                        if (key.Equals("ID", StringComparison.OrdinalIgnoreCase) ||
+                            key.Equals("Code", StringComparison.OrdinalIgnoreCase) ||
+                            key.Equals("EngName", StringComparison.OrdinalIgnoreCase) ||
+                            key.Equals("ArbName", StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        var value = kv.Value?.ToString();
+                        if (!string.IsNullOrEmpty(value))
                         {
-                            var displayKey = lang == 2 ? (column.DisplayName) : column.FieldName;
-                            translatedItem[displayKey] = kv.Value;
-                        }
-                        else
-                        {
-                            translatedItem[kv.Key] = kv.Value;
+                            nameParts.Add(value);
                         }
                     }
+
+                    translatedItem["Name"] = string.Join(" - ", nameParts);
                     return translatedItem;
                 }).ToList();
 
                 return new SearchExecuteResultDto(
                     request.SearchID,
-                    lang == 2 ? (search.ArbName ?? search.EngName ?? "") : (search.EngName ?? search.ArbName ?? ""),
+                    language == 2 ? (search.ArbName ?? search.EngName ?? "") : (search.EngName ?? search.ArbName ?? ""),
                     totalCount,
                     request.PageNumber,
                     request.PageSize,
                     translatedItems
                 );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new SearchExecuteResultDto(request.SearchID, "", 0, request.PageNumber, request.PageSize, new List<Dictionary<string, object>>());
             }
@@ -115,7 +156,6 @@ namespace Infrastructure.Data.Repositories.System.Search
 
         #region Helper Methods
 
-        
         private (string SqlQuery, Dictionary<string, object> Parameters) BuildDynamicSqlQuery(
             string tableName,
             string objectCode,
@@ -130,40 +170,56 @@ namespace Infrastructure.Data.Repositories.System.Search
             var whereConditions = new List<string>();
             var selectFields = new List<string>();
 
-             foreach (var col in viewColumns)
+            selectFields.Add("ID");
+            selectFields.Add("Code");
+
+            if (!selectFields.Contains("EngName"))
+                selectFields.Add("EngName");
+            if (!selectFields.Contains("ArbName"))
+                selectFields.Add("ArbName");
+
+            foreach (var col in viewColumns)
             {
                 if (!selectFields.Contains(col.FieldName))
                     selectFields.Add(col.FieldName);
             }
 
-             whereConditions.Add("CancelDate IS NULL");
+            whereConditions.Add("CancelDate IS NULL");
 
-             if (companyId > 0 && objectCode.ToLower() != "company")
+            if (companyId > 0 && objectCode.ToLower() != "company")
             {
                 whereConditions.Add("CompanyID = @CompanyId");
                 parameters["@CompanyId"] = companyId;
             }
 
-             // if (userId.HasValue && userId.Value > 0)
-            // {
-            //     whereConditions.Add("UserID = @UserId");
-            //     parameters["@UserId"] = userId.Value;
-            // }
-
-             if (!string.IsNullOrWhiteSpace(anotherCriteria))
+            if (!string.IsNullOrWhiteSpace(anotherCriteria))
             {
                 whereConditions.Add(anotherCriteria);
             }
 
              if (!string.IsNullOrWhiteSpace(searchTerm) && criteriaColumns.Any())
             {
+                var processedSearchTerm = ProcessArabicSearchTerm(searchTerm);
                 var searchConditions = new List<string>();
+
                 foreach (var col in criteriaColumns)
                 {
-                    searchConditions.Add($"{col.FieldName} LIKE @SearchTerm");
+                     var processedColumn = $@"
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                REPLACE({col.FieldName}, 'أ', 'ا'),
+                            'إ', 'ا'),
+                        'آ', 'ا'),
+                    'ة', 'ه'),
+                'ى', 'ي')";
+
+                    searchConditions.Add($"{processedColumn} LIKE @SearchTerm");
                 }
+
                 whereConditions.Add($"({string.Join(" OR ", searchConditions)})");
-                parameters["@SearchTerm"] = $"%{EscapeSqlString(searchTerm)}%";
+                parameters["@SearchTerm"] = $"%{EscapeSqlString(processedSearchTerm)}%";
             }
 
             var selectClause = string.Join(", ", selectFields);
@@ -173,11 +229,33 @@ namespace Infrastructure.Data.Repositories.System.Search
             return (sqlQuery, parameters);
         }
 
-       
+         private string ProcessArabicSearchTerm(string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm))
+                return searchTerm;
+
+            return searchTerm
+                .Replace("أ", "ا")
+                .Replace("إ", "ا")
+                .Replace("آ", "ا")
+                .Replace("ة", "ه")
+                .Replace("ى", "ي");
+        }
         private string BuildPagedSqlQuery(string baseSqlQuery, SearchExecuteRequestDto request, Dictionary<string, object> parameters)
         {
             var sortBy = string.IsNullOrEmpty(request.SortBy) ? "Code" : request.SortBy;
             var sortDirection = request.SortDescending ? "DESC" : "ASC";
+
+            if (request.LoadAll)
+            {
+                return $"{baseSqlQuery} ORDER BY {sortBy} {sortDirection}";
+            }
+
+            if (request.LoadLimit.HasValue && request.LoadLimit.Value > 0)
+            {
+                return $"SELECT TOP {request.LoadLimit.Value} * FROM ({baseSqlQuery}) AS Query ORDER BY {sortBy} {sortDirection}";
+            }
+
             var offset = request.PageSize * (request.PageNumber - 1);
             var fetch = request.PageSize;
 
