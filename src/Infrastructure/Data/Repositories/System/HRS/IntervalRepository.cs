@@ -92,12 +92,11 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<Interval>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id)
         {
             var item = await _db.Intervals.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
                 _db.Intervals.Update(item);
             }
         }

@@ -7,7 +7,7 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Commands
 {
     public static class SoftDeleteEndOfServiceRule
     {
-        public record Command(int Id, int? RegUserId = null) : IRequest<Unit>;
+        public record Command(int Id) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
@@ -36,7 +36,7 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Commands
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _repo.SoftDeleteRuleAsync(request.Id, request.RegUserId);
+                await _repo.SoftDeleteRuleAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

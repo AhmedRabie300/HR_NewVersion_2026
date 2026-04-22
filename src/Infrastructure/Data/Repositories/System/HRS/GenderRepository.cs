@@ -86,12 +86,11 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<Gender>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id)
         {
             var item = await _db.Genders.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
                 _db.Genders.Update(item);
             }
         }

@@ -6,6 +6,7 @@ using Application.System.Search.Abstractions;
 using Application.UARbac.Abstractions;
 using Infrastructure.Common.CurrentUser;
 using Infrastructure.Data;
+using Infrastructure.Data.Repositories.Common;
 using Infrastructure.Data.Repositories.System;
 using Infrastructure.Data.Repositories.System.HRS;
 using Infrastructure.Data.Repositories.System.MasterData;
@@ -85,6 +86,7 @@ namespace Infrastructure
             services.AddScoped<ITransactionsTypeRepository, TransactionsTypeRepository>();
             services.AddScoped<IEndOfServiceRepository, EndOfServiceRepository>();
             services.AddScoped<IEndOfServiceRepository, EndOfServiceRepository>();
+            services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             {

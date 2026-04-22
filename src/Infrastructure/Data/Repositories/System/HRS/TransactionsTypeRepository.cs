@@ -120,12 +120,11 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<TransactionsType>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id)
         {
             var item = await _db.TransactionsTypes.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
                 _db.TransactionsTypes.Update(item);
             }
         }

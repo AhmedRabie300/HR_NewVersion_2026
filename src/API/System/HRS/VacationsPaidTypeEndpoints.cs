@@ -44,7 +44,6 @@ namespace API.System.HRS
             })
             .WithName("GetVacationsPaidTypeById");
 
-            // ✅ POST create - بدون CompanyId وبدون RegUserId (زي BankEndpoints)
             group.MapPost("/", async (
                 IMediator mediator,
                 CreateVacationsPaidTypeDto dto,
@@ -68,7 +67,6 @@ namespace API.System.HRS
             })
             .WithName("UpdateVacationsPaidType");
 
-            // ✅ DELETE soft - بدون regUserId (زي BankEndpoints)
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,

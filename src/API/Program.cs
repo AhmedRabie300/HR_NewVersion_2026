@@ -3,6 +3,7 @@ using API.Common.Swagger;
 using API.Common.Versioning;
 using API.Endpoints;
 using API.Helpers;
+using API.System.common;
 using API.System.HRS;
 using API.System.HRS.Basics.FiscalTransactions;
 using API.System.HRS.VacationAndEndOfService;
@@ -143,5 +144,7 @@ v1Api.MapProjectEndpoints();
 v1Api.MapIntervalEndpoints();
 v1Api.MapTransactionsTypeEndpoints();
 v1Api.MapEndOfServiceEndpoints();
+v1Api.MapUtilsEndpoints();
+
 
 app.Run();

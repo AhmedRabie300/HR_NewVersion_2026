@@ -82,10 +82,9 @@ namespace API.System.HRS.VacationAndEndOfService
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteEndOfService.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteEndOfService.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteEndOfService");
@@ -129,10 +128,9 @@ namespace API.System.HRS.VacationAndEndOfService
             group.MapDelete("/rules/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteEndOfServiceRule.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteEndOfServiceRule.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteEndOfServiceRule");

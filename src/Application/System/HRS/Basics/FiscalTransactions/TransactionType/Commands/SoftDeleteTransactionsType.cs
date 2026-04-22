@@ -7,7 +7,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Comma
 {
     public static class SoftDeleteTransactionsType
     {
-        public record Command(int Id, int? RegUserId = null) : IRequest<Unit>;
+        public record Command(int Id) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
@@ -36,7 +36,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Comma
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _repo.SoftDeleteAsync(request.Id, request.RegUserId);
+                await _repo.SoftDeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

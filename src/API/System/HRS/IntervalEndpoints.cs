@@ -66,10 +66,9 @@ namespace API.System.HRS.Basics.FiscalTransactions
              group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteInterval.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteInterval.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteInterval");

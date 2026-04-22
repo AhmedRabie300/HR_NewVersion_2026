@@ -115,12 +115,11 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<EndOfService>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id)
         {
             var item = await _db.EndOfServices.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
                 _db.EndOfServices.Update(item);
             }
         }
@@ -225,12 +224,11 @@ namespace Infrastructure.Data.Repositories.System.HRS
         public async Task<bool> RuleExistsAsync(int id)
             => await _db.EndOfServiceRules.AnyAsync(x => x.Id == id);
 
-        public async Task SoftDeleteRuleAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteRuleAsync(int id)
         {
             var item = await _db.EndOfServiceRules.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
                 _db.EndOfServiceRules.Update(item);
             }
         }

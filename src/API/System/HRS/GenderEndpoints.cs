@@ -62,10 +62,9 @@ namespace API.System.HRS
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteGender.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteGender.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteGender");

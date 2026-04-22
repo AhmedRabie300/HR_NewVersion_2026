@@ -68,7 +68,6 @@ namespace API.System.HRS
             })
             .WithName("UpdateTransactionsGroup");
 
-            // ✅ DELETE soft - بدون regUserId (زي BankEndpoints)
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
