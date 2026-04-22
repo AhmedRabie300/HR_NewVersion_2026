@@ -1,3 +1,4 @@
+using API.Common.Endpoints;
 using API.Common.Middleware;
 using API.Common.Swagger;
 using API.Common.Versioning;
@@ -145,6 +146,7 @@ v1Api.MapIntervalEndpoints();
 v1Api.MapTransactionsTypeEndpoints();
 v1Api.MapEndOfServiceEndpoints();
 v1Api.MapUtilsEndpoints();
+v1Api.MapLookupEndpoints();
 
 
 app.Run();

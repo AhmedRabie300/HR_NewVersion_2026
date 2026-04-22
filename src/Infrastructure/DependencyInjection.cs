@@ -15,6 +15,7 @@ using Infrastructure.Data.Repositories.UARbac;
 using Infrastructure.Repositories.UARbac;
 using Infrastructure.Services;
 using Infrastructure.Services.Auth;
+using Infrastructure.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,6 +88,7 @@ namespace Infrastructure
             services.AddScoped<IEndOfServiceRepository, EndOfServiceRepository>();
             services.AddScoped<IEndOfServiceRepository, EndOfServiceRepository>();
             services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
+            services.AddScoped<ILookupService, LookupService>();
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             {
