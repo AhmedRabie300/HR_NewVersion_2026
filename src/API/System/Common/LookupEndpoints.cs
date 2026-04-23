@@ -21,8 +21,7 @@ namespace API.Common.Endpoints
                 var result = await mediator.Send(new GetLookup.Query(entityName), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetLookup")
-            .WithOpenApi();
+            .WithName("GetLookup");
 
             return routes;
         }

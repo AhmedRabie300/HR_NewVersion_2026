@@ -18,10 +18,9 @@ namespace API.System.common
                 CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetNextCode.Query(entityName), ct);
-                return Results.Ok(new { entityName, nextCode = result });
+                return Results.Ok(result);
             })
-            .WithName("GetNextCode")
-            .WithOpenApi();
+            .WithName("GetNextCode");
 
             return routes;
         }
