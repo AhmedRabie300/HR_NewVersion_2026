@@ -37,8 +37,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Queri
 
             public async Task<TransactionsTypeDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _currentUser.Language;
-
+ 
                 var entity = await _repo.GetByIdAsync(request.Id);
  
 
@@ -52,7 +51,6 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Queri
                     ShortArbName: entity.ShortArbName,
                     ShortArbName4S: entity.ShortArbName4S,
                     TransactionGroupId: entity.TransactionGroupId,
-                    TransactionGroupName: lang == 2 ? entity.TransactionGroup?.ArbName : entity.TransactionGroup?.EngName,
                     Sign: entity.Sign,
                     DebitAccountCode: entity.DebitAccountCode,
                     CreditAccountCode: entity.CreditAccountCode,
@@ -68,7 +66,6 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Queri
                     IsDistributable: entity.IsDistributable,
                     IsAllowPosting: entity.IsAllowPosting,
                     CompanyId: entity.CompanyId,
-                    CompanyName: lang == 2 ? entity.Company?.ArbName : entity.Company?.EngName,
                     Remarks: entity.Remarks,
                     RegUserId: entity.RegUserId,
                     RegComputerId: entity.RegComputerId,

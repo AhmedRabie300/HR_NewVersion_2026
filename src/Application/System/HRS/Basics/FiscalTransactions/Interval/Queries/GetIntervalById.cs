@@ -37,8 +37,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.Interval.Queries
 
             public async Task<IntervalDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _currentUser.Language;
-
+ 
                 var entity = await _repo.GetByIdAsync(request.Id);
                
                 return new IntervalDto(

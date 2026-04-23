@@ -9,6 +9,7 @@ using Infrastructure.Data;
 using Infrastructure.Data.Repositories.Common;
 using Infrastructure.Data.Repositories.System;
 using Infrastructure.Data.Repositories.System.HRS;
+using Infrastructure.Data.Repositories.System.HRS.Basics.HICompanies;
 using Infrastructure.Data.Repositories.System.MasterData;
 using Infrastructure.Data.Repositories.System.Search;
 using Infrastructure.Data.Repositories.UARbac;
@@ -89,6 +90,9 @@ namespace Infrastructure
             services.AddScoped<IEndOfServiceRepository, EndOfServiceRepository>();
             services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
             services.AddScoped<ILookupService, LookupService>();
+            services.AddScoped<IItemRepository, ItemRepository>();
+            services.AddScoped<IHICompanyRepository, HICompanyRepository>();
+            services.AddScoped<IContractsTypeRepository, ContractsTypeRepository>();
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             {

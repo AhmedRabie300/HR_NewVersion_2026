@@ -45,8 +45,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionsGroup.Que
             {
  
                 var entity = await _repo.GetByIdAsync(request.Id);
-                if (entity is null)
-                    throw new NotFoundException(_msg.NotFound("TransactionsGroup", request.Id));
+           
     
 
                 return new TransactionsGroupDto(

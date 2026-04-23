@@ -15,8 +15,7 @@ namespace Application.System.HRS.VacationAndEndOfService.VacationsType.Queries
         {
             public Validator(IValidationMessages msg)
             {
-                RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
+
             }
         }
 
