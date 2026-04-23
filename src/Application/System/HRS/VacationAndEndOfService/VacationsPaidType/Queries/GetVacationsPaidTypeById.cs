@@ -21,8 +21,6 @@ namespace Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Queri
                 _localizer = localizer;
                 _contextService = contextService;
 
-                RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _localizer.GetMessage("IdGreaterThanZero", _contextService.GetCurrentLanguage()));
             }
         }
 
@@ -46,8 +44,7 @@ namespace Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Queri
                 var lang = _contextService.GetCurrentLanguage();
 
                 var entity = await _repo.GetByIdAsync(request.Id);
-                if (entity == null)
-                    throw new NotFoundException(_msg.NotFound("VacationsPaidType", request.Id));
+        
 
                 return new VacationsPaidTypeDto(
                     Id: entity.Id,

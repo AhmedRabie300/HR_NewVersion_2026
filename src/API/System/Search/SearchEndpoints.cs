@@ -12,18 +12,7 @@ namespace API.Endpoints
         {
             var group = routes.MapGroup("/api/search")
                 .WithTags("Search");
-
-            //  group.MapGet("/columns/{searchID:int}", async (
-            //    IMediator mediator,
-            //    int searchID,
-            //    CancellationToken ct) =>
-            //{
-            //    var result = await mediator.Send(new GetSearchColumns.Query(searchID), ct);
-            //    return Results.Ok(result);
-            //})
-            //.WithName("GetSearchColumns")
-            //.WithDescription("Get search columns (criteria and view) for a specific search ID");
-
+ 
             group.MapPost("/execute", async (
                 IMediator mediator,
                 [FromBody] SearchExecuteRequestDto request,

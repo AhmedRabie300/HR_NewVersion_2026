@@ -1,5 +1,4 @@
-﻿// Application/System/Search/Dtos/SearchRequestDto.cs
-namespace Application.System.Search.Dtos
+﻿namespace Application.System.Search.Dtos
 {
     public sealed record SearchRequestDto(
         int SearchID,              

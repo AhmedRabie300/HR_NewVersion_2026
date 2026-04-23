@@ -6,6 +6,6 @@ namespace Application.System.Search.Abstractions
     {
          Task<List<SearchColumnResponseDto>> GetSearchColumnsAsync(int searchID, int lang, CancellationToken ct);
 
-         Task<SearchExecuteResultDto> ExecuteSearchAsync(SearchExecuteRequestDto request, int lang, int companyId, CancellationToken ct);
+        Task<SearchExecuteResultDto> ExecuteSearchAsync(SearchExecuteRequestDto request, int companyId, int language, CancellationToken ct);
     }
 }

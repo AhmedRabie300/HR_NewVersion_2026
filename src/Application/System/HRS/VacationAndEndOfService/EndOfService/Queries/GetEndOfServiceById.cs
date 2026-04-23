@@ -20,10 +20,7 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Queries
             {
                 _currentUser = currentUser;
 
-                RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(x => _currentUser.Language == 2
-                        ? "المعرف يجب أن يكون أكبر من 0"
-                        : "ID must be greater than 0");
+        
             }
         }
 
@@ -45,8 +42,7 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Queries
                 var lang = _currentUser.Language;
 
                 var entity = await _repo.GetByIdAsync(request.Id);
-                if (entity == null)
-                    throw new NotFoundException(_msg.NotFound("EndOfService", request.Id));
+ 
 
                 return new EndOfServiceDto(
                     Id: entity.Id,

@@ -1,4 +1,4 @@
-﻿// Application/System/Search/Queries/ExecuteSearch.cs
+﻿using Application.Abstractions;
 using Application.Common.Abstractions;
 using Application.System.Search.Abstractions;
 using Application.System.Search.Dtos;
@@ -13,20 +13,20 @@ namespace Application.System.Search.Queries
         public class Handler : IRequestHandler<Query, SearchExecuteResultDto>
         {
             private readonly IGeneralSearchRepository _repo;
-            private readonly IContextService _contextService;
+            private readonly ICurrentUser _currentUser;
 
-            public Handler(IGeneralSearchRepository repo, IContextService contextService)
+            public Handler(IGeneralSearchRepository repo, ICurrentUser currentUser)
             {
                 _repo = repo;
-                _contextService = contextService;
+                _currentUser = currentUser;
             }
 
             public async Task<SearchExecuteResultDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var lang = _contextService.GetCurrentLanguage();
-                var companyId = _contextService.GetCurrentCompanyId();
+                var companyId = _currentUser.CompanyId;
+                var language = _currentUser.Language;
 
-                return await _repo.ExecuteSearchAsync(request.Request, lang, companyId, cancellationToken);
+                return await _repo.ExecuteSearchAsync(request.Request, companyId, language, cancellationToken);
             }
         }
     }

@@ -1,7 +1,10 @@
 ﻿using Application.Abstractions;
 using Domain.Common;
 using Domain.System.HRS;
+using Domain.System.HRS.Basics;
+using Domain.System.HRS.Basics.ContractsTypes;
 using Domain.System.HRS.Basics.FiscalTransactions;
+using Domain.System.HRS.Basics.HICompanies;
 using Domain.System.HRS.VacationAndEndOfService;
 using Domain.System.MasterData;
 using Domain.System.Search;
@@ -75,6 +78,10 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<EndOfService> EndOfServices => Set<EndOfService>();
     public DbSet<EndOfServiceRule> EndOfServiceRules => Set<EndOfServiceRule>();
+    public DbSet<Item> Items => Set<Item>();
+    public DbSet<HICompany> HICompanies => Set<HICompany>();
+    public DbSet<HICompanyClass> HICompanyClasses => Set<HICompanyClass>();
+    public DbSet<ContractsType> ContractsTypes => Set<ContractsType>();
 
 
 

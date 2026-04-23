@@ -1,14 +1,14 @@
-﻿using Domain.System.MasterData;
+﻿using Domain.System.HRS.Basics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.EntityConfig.System.MasterData
+namespace Infrastructure.EntityConfig.System.HRS.Basics
 {
-    public class ContractTypeConfiguration : IEntityTypeConfiguration<ContractType>
+    public class ItemConfiguration : IEntityTypeConfiguration<Item>
     {
-        public void Configure(EntityTypeBuilder<ContractType> builder)
+        public void Configure(EntityTypeBuilder<Item> builder)
         {
-            builder.ToTable("hrs_ContractsTypes");
+            builder.ToTable("hrs_Items", tb => tb.UseSqlOutputClause(false));
 
             builder.HasKey(x => x.Id);
 
@@ -18,23 +18,37 @@ namespace Infrastructure.EntityConfig.System.MasterData
                 .HasColumnName("Code");
 
             builder.Property(x => x.EngName)
-                .HasMaxLength(100)
+                .HasMaxLength(500)
                 .HasColumnName("EngName");
 
             builder.Property(x => x.ArbName)
-                .HasMaxLength(100)
+                .HasMaxLength(500)
                 .HasColumnName("ArbName");
 
             builder.Property(x => x.ArbName4S)
-                .HasMaxLength(100)
+                .HasMaxLength(500)
                 .HasColumnName("ArbName4S");
+
+            builder.Property(x => x.PurchaseDate)
+                .HasColumnName("PurchaseDate");
+
+            builder.Property(x => x.PurchasePrice)
+                .HasColumnType("money")
+                .HasColumnName("PurchasePrice");
+
+            builder.Property(x => x.ExpiryDate)
+                .HasColumnName("ExpiryDate");
+
+            builder.Property(x => x.LicenseNumber)
+                .HasMaxLength(100)
+                .HasColumnName("LicenseNumber");
 
             builder.Property(x => x.CompanyId)
                 .IsRequired()
                 .HasColumnName("CompanyID");
 
-            builder.Property(x => x.IsSpecial)
-                .HasColumnName("IsSpecial");
+            builder.Property(x => x.IsFromAssets)
+                .HasColumnName("IsFromAssets");
 
             builder.Property(x => x.Remarks)
                 .HasMaxLength(2048)
@@ -44,7 +58,6 @@ namespace Infrastructure.EntityConfig.System.MasterData
                 .HasColumnName("RegUserID");
 
             builder.Property(x => x.RegComputerId)
-                .HasMaxLength(50)
                 .HasColumnName("RegComputerID");
 
             builder.Property(x => x.RegDate)
@@ -55,17 +68,25 @@ namespace Infrastructure.EntityConfig.System.MasterData
             builder.Property(x => x.CancelDate)
                 .HasColumnName("CancelDate");
 
+            // Relationships
             builder.HasOne(x => x.Company)
                 .WithMany()
                 .HasForeignKey(x => x.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(x => new { x.Code, x.CompanyId })
+            // Indexes
+            builder.HasIndex(x => x.Code)
                 .IsUnique()
-                .HasDatabaseName("IX_ContractTypes_Code_CompanyId");
+                .HasDatabaseName("IX_Items_Code");
 
             builder.HasIndex(x => x.CompanyId)
-                .HasDatabaseName("IX_ContractTypes_CompanyId");
+                .HasDatabaseName("IX_Items_CompanyId");
+
+            builder.HasIndex(x => x.EngName)
+                .HasDatabaseName("IX_Items_EngName");
+
+            builder.HasIndex(x => x.ArbName)
+                .HasDatabaseName("IX_Items_ArbName");
         }
     }
 }
