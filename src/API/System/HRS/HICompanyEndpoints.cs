@@ -23,7 +23,7 @@ namespace API.System.HRS
                 return Results.Ok(result);
             })
             .WithName("GetAllHICompanies")
-            .WithOpenApi();
+            ;
 
             // GET paged
             group.MapGet("/paged", async (
@@ -38,7 +38,7 @@ namespace API.System.HRS
                 return Results.Ok(result);
             })
             .WithName("GetPagedHICompanies")
-            .WithOpenApi();
+            ;
 
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -47,7 +47,7 @@ namespace API.System.HRS
                 return Results.Ok(result);
             })
             .WithName("GetHICompanyById")
-            .WithOpenApi();
+            ;
 
             // GET classes by hiCompanyId
             group.MapGet("/{hiCompanyId:int}/classes", async (IMediator mediator, int hiCompanyId, CancellationToken ct) =>
@@ -56,7 +56,7 @@ namespace API.System.HRS
                 return Results.Ok(result);
             })
             .WithName("GetHICompanyClasses")
-            .WithOpenApi();
+            ;
 
             // POST create
             group.MapPost("/", async (
@@ -68,7 +68,7 @@ namespace API.System.HRS
                 return Results.Created($"/basics/hi-companies/{id}", new { id });
             })
             .WithName("CreateHICompany")
-            .WithOpenApi();
+            ;
 
             // PUT update
             group.MapPut("/{id:int}", async (
@@ -82,7 +82,7 @@ namespace API.System.HRS
                 return Results.NoContent();
             })
             .WithName("UpdateHICompany")
-            .WithOpenApi();
+            ;
 
             // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
@@ -95,7 +95,7 @@ namespace API.System.HRS
                 return Results.NoContent();
             })
             .WithName("SoftDeleteHICompany")
-            .WithOpenApi();
+            ;
 
             // DELETE hard
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -104,7 +104,7 @@ namespace API.System.HRS
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("DeleteHICompany")
-            .WithOpenApi();
+            ;
 
             // ==================== HICompanyClass (Detail) ====================
 
@@ -119,7 +119,7 @@ namespace API.System.HRS
                 return Results.Created($"/basics/hi-companies/{hiCompanyId}/classes/{id}", new { id });
             })
             .WithName("AddHICompanyClass")
-            .WithOpenApi();
+            ;
 
             // PUT update class
             group.MapPut("/classes/{id:int}", async (
@@ -133,7 +133,7 @@ namespace API.System.HRS
                 return Results.NoContent();
             })
             .WithName("UpdateHICompanyClass")
-            .WithOpenApi();
+            ;
 
             // DELETE soft class
             group.MapDelete("/classes/{id:int}/soft", async (
@@ -146,7 +146,7 @@ namespace API.System.HRS
                 return Results.NoContent();
             })
             .WithName("SoftDeleteHICompanyClass")
-            .WithOpenApi();
+            ;
 
             // DELETE hard class
             group.MapDelete("/classes/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -155,7 +155,7 @@ namespace API.System.HRS
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("DeleteHICompanyClass")
-            .WithOpenApi();
+            ;
 
             return routes;
         }

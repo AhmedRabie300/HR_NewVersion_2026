@@ -1,26 +1,26 @@
 ﻿using Application.Common.Abstractions;
-using Application.System.HRS.Basics.Items.Commands;
-using Application.System.HRS.Basics.Items.Dtos;
-using Application.System.HRS.Basics.Items.Queries;
+using Application.System.HRS.Basics.FiscalYears.Commands;
+using Application.System.HRS.Basics.FiscalYears.Dtos;
+using Application.System.HRS.Basics.FiscalYears.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.HRS
 {
-    public static class ItemEndpoints
+    public static class FiscalYearEndpoints
     {
-        public static IEndpointRouteBuilder MapItemEndpoints(this IEndpointRouteBuilder routes)
+        public static IEndpointRouteBuilder MapFiscalYearEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/items")
-                .WithTags("Items");
+            var group = routes.MapGroup("/basics/fiscal-years")
+                .WithTags("FiscalYears");
 
             // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new ListItems.Query(), ct);
+                var result = await mediator.Send(new ListFiscalYears.Query(), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetAllItems")
+            .WithName("GetAllFiscalYears")
             ;
 
             // GET paged
@@ -32,45 +32,45 @@ namespace API.System.HRS
                 CancellationToken ct = default) =>
             {
                 var result = await mediator.Send(
-                    new GetPagedItems.Query(pageNumber, pageSize, searchTerm), ct);
+                    new GetPagedFiscalYears.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetPagedItems")
+            .WithName("GetPagedFiscalYears")
             ;
 
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new GetItemById.Query(id), ct);
+                var result = await mediator.Send(new GetFiscalYearById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetItemById")
+            .WithName("GetFiscalYearById")
             ;
 
             // POST create
             group.MapPost("/", async (
                 IMediator mediator,
-                CreateItemDto dto,
+                CreateFiscalYearDto dto,
                 CancellationToken ct) =>
             {
-                var id = await mediator.Send(new CreateItem.Command(dto), ct);
-                return Results.Created($"/basics/items/{id}", new { id });
+                var id = await mediator.Send(new CreateFiscalYear.Command(dto), ct);
+                return Results.Created($"/basics/fiscal-years/{id}", new { id });
             })
-            .WithName("CreateItem")
+            .WithName("CreateFiscalYear")
             ;
 
             // PUT update
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
-                UpdateItemDto dto,
+                UpdateFiscalYearDto dto,
                 CancellationToken ct) =>
             {
                 var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateItem.Command(fixedDto), ct);
+                await mediator.Send(new UpdateFiscalYear.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .WithName("UpdateItem")
+            .WithName("UpdateFiscalYear")
             ;
 
             // DELETE soft
@@ -80,19 +80,19 @@ namespace API.System.HRS
                 [FromQuery] int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteItem.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteFiscalYear.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .WithName("SoftDeleteItem")
+            .WithName("SoftDeleteFiscalYear")
             ;
 
             // DELETE hard
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
-                var result = await mediator.Send(new DeleteItem.Command(id), ct);
+                var result = await mediator.Send(new DeleteFiscalYear.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .WithName("DeleteItem")
+            .WithName("DeleteFiscalYear")
             ;
 
             return routes;
