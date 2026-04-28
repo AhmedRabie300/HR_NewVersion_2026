@@ -8,7 +8,7 @@ namespace API.System.common
     {
         public static IEndpointRouteBuilder MapUtilsEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/utils")
+            var group = routes.MapGroup("utils")
                 .WithTags("Utils");
 
             // Get Next Code

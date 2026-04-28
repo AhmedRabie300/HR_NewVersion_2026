@@ -27,27 +27,28 @@ namespace Application.System.MasterData.Location.Commands
         {
             private readonly ILocationRepository _repo;
                         private readonly IValidationMessages _msg;
-            private readonly IContextService _ContextService;
-private readonly ICompanyRepository _companyRepo;
+            private readonly ICurrentUser _currentUser;
+            private readonly ICompanyRepository _companyRepo;
             private readonly IBranchRepository _branchRepo;
             private readonly IDepartmentRepository _departmentRepo;
             public Handler(
                 ILocationRepository repo, IValidationMessages msg,
                 ICompanyRepository companyRepo,
                 IBranchRepository branchRepo,
-                IDepartmentRepository departmentRepo, IContextService ContextService)
+                IDepartmentRepository departmentRepo,
+                ICurrentUser currentUser)   
             {
                 _repo = repo;
                 _msg = msg;
                 _companyRepo = companyRepo;
                 _branchRepo = branchRepo;
                 _departmentRepo = departmentRepo;
-                _ContextService = ContextService;
+                _currentUser = currentUser;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _ContextService.GetCurrentCompanyId();
+                var companyId = _currentUser.CompanyId;
                 var entity = await _repo.GetByIdAsync(request.Data.Id);
                 if (entity == null)
                     throw new NotFoundException(_msg.NotFound("Location", request.Data.Id));

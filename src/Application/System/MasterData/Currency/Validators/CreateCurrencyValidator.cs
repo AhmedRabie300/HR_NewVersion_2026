@@ -13,13 +13,13 @@ namespace Application.System.MasterData.Currency.Validators
         {
             _repo = repo;
             RuleFor(x => x.Code)
-.NotEmpty().WithMessage(x => msg.Get("CodeRequired"))
-.MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
-.MustAsync(async (code, cancellation) =>
-{
-return !await _repo.CodeExistsAsync(code);
-})
-.WithMessage(x => msg.Format("CodeExists", msg.Get("Currency"), x.Code));
+            .NotEmpty().WithMessage(x => msg.Get("CodeRequired"))
+            .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+            .MustAsync(async (code, cancellation) =>
+            {
+            return !await _repo.CodeExistsAsync(code);
+            })
+            .WithMessage(x => msg.Format("CodeExists", msg.Get("Currency"), x.Code));
 
 
             RuleFor(x => x.EngName)

@@ -10,7 +10,7 @@ namespace API.Endpoints
     {
         public static IEndpointRouteBuilder MapSearchEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/search")
+            var group = routes.MapGroup("search")
                 .WithTags("Search");
  
             group.MapPost("/execute", async (

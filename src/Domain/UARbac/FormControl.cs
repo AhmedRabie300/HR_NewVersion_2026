@@ -10,6 +10,7 @@ public sealed class FormControl : LegacyEntity
     public string? FieldName { get; private set; } 
     public int? Section { get; private set; }
 
+    public int? SearchID { get; private set; }
     public string? Format { get; set; }
     public string? EngCaption { get; private set; }
     public string? ArbCaption { get; private set; }

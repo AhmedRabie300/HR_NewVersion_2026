@@ -12,6 +12,7 @@
      bool? Compulsory,
      bool? IsHide,
      bool? IsDisabled,
+     int? SearchId,
      int? Rank 
  );
 
