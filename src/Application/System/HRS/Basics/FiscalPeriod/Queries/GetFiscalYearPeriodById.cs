@@ -42,7 +42,6 @@ namespace Application.System.HRS.Basics.FiscalPeriod.Queries
                 var lang = _currentUser.Language;
 
                 var entity = await _repo.GetByIdAsync(request.Id);
-          
 
                 return new FiscalYearPeriodDto(
                     Id: entity.Id,

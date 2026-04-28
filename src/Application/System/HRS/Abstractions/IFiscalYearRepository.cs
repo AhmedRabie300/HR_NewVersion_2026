@@ -10,6 +10,7 @@ namespace Application.System.HRS.Abstractions
         Task<List<FiscalYear>> GetAllAsync();
         Task<List<FiscalYear>> GetByCompanyIdAsync();  
         Task<FiscalYear> AddAsync(FiscalYear entity);
+
         Task UpdateAsync(FiscalYear entity);
         Task DeleteAsync(int id);
         Task<bool> ExistsAsync(int id);
