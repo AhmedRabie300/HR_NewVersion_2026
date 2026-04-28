@@ -9,6 +9,7 @@ using Infrastructure.Data;
 using Infrastructure.Data.Repositories.Common;
 using Infrastructure.Data.Repositories.System;
 using Infrastructure.Data.Repositories.System.HRS;
+using Infrastructure.Data.Repositories.System.HRS.Basics.FiscalPeriod;
 using Infrastructure.Data.Repositories.System.HRS.Basics.HICompanies;
 using Infrastructure.Data.Repositories.System.MasterData;
 using Infrastructure.Data.Repositories.System.Search;
@@ -93,6 +94,13 @@ namespace Infrastructure
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IHICompanyRepository, HICompanyRepository>();
             services.AddScoped<IContractsTypeRepository, ContractsTypeRepository>();
+            services.AddScoped<IGradeRepository, GradeRepository>();
+            services.AddScoped<IGradeStepRepository, GradeStepRepository>();
+            services.AddScoped<IEmployeeClassRepository, EmployeeClassRepository>();
+            services.AddScoped<IFiscalYearRepository, FiscalYearRepository>();
+            services.AddScoped<IFiscalYearPeriodRepository, FiscalYearPeriodRepository>();
+
+
 
             services.AddDbContext<ApplicationDbContext>(opt =>
             {

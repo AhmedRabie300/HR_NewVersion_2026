@@ -7,7 +7,9 @@ using API.Helpers;
 using API.System.common;
 using API.System.HRS;
 using API.System.HRS.Basics.ContractsTypes;
+using API.System.HRS.Basics.FiscalPeriod;
 using API.System.HRS.Basics.FiscalTransactions;
+using API.System.HRS.Basics.Grades;
 using API.System.HRS.VacationAndEndOfService;
 using API.System.MasterData;
 using API.UARbac;
@@ -151,6 +153,11 @@ v1Api.MapLookupEndpoints();
 v1Api.MapItemEndpoints();
 v1Api.MapHICompanyEndpoints();
 v1Api.MapContractsTypeEndpoints();
+v1Api.MapGradeEndpoints();
+v1Api.MapGradeStepEndpoints();
+v1Api.MapEmployeeClassEndpoints();
+v1Api.MapFiscalYearEndpoints();
+v1Api.MapFiscalYearPeriodEndpoints();
 
 
 app.Run();

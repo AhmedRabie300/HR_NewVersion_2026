@@ -3,7 +3,9 @@ using Domain.Common;
 using Domain.System.HRS;
 using Domain.System.HRS.Basics;
 using Domain.System.HRS.Basics.ContractsTypes;
+using Domain.System.HRS.Basics.FiscalPeriod;
 using Domain.System.HRS.Basics.FiscalTransactions;
+using Domain.System.HRS.Basics.GradesAndClasses;
 using Domain.System.HRS.Basics.HICompanies;
 using Domain.System.HRS.VacationAndEndOfService;
 using Domain.System.MasterData;
@@ -82,6 +84,16 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<HICompany> HICompanies => Set<HICompany>();
     public DbSet<HICompanyClass> HICompanyClasses => Set<HICompanyClass>();
     public DbSet<ContractsType> ContractsTypes => Set<ContractsType>();
+    public DbSet<Grade> Grades => Set<Grade>();
+    public DbSet<GradeTransaction> GradeTransactions => Set<GradeTransaction>();
+    public DbSet<GradeStep> GradeSteps => Set<GradeStep>();
+    public DbSet<GradeStepTransaction> GradeStepTransactions => Set<GradeStepTransaction>();
+    public DbSet<EmployeeClass> EmployeeClasses => Set<EmployeeClass>();
+    public DbSet<EmployeeClassDelay> EmployeeClassDelays => Set<EmployeeClassDelay>();
+    public DbSet<EmployeeClassVacation> EmployeeClassVacations => Set<EmployeeClassVacation>();
+    public DbSet<FiscalYear> FiscalYears => Set<FiscalYear>();
+    public DbSet<FiscalYearPeriod> FiscalYearPeriods => Set<FiscalYearPeriod>();
+    public DbSet<FiscalYearPeriodModule> FiscalYearPeriodModules => Set<FiscalYearPeriodModule>();
 
 
 
