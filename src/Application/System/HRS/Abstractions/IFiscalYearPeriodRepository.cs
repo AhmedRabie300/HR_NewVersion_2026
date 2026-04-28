@@ -26,7 +26,6 @@ namespace Application.System.HRS.Abstractions
         Task<bool> IsArbNameUniqueAsync(string arbName, int? excludeId = null, CancellationToken ct = default);
         Task<List<FiscalYearPeriod>> GeneratePeriodsAsync(int fiscalYearId, bool isFormal, int? sourceFiscalYearId = null, CancellationToken ct = default);
 
-        // ==================== FiscalYearPeriodModule (Detail 2) ====================
         Task<FiscalYearPeriodModule?> GetModuleByIdAsync(int id);
         Task<List<FiscalYearPeriodModule>> GetModulesByPeriodIdAsync(int fiscalYearPeriodId);
         Task<FiscalYearPeriodModule> AddModuleAsync(FiscalYearPeriodModule entity);

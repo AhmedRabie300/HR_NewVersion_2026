@@ -175,5 +175,90 @@ public class LocalizationService : ILocalizationService
         Add("PercentageBetween0And100", "Percentage must be between 0 and 100", "النسبة المئوية يجب أن تكون بين 0 و 100");
         Add("EngNameAlreadyExists", "English name '{0}' already exists", "الاسم الإنجليزي '{0}' موجود بالفعل");
         Add("ArbNameAlreadyExists", "Arabic name '{0}' already exists", "الاسم العربي '{0}' موجود بالفعل");
+        //
+        // FiscalYear
+        Add("FiscalYear", "Fiscal year", "السنة المالية");
+        Add("FiscalYearRequired", "Fiscal year is required", "السنة المالية مطلوبة");
+
+        // FiscalYearPeriod
+        Add("FiscalYearPeriod", "Fiscal year period", "فترة السنة المالية");
+        Add("FiscalYearPeriodRequired", "Fiscal year period is required", "فترة السنة المالية مطلوبة");
+        Add("PeriodTypeRange", "Period type must be between 1 and 12", "نوع الفترة يجب أن يكون بين 1 و 12");
+        Add("PeriodRankPositive", "Period rank must be positive", "ترتيب الفترة يجب أن يكون موجب");
+        Add("FromDateLessThanToDate", "From date must be less than or equal to To date", "تاريخ البداية يجب أن يكون أقل من أو يساوي تاريخ النهاية");
+        Add("PrepareFromDateLessThanPrepareToDate", "Prepare from date must be less than or equal to Prepare to date", "تاريخ تحضير البداية يجب أن يكون أقل من أو يساوي تاريخ تحضير النهاية");
+
+        // FiscalYearPeriodModule
+        Add("FiscalYearPeriodModule", "Fiscal year period module", "وحدة فترة السنة المالية");
+        Add("ModuleAlreadyExistsInPeriod", "This module already exists in this period", "هذه الوحدة موجودة بالفعل في هذه الفترة");
+        Add("OpenDateLessThanCloseDate", "Open date must be less than or equal to Close date", "تاريخ الفتح يجب أن يكون أقل من أو يساوي تاريخ الغلق");
+
+        // ContractsType
+        Add("ContractsType", "Contract type", "نوع العقد");
+
+        // EmployeeClass
+        Add("EmployeeClass", "Employee class", "فئة الموظف");
+        Add("EmployeeClassRequired", "Employee class is required", "فئة الموظف مطلوبة");
+        Add("ClassIdRequired", "Class ID is required", "معرف الفئة مطلوب");
+        Add("EmployeeClassIdRequired", "Employee class ID is required", "معرف فئة الموظف مطلوب");
+        Add("VacationTypeIdRequired", "Vacation type ID is required", "معرف نوع الإجازة مطلوب");
+        Add("WorkHoursPerDayPositive", "Work hours per day must be positive", "ساعات العمل اليومية يجب أن تكون موجبة");
+        Add("OvertimeFactorMin", "Overtime factor must be at least 1", "عامل الوقت الإضافي يجب أن يكون 1 على الأقل");
+        Add("HolidayFactorMin", "Holiday factor must be at least 1", "عامل الإجازة يجب أن يكون 1 على الأقل");
+        Add("NoOfDaysPerPeriodRange", "Number of days per period must be between 1 and 255", "عدد الأيام لكل فترة يجب أن يكون بين 1 و 255");
+        Add("NoOfHoursPerWeekPositive", "Number of hours per week must be positive", "عدد الساعات لكل أسبوع يجب أن يكون موجب");
+        Add("FirstDayOfWeekRange", "First day of week must be between 0 and 6", "أول يوم في الأسبوع يجب أن يكون بين 0 و 6");
+        Add("FromMinPositive", "From minutes must be positive", "الدقائق من يجب أن تكون موجبة");
+        Add("ToMinPositive", "To minutes must be positive", "الدقائق إلى يجب أن تكون موجبة");
+        Add("PunishPCTRange", "Punishment percentage must be between 0 and 100", "نسبة العقوبة يجب أن تكون بين 0 و 100");
+        Add("FromMinLessThanToMin", "From minutes must be less than To minutes", "الدقائق من يجب أن تكون أقل من الدقائق إلى");
+        Add("DurationDaysPositive", "Duration days must be positive", "أيام المدة يجب أن تكون موجبة");
+        Add("RequiredWorkingMonthsPositive", "Required working months must be positive", "أشهر العمل المطلوبة يجب أن تكون موجبة");
+        Add("TicketsRndPositive", "Tickets round must be positive", "تقريب التذاكر يجب أن يكون موجب");
+        Add("DependantTicketRndPositive", "Dependant ticket round must be positive", "تقريب تذكرة المعال يجب أن يكون موجب");
+        Add("MaxKeepDaysPositive", "Maximum keep days must be positive", "أقصى أيام للحفظ يجب أن تكون موجبة");
+        Add("FromMonthPositive", "From month must be positive", "من شهر يجب أن يكون موجب");
+        Add("ToMonthPositive", "To month must be positive", "إلى شهر يجب أن يكون موجب");
+        Add("FromMonthLessThanToMonth", "From month must be less than To month", "من شهر يجب أن يكون أقل من إلى شهر");
+
+        // Grade
+        Add("Grade", "Grade", "الدرجة");
+        Add("GradeRequired", "Grade is required", "الدرجة مطلوبة");
+        Add("FromSalaryMustBePositive", "From salary must be positive", "الراتب من يجب أن يكون موجب");
+        Add("ToSalaryMustBePositive", "To salary must be positive", "الراتب إلى يجب أن يكون موجب");
+        Add("RegularHoursMustBePositive", "Regular hours must be positive", "الساعات النظامية يجب أن تكون موجبة");
+        Add("GradeIdRequired", "Grade ID is required", "معرف الدرجة مطلوب");
+
+        // GradeTransaction
+        Add("GradeTransaction", "Grade transaction", "معاملة الدرجة");
+        Add("TransactionTypeRequired", "Transaction type is required", "نوع المعاملة مطلوب");
+        Add("MinValueMustBePositive", "Minimum value must be positive", "الحد الأدنى يجب أن يكون موجب");
+        Add("MaxValueMustBePositive", "Maximum value must be positive", "الحد الأقصى يجب أن يكون موجب");
+
+        // GradeStep
+        Add("GradeStep", "Grade step", "خطوة الدرجة");
+        Add("GradeStepRequired", "Grade step is required", "خطوة الدرجة مطلوبة");
+        Add("StepMustBePositive", "Step must be positive", "الخطوة يجب أن تكون موجبة");
+
+        // GradeStepTransaction
+        Add("GradeStepTransaction", "Grade step transaction", "معاملة خطوة الدرجة");
+        Add("AmountMustBePositive", "Amount must be positive", "المبلغ يجب أن يكون موجب");
+
+        // HICompany
+        Add("HICompany", "Health insurance company", "شركة التأمين الصحي");
+        Add("HICompanyClass", "Health insurance company class", "فئة شركة التأمين الصحي");
+        Add("CompanyAmountMustBePositive", "Company amount must be positive", "مبلغ الشركة يجب أن يكون موجب");
+        Add("EmployeeAmountMustBePositive", "Employee amount must be positive", "مبلغ الموظف يجب أن يكون موجب");
+
+        // Item
+        Add("Item", "Item", "الصنف");
+        Add("PurchasePriceMustBePositive", "Purchase price must be positive", "سعر الشراء يجب أن يكون موجب");
+        Add("LicenseNumberMaxLength", "License number max length is 100", "الحد الأقصى لرقم الترخيص هو 100");
+
+        // Project
+        Add("Project", "Project", "المشروع");
+        Add("CreditLimitPositive", "Credit limit must be positive", "الحد الائتماني يجب أن يكون موجب");
+        Add("ProjectPeriodPositive", "Project period must be positive", "فترة المشروع يجب أن تكون موجبة");
+ 
     }
 }

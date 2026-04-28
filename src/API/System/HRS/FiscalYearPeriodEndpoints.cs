@@ -14,8 +14,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
             var group = routes.MapGroup("/basics/fiscal-periods")
                 .WithTags("FiscalYearPeriods");
 
-            // ==================== FiscalYearPeriod (Detail 1) ====================
-
+ 
             // GET all
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
             {
@@ -23,7 +22,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Ok(result);
             })
             .WithName("GetAllFiscalYearPeriods")
-            .WithOpenApi();
+            ;
 
             // GET paged
             group.MapGet("/paged", async (
@@ -38,7 +37,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Ok(result);
             })
             .WithName("GetPagedFiscalYearPeriods")
-            .WithOpenApi();
+            ;
 
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -47,7 +46,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Ok(result);
             })
             .WithName("GetFiscalYearPeriodById")
-            .WithOpenApi();
+            ;
 
             // GET by fiscal year id
             group.MapGet("/by-fiscal-year/{fiscalYearId:int}", async (IMediator mediator, int fiscalYearId, CancellationToken ct) =>
@@ -56,7 +55,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Ok(result);
             })
             .WithName("GetFiscalYearPeriodsByFiscalYearId")
-            .WithOpenApi();
+            ;
 
             // POST generate periods
             group.MapPost("/generate", async (
@@ -68,7 +67,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Ok(new { generatedCount = result });
             })
             .WithName("GenerateFiscalYearPeriods")
-            .WithOpenApi();
+            ;
 
             // POST create
             group.MapPost("/", async (
@@ -80,7 +79,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Created($"/basics/fiscal-periods/{id}", new { id });
             })
             .WithName("CreateFiscalYearPeriod")
-            .WithOpenApi();
+            ;
 
             // PUT update
             group.MapPut("/{id:int}", async (
@@ -94,7 +93,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.NoContent();
             })
             .WithName("UpdateFiscalYearPeriod")
-            .WithOpenApi();
+            ;
 
             // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
@@ -107,7 +106,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.NoContent();
             })
             .WithName("SoftDeleteFiscalYearPeriod")
-            .WithOpenApi();
+            ;
 
             // DELETE hard
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -116,7 +115,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("DeleteFiscalYearPeriod")
-            .WithOpenApi();
+            ;
 
             // ==================== FiscalYearPeriodModule (Detail 2) ====================
 
@@ -127,7 +126,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Ok(result);
             })
             .WithName("GetFiscalYearPeriodModules")
-            .WithOpenApi();
+            ;
 
             // POST add module
             group.MapPost("/modules", async (
@@ -139,7 +138,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.Created($"/basics/fiscal-periods/modules/{id}", new { id });
             })
             .WithName("AddFiscalYearPeriodModule")
-            .WithOpenApi();
+            ;
 
             // PUT update module
             group.MapPut("/modules/{id:int}", async (
@@ -153,7 +152,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.NoContent();
             })
             .WithName("UpdateFiscalYearPeriodModule")
-            .WithOpenApi();
+            ;
 
             // DELETE soft module
             group.MapDelete("/modules/{id:int}/soft", async (
@@ -166,7 +165,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return Results.NoContent();
             })
             .WithName("SoftDeleteFiscalYearPeriodModule")
-            .WithOpenApi();
+            ;
 
             // DELETE hard module
             group.MapDelete("/modules/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -175,7 +174,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("DeleteFiscalYearPeriodModule")
-            .WithOpenApi();
+            ;
 
             return routes;
         }
