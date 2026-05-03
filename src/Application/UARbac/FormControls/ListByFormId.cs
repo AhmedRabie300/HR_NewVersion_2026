@@ -45,6 +45,7 @@ public static class ListByFormId
                 x.Compulsory,
                 x.IsHide,
                 x.IsDisabled,
+                x.SearchID,
                 x?.Rank
             )).ToList();
         }

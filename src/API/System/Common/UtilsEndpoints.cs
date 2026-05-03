@@ -8,7 +8,7 @@ namespace API.System.common
     {
         public static IEndpointRouteBuilder MapUtilsEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/utils")
+            var group = routes.MapGroup("utils")
                 .WithTags("Utils");
 
             // Get Next Code
@@ -18,7 +18,7 @@ namespace API.System.common
                 CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetNextCode.Query(entityName), ct);
-                return Results.Ok(new { entityName, nextCode = result });
+                return Results.Ok(result);
             })
             .WithName("GetNextCode");
 
