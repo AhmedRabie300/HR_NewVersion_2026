@@ -33,8 +33,7 @@ public Handler(IBloodGroupRepository repo, IValidationMessages msg)
 
             public async Task Handle(Command request, CancellationToken cancellationToken)
             {
-                if (!await _repo.ExistsAsync(request.Id))
-                    throw new NotFoundException(_msg.NotFound("BloodGroup", request.Id));
+         
 
                 await _repo.DeleteAsync(request.Id);
                 await _repo.SaveChangesAsync(cancellationToken);

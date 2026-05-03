@@ -11,7 +11,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapHICompanyEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/hi-companies")
+            var group = routes.MapGroup("/HRS/hi-companies")
                 .WithTags("HICompanies");
 
             // ==================== HICompany (Master) ====================

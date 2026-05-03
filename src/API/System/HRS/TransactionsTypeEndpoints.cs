@@ -11,7 +11,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapTransactionsTypeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/fiscal-transactions/transactions-types")
+            var group = routes.MapGroup("/HRS/fiscal-transactions/transactions-types")
                 .WithTags("TransactionsTypes");
 
             // GET all
@@ -86,6 +86,18 @@ namespace API.System.HRS
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("DeleteTransactionsType");
+
+
+            group.MapGet("/filter", async (
+               IMediator mediator,
+               [FromQuery] int? transactionGroupId = null,
+               [FromQuery] short? sign = null,
+               CancellationToken ct = default) =>
+            {
+                var result = await mediator.Send(new GetTransactionsTypesByFilter.Query(transactionGroupId, sign), ct);
+                return Results.Ok(result);
+            });
+           
 
             return routes;
         }

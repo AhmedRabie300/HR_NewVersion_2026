@@ -1,4 +1,5 @@
 using API.Common.Endpoints;
+using Infrastructure.Common.Helpers;
 using API.Common.Middleware;
 using API.Common.Swagger;
 using API.Common.Versioning;
@@ -10,6 +11,7 @@ using API.System.HRS.Basics.ContractsTypes;
 using API.System.HRS.Basics.FiscalPeriod;
 using API.System.HRS.Basics.FiscalTransactions;
 using API.System.HRS.Basics.Grades;
+using API.System.HRS.Employees;
 using API.System.HRS.VacationAndEndOfService;
 using API.System.MasterData;
 using API.UARbac;
@@ -75,6 +77,7 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+DataHelper.Initialize(builder.Configuration);
 
 var app = builder.Build();
 
@@ -158,6 +161,7 @@ v1Api.MapGradeStepEndpoints();
 v1Api.MapEmployeeClassEndpoints();
 v1Api.MapFiscalYearEndpoints();
 v1Api.MapFiscalYearPeriodEndpoints();
+v1Api.MapEmployeeEndpoints();
 
 
 app.Run();

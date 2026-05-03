@@ -11,7 +11,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapFiscalYearEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/fiscal-years")
+            var group = routes.MapGroup("/HRS/fiscal-years")
                 .WithTags("FiscalYears");
 
             // GET all

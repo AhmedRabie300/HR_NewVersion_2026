@@ -11,7 +11,7 @@ namespace API.System.HRS.Basics.ContractsTypes
     {
         public static IEndpointRouteBuilder MapContractsTypeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/contracts-types")
+            var group = routes.MapGroup("/HRS/contracts-types")
                 .WithTags("ContractsTypes");
 
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>

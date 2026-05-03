@@ -36,16 +36,14 @@ namespace API.System.HRS
             })
             .WithName("GetPagedTransactionsGroups");
 
-            // ✅ GET by id
-            group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetTransactionsGroupById.Query(id), ct);
                 return Results.Ok(result);
             })
             .WithName("GetTransactionsGroupById");
 
-            // ✅ POST create - بدون CompanyId وبدون RegUserId (زي BankEndpoints)
-            group.MapPost("/", async (
+             group.MapPost("/", async (
                 IMediator mediator,
                 CreateTransactionsGroupDto dto,
                 CancellationToken ct) =>
@@ -55,8 +53,7 @@ namespace API.System.HRS
             })
             .WithName("CreateTransactionsGroup");
 
-            // ✅ PUT update
-            group.MapPut("/{id:int}", async (
+             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 UpdateTransactionsGroupDto dto,
@@ -78,8 +75,7 @@ namespace API.System.HRS
             })
             .WithName("SoftDeleteTransactionsGroup");
 
-            // ✅ DELETE hard
-            group.MapDelete("/{id:int}", async (
+             group.MapDelete("/{id:int}", async (
                 IMediator mediator,
                 int id,
                 CancellationToken ct) =>

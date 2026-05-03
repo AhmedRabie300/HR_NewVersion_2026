@@ -20,8 +20,7 @@ namespace API.System.common
                 var result = await mediator.Send(new GetNextCode.Query(entityName), ct);
                 return Results.Ok(new { entityName, nextCode = result });
             })
-            .WithName("GetNextCode")
-            .WithOpenApi();
+            .WithName("GetNextCode");
 
             return routes;
         }

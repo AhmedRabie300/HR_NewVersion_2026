@@ -11,6 +11,7 @@ using Infrastructure.Data.Repositories.System;
 using Infrastructure.Data.Repositories.System.HRS;
 using Infrastructure.Data.Repositories.System.HRS.Basics.FiscalPeriod;
 using Infrastructure.Data.Repositories.System.HRS.Basics.HICompanies;
+using Infrastructure.Data.Repositories.System.HRS.Employees;
 using Infrastructure.Data.Repositories.System.MasterData;
 using Infrastructure.Data.Repositories.System.Search;
 using Infrastructure.Data.Repositories.UARbac;
@@ -99,6 +100,7 @@ namespace Infrastructure
             services.AddScoped<IEmployeeClassRepository, EmployeeClassRepository>();
             services.AddScoped<IFiscalYearRepository, FiscalYearRepository>();
             services.AddScoped<IFiscalYearPeriodRepository, FiscalYearPeriodRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 
 

@@ -36,7 +36,6 @@ namespace Application.System.MasterData.BloodGroup.Commands
             {
                 var bloodGroup = await _repo.GetByIdAsync(request.Data.Id);
                 if (bloodGroup == null)
-                    throw new NotFoundException(_msg.NotFound("BloodGroup", request.Data.Id));
 
                 bloodGroup.Update(
                     request.Data.EngName,

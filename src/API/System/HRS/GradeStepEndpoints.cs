@@ -13,7 +13,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapGradeStepEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/grades/steps")
+            var group = routes.MapGroup("/HRS/grades/steps")
                 .WithTags("GradeSteps");
 
             // ==================== GradeStep (Master) ====================
@@ -172,8 +172,33 @@ namespace API.System.HRS
                 var result = await mediator.Send(new DeleteGradeStepTransaction.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .WithName("DeleteGradeStepTransaction")
-            ;
+            .WithName("DeleteGradeStepTransaction");
+ 
+
+             group.MapGet("/list", async (
+                IMediator mediator,
+                HttpContext httpContext,
+                CancellationToken ct) =>
+            {
+                var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
+                var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
+                var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
+                var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
+
+                 var filters = httpContext.Request.Query
+                    .Where(x => x.Key != "pageNumber"
+                                && x.Key != "pageSize"
+                                && x.Key != "orderBy"
+                                && x.Key != "orderDirection")
+                    .ToDictionary(x => x.Key.ToLower(), x => x.Value.ToString());
+
+                var result = await mediator.Send(new GetGradeStepList.Query(
+                    pageNumber, pageSize, orderBy, orderDirection, filters), ct);
+
+                return Results.Json(result);
+            })
+            .WithName("GetGradeStepList");
+
 
             return routes;
         }

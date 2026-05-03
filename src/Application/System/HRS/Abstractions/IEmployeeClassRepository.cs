@@ -40,5 +40,9 @@ namespace Application.System.HRS.Abstractions
         Task DeleteVacationAsync(int id);
         Task<bool> VacationExistsAsync(int id);
         Task SoftDeleteVacationAsync(int id, int? regUserId = null);
+
+
+        Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string? orderBy, string? orderDirection, string? criteria);
+
     }
 }

@@ -1,19 +1,28 @@
 ﻿using Application.Common.Models;
 using Application.System.HRS.Abstractions;
 using Domain.System.HRS.Basics.GradesAndClasses;
+using Infrastructure.Common.Helpers;  
 using Infrastructure.Data;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
+using Newtonsoft.Json.Linq;           
+using System.Data;
 using System.Text.RegularExpressions;
+using Application.Abstractions;
+
 
 namespace Infrastructure.Data.Repositories.System.HRS
 {
     public sealed class EmployeeClassRepository : IEmployeeClassRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly ICurrentUser _currentUser;   
 
-        public EmployeeClassRepository(ApplicationDbContext db)
+        public EmployeeClassRepository(ApplicationDbContext db, ICurrentUser currentUser)
         {
             _db = db;
+            _currentUser = currentUser;
         }
 
         // ==================== EmployeeClass (Master) ====================
@@ -276,5 +285,32 @@ namespace Infrastructure.Data.Repositories.System.HRS
 
         public Task SaveChangesAsync(CancellationToken ct)
             => _db.SaveChangesAsync(ct);
+
+
+        public async Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string? orderBy, string? orderDirection, string? criteria)
+        {
+            var user = _currentUser.UserId ;
+            var lang = _currentUser.Language == 2 ? "AR" : "EN";
+            var companyId = _currentUser.CompanyId;
+
+            var criteriaObj = string.IsNullOrEmpty(criteria)
+                ? new JObject()
+                : JObject.Parse(criteria);
+            criteriaObj["companyId"] = companyId;
+            criteria = criteriaObj.ToString();
+
+            return await DataHelper.ExecuteListProcedureAsync(
+                "hrs_EmployeesClassesGetList",
+                user,
+                0,
+                "/basics/employee-classes",
+                lang,
+                pageSize,
+                pageNumber,
+                orderBy,
+                orderDirection,
+                criteria);
+        }
+
     }
 }

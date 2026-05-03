@@ -11,7 +11,7 @@ namespace API.System.HRS.VacationAndEndOfService
     {
         public static IEndpointRouteBuilder MapEndOfServiceEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/vacation-end-of-service/end-of-services")
+            var group = routes.MapGroup("/HRS/vacation-end-of-service/end-of-services")
                 .WithTags("EndOfServices");
 
             // ==================== EndOfService (Header) ====================

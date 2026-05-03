@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Domain.Common;
 using Domain.System.HRS;
+using Domain.System.HRS.Employees;
 using Domain.System.HRS.Basics;
 using Domain.System.HRS.Basics.ContractsTypes;
 using Domain.System.HRS.Basics.FiscalPeriod;
@@ -94,6 +95,7 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<FiscalYear> FiscalYears => Set<FiscalYear>();
     public DbSet<FiscalYearPeriod> FiscalYearPeriods => Set<FiscalYearPeriod>();
     public DbSet<FiscalYearPeriodModule> FiscalYearPeriodModules => Set<FiscalYearPeriodModule>();
+    public DbSet<Employee> Employees => Set<Employee>();
 
 
 

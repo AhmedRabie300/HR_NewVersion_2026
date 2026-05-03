@@ -1,5 +1,6 @@
 ﻿using Application.Common.Abstractions;
 using Application.System.HRS.Basics.EmployeesClasses.Dtos;
+using Application.System.HRS.Basics.EmployeesClasses.Queries;
 using Application.System.HRS.Basics.GradeAndClasses.EmployeesClasses.Dtos;
 using Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Commands;
 using Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Dtos;
@@ -13,7 +14,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapEmployeeClassEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/employee-classes")
+            var group = routes.MapGroup("/HRS/employee-classes")
                 .WithTags("EmployeeClasses");
 
             // ==================== EmployeeClass (Master) ====================
@@ -197,8 +198,7 @@ namespace API.System.HRS
             .WithName("UpdateEmployeeClassVacation")
             ;
 
-            // DELETE soft vacation
-            group.MapDelete("/vacations/{id:int}/soft", async (
+             group.MapDelete("/vacations/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
                 [FromQuery] int? regUserId,
@@ -210,14 +210,40 @@ namespace API.System.HRS
             .WithName("SoftDeleteEmployeeClassVacation")
             ;
 
-            // DELETE hard vacation
-            group.MapDelete("/vacations/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+             group.MapDelete("/vacations/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new DeleteEmployeeClassVacation.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("DeleteEmployeeClassVacation")
             ;
+
+
+
+            group.MapGet("/list", async (
+           IMediator mediator,
+           HttpContext httpContext,
+           CancellationToken ct) =>
+            {
+                 var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
+                var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
+                var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
+                var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
+
+                 var filters = httpContext.Request.Query
+                    .Where(x => x.Key != "pageNumber"
+                                && x.Key != "pageSize"
+                                && x.Key != "orderBy"
+                                && x.Key != "orderDirection")
+                    .ToDictionary(x => x.Key, x => x.Value.ToString());
+
+                var result = await mediator.Send(new GetEmployeeClassList.Query(
+                    pageNumber, pageSize, orderBy, orderDirection, filters), ct);
+
+                return Results.Json(result);
+            })
+       .WithName("GetEmployeeClassList");
+
 
             return routes;
         }

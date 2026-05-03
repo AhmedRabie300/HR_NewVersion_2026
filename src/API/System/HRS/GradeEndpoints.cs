@@ -1,11 +1,14 @@
 ﻿using Application.Common.Abstractions;
+using Application.System.HRS.Basics.EmployeesClasses.Grades.Queries;
 using Application.System.HRS.Basics.GradeAndClasses.Grades.Commands;
 using Application.System.HRS.Basics.Grades.Commands;
+using Application.System.HRS.Basics.Grades.Queries;
 using Application.System.HRS.Basics.Grades.Queries;
 using Application.System.HRS.Basics.GradesAndClasses.Grades.Commands;
 using Application.System.HRS.Basics.GradesAndClasses.Grades.Dtos;
 using Application.System.HRS.Basics.GradesAndClasses.Grades.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.System.HRS.Basics.Grades
@@ -14,7 +17,7 @@ namespace API.System.HRS.Basics.Grades
     {
         public static IEndpointRouteBuilder MapGradeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/grades")
+            var group = routes.MapGroup("/HRS/grades")
                 .WithTags("Grades");
 
             // ==================== Grade (Master) ====================
@@ -148,6 +151,31 @@ namespace API.System.HRS.Basics.Grades
             .WithName("DeleteGradeTransaction")
             ;
 
+
+
+             group.MapGet("/list", async (
+                IMediator mediator,
+                HttpContext httpContext,
+                CancellationToken ct) =>
+            {
+                var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
+                var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
+                var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
+                var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
+
+                 var filters = httpContext.Request.Query
+                    .Where(x => x.Key != "pageNumber"
+                                && x.Key != "pageSize"
+                                && x.Key != "orderBy"
+                                && x.Key != "orderDirection")
+                    .ToDictionary(x => x.Key, x => x.Value.ToString());
+
+                var result = await mediator.Send(new GetGradeList.Query(
+                    pageNumber, pageSize, orderBy, orderDirection, filters), ct);
+
+                return Results.Json(result);
+            })
+            .WithName("GetGradeList");
             return routes;
         }
     }

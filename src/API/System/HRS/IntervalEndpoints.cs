@@ -11,7 +11,7 @@ namespace API.System.HRS.Basics.FiscalTransactions
     {
         public static IEndpointRouteBuilder MapIntervalEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/fiscal-transactions/intervals")
+            var group = routes.MapGroup("/HRS/fiscal-transactions/intervals")
                 .WithTags("Intervals");
 
              group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>

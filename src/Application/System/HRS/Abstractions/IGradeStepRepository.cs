@@ -32,5 +32,7 @@ namespace Application.System.HRS.Abstractions
         Task DeleteTransactionAsync(int id);
         Task<bool> TransactionExistsAsync(int id);
         Task SoftDeleteTransactionAsync(int id, int? regUserId = null);
+
+        Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string? orderBy, string? orderDirection, string? criteria);
     }
 }

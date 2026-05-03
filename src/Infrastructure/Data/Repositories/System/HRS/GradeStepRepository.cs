@@ -4,16 +4,21 @@ using Domain.System.HRS.Basics.GradesAndClasses;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using Infrastructure.Common.Helpers;
+using Newtonsoft.Json.Linq;
+using Application.Abstractions;
 
 namespace Infrastructure.Data.Repositories.System.HRS
 {
     public sealed class GradeStepRepository : IGradeStepRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly ICurrentUser _currentUser;
 
-        public GradeStepRepository(ApplicationDbContext db)
+        public GradeStepRepository(ApplicationDbContext db, ICurrentUser CurrentUser)
         {
             _db = db;
+            _currentUser = CurrentUser;
         }
 
         // ==================== GradeStep (Master) ====================
@@ -243,5 +248,39 @@ namespace Infrastructure.Data.Repositories.System.HRS
 
         public Task SaveChangesAsync(CancellationToken ct)
             => _db.SaveChangesAsync(ct);
+
+
+  
+
+public async Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string? orderBy, string? orderDirection, string? criteria)
+    {
+        var userId = _currentUser.UserId ?? 1;
+        var lang = _currentUser.Language == 2 ? "AR" : "EN";
+        var companyId = _currentUser.CompanyId;
+
+         JObject criteriaObj;
+        if (string.IsNullOrEmpty(criteria))
+        {
+            criteriaObj = new JObject();
+        }
+        else
+        {
+            criteriaObj = JObject.Parse(criteria);
+        }
+        criteriaObj["companyid"] = companyId;
+        criteria = criteriaObj.ToString();
+
+        return await DataHelper.ExecuteListProcedureAsync(
+            "hrs_GradeStepsGetList",
+            userId,
+            0,
+            "/basics/grades/steps",
+            lang,
+            pageSize,
+            pageNumber,
+            orderBy,
+            orderDirection,
+            criteria);
     }
+}
 }

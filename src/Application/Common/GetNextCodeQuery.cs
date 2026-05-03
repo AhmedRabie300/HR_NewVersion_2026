@@ -19,10 +19,7 @@ namespace Application.Common
             public async Task<string> Handle(Query request, CancellationToken cancellationToken)
             {
                 var entityType = FindEntityType(request.EntityName);
-
-                if (entityType == null)
-                    throw new NotFoundException($"Entity '{request.EntityName}' not found");
-
+ 
                 var method = typeof(ICodeGeneratorService)
                     .GetMethod(nameof(ICodeGeneratorService.GetNextCodeAsync))
                     ?.MakeGenericMethod(entityType);

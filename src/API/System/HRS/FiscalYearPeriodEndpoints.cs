@@ -11,7 +11,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
     {
         public static IEndpointRouteBuilder MapFiscalYearPeriodEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/basics/fiscal-periods")
+            var group = routes.MapGroup("/HRS/fiscal-periods")
                 .WithTags("FiscalYearPeriods");
 
  

@@ -100,11 +100,11 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 searchTerm = searchTerm.Trim();
-                query = query.Where(x =>
-                    (x.EngName != null && x.EngName.Contains(searchTerm)) ||
-                    (x.ArbName != null && x.ArbName.Contains(searchTerm)) ||
-                    x.Code.Contains(searchTerm) ||
-                    (x.CostCenterCode != null && x.CostCenterCode.Contains(searchTerm)));
+                //query = query.Where(x =>
+                //    (x.EngName != null && x.EngName.Contains(searchTerm)) ||
+                //    (x.ArbName != null && x.ArbName.Contains(searchTerm)) ||
+                //    x.Code.Contains(searchTerm) ||
+                //    (x.CostCenterCode != null && x.CostCenterCode.Contains(searchTerm)));
             }
 
             var totalCount = await query.CountAsync();
