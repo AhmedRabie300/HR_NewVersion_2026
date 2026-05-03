@@ -35,7 +35,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Queri
                 }
 
                 if (request.Sign.HasValue)
-                {
+                {   
                     filteredItems = filteredItems.Where(x => x.Sign == request.Sign.Value);
                 }
 

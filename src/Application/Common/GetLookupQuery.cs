@@ -7,7 +7,7 @@ namespace Application.Common
 {
     public static class GetLookup
     {
-        public record Query(string EntityName) : IRequest<List<LookupDto>>;
+        public record Query(string EntityName, string? Criteria = null) : IRequest<List<LookupDto>>;
 
         public class Validator : AbstractValidator<Query>
         {
@@ -35,7 +35,7 @@ namespace Application.Common
                 if (entityType == null)
                     throw new Exception($"Entity '{request.EntityName}' not found");
 
-                // Call the generic method
+                // Call the generic method with criteria
                 var method = typeof(ILookupService)
                     .GetMethod(nameof(ILookupService.GetLookupAsync))
                     ?.MakeGenericMethod(entityType);
@@ -43,7 +43,8 @@ namespace Application.Common
                 if (method == null)
                     throw new Exception($"Cannot get lookup for '{request.EntityName}'");
 
-                var result = await (Task<List<LookupDto>>)method.Invoke(_lookupService, new object[] { cancellationToken })!;
+                // Pass criteria to the service
+                var result = await (Task<List<LookupDto>>)method.Invoke(_lookupService, new object[] { request.Criteria, cancellationToken })!;
                 return result;
             }
 

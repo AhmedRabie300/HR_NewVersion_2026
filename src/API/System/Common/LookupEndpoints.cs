@@ -12,16 +12,18 @@ namespace API.Common.Endpoints
             var group = routes.MapGroup("/api/lookup")
                 .WithTags("Lookup");
 
-            // Get Lookup by Entity Name
+            // Get Lookup by Entity Name with optional criteria
             group.MapGet("/{entityName}", async (
                 string entityName,
+                [FromQuery] string? criteria,
                 IMediator mediator,
                 CancellationToken ct) =>
             {
-                var result = await mediator.Send(new GetLookup.Query(entityName), ct);
+                var result = await mediator.Send(new GetLookup.Query(entityName, criteria), ct);
                 return Results.Ok(result);
             })
             .WithName("GetLookup");
+      
 
             return routes;
         }
