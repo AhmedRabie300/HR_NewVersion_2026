@@ -11,7 +11,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapFiscalYearEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/fiscal-years")
+            var group = routes.MapGroup("/hrs/fiscal-years")
                 .WithTags("FiscalYears");
 
             // GET all
@@ -54,7 +54,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateFiscalYear.Command(dto), ct);
-                return Results.Created($"/basics/fiscal-years/{id}", new { id });
+                return Results.Created($"/hrs/fiscal-years/{id}", new { id });
             })
             .WithName("CreateFiscalYear")
             ;

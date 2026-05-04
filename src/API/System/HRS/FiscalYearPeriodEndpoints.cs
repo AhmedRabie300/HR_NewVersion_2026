@@ -11,7 +11,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
     {
         public static IEndpointRouteBuilder MapFiscalYearPeriodEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/fiscal-periods")
+            var group = routes.MapGroup("/hrs/fiscal-periods")
                 .WithTags("FiscalYearPeriods");
 
  
@@ -76,7 +76,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateFiscalYearPeriod.Command(dto), ct);
-                return Results.Created($"/basics/fiscal-periods/{id}", new { id });
+                return Results.Created($"/hrs/fiscal-periods/{id}", new { id });
             })
             .WithName("CreateFiscalYearPeriod")
             ;
@@ -135,7 +135,7 @@ namespace API.System.HRS.Basics.FiscalPeriod
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new AddFiscalYearPeriodModule.Command(dto), ct);
-                return Results.Created($"/basics/fiscal-periods/modules/{id}", new { id });
+                return Results.Created($"/hrs/fiscal-periods/modules/{id}", new { id });
             })
             .WithName("AddFiscalYearPeriodModule")
             ;

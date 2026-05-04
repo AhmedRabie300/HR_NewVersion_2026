@@ -14,7 +14,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapEmployeeClassEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/employee-classes")
+            var group = routes.MapGroup("/hrs/employee-classes")
                 .WithTags("EmployeeClasses");
 
             // ==================== EmployeeClass (Master) ====================
@@ -77,7 +77,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateEmployeeClass.Command(dto), ct);
-                return Results.Created($"/basics/employee-classes/{id}", new { id });
+                return Results.Created($"/hrs/employee-classes/{id}", new { id });
             })
             .WithName("CreateEmployeeClass")
             ;
@@ -128,7 +128,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new AddEmployeeClassDelay.Command(classId, dto), ct);
-                return Results.Created($"/basics/employee-classes/{classId}/delays/{id}", new { id });
+                return Results.Created($"/hrs/employee-classes/{classId}/delays/{id}", new { id });
             })
             .WithName("AddEmployeeClassDelay")
             ;
@@ -179,7 +179,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new AddEmployeeClassVacation.Command(classId, dto), ct);
-                return Results.Created($"/basics/employee-classes/{classId}/vacations/{id}", new { id });
+                return Results.Created($"/hrs/employee-classes/{classId}/vacations/{id}", new { id });
             })
             .WithName("AddEmployeeClassVacation")
             ;

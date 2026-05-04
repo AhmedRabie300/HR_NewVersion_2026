@@ -11,7 +11,7 @@ namespace API.System.HRS.Basics.ContractsTypes
     {
         public static IEndpointRouteBuilder MapContractsTypeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/contracts-types")
+            var group = routes.MapGroup("/hrs/contracts-types")
                 .WithTags("ContractsTypes");
 
             group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
@@ -19,9 +19,8 @@ namespace API.System.HRS.Basics.ContractsTypes
                 var result = await mediator.Send(new ListContractsTypes.Query(), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetAllContractsTypes")
-            .WithOpenApi();
-
+            .WithName("GetAllContractsTypes");
+ 
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
@@ -33,28 +32,25 @@ namespace API.System.HRS.Basics.ContractsTypes
                     new GetPagedContractsTypes.Query(pageNumber, pageSize, searchTerm), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetPagedContractsTypes")
-            .WithOpenApi();
-
+            .WithName("GetPagedContractsTypes");
+ 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetContractsTypeById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetContractsTypeById")
-            .WithOpenApi();
-
+            .WithName("GetContractsTypeById");
+ 
             group.MapPost("/", async (
                 IMediator mediator,
                 CreateContractsTypeDto dto,
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateContractsType.Command(dto), ct);
-                return Results.Created($"/basics/contracts-types/{id}", new { id });
+                return Results.Created($"/hrs/contracts-types/{id}", new { id });
             })
-            .WithName("CreateContractsType")
-            .WithOpenApi();
-
+            .WithName("CreateContractsType");
+ 
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -65,8 +61,7 @@ namespace API.System.HRS.Basics.ContractsTypes
                 await mediator.Send(new UpdateContractsType.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .WithName("UpdateContractsType")
-            .WithOpenApi();
+            .WithName("UpdateContractsType");
 
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
@@ -77,16 +72,14 @@ namespace API.System.HRS.Basics.ContractsTypes
                 await mediator.Send(new SoftDeleteContractsType.Command(id, regUserId), ct);
                 return Results.NoContent();
             })
-            .WithName("SoftDeleteContractsType")
-            .WithOpenApi();
+            .WithName("SoftDeleteContractsType");
 
             group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new DeleteContractsType.Command(id), ct);
                 return result ? Results.NoContent() : Results.NotFound();
             })
-            .WithName("DeleteContractsType")
-            .WithOpenApi();
+            .WithName("DeleteContractsType");
 
             return routes;
         }

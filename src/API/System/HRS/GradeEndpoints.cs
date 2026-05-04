@@ -17,7 +17,7 @@ namespace API.System.HRS.Basics.Grades
     {
         public static IEndpointRouteBuilder MapGradeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/grades")
+            var group = routes.MapGroup("/hrs/grades")
                 .WithTags("Grades");
 
             // ==================== Grade (Master) ====================
@@ -58,7 +58,7 @@ namespace API.System.HRS.Basics.Grades
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateGrade.Command(dto), ct);
-                return Results.Created($"/basics/grades/{id}", new { id });
+                return Results.Created($"/hrs/grades/{id}", new { id });
             })
             .WithName("CreateGrade")
             ;
@@ -113,7 +113,7 @@ namespace API.System.HRS.Basics.Grades
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new AddGradeTransaction.Command(gradeId, dto), ct);
-                return Results.Created($"/basics/grades/{gradeId}/transactions/{id}", new { id });
+                return Results.Created($"/hrs/grades/{gradeId}/transactions/{id}", new { id });
             })
             .WithName("AddGradeTransaction")
             ;

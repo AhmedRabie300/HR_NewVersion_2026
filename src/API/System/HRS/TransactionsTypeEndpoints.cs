@@ -11,7 +11,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapTransactionsTypeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/fiscal-transactions/transactions-types")
+            var group = routes.MapGroup("/hrs/fiscal-transactions/transactions-types")
                 .WithTags("TransactionsTypes");
 
             // GET all
@@ -51,7 +51,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateTransactionsType.Command(dto), ct);
-                return Results.Created($"/basics/fiscal-transactions/transactions-types/{id}", new { id });
+                return Results.Created($"/hrs/fiscal-transactions/transactions-types/{id}", new { id });
             })
             .WithName("CreateTransactionsType");
 

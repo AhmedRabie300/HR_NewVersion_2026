@@ -11,7 +11,7 @@ namespace API.System.HRS.Basics.FiscalTransactions
     {
         public static IEndpointRouteBuilder MapIntervalEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/fiscal-transactions/intervals")
+            var group = routes.MapGroup("/hrs/fiscal-transactions/intervals")
                 .WithTags("Intervals");
 
              group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
@@ -47,7 +47,7 @@ namespace API.System.HRS.Basics.FiscalTransactions
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateInterval.Command(dto), ct);
-                return Results.Created($"/basics/fiscal-transactions/intervals/{id}", new { id });
+                return Results.Created($"/hrs/fiscal-transactions/intervals/{id}", new { id });
             })
             .WithName("CreateInterval");
 

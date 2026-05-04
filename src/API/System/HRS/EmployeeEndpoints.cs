@@ -12,7 +12,7 @@ namespace API.System.HRS.Employees
     {
         public static IEndpointRouteBuilder MapEmployeeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/employees")
+            var group = routes.MapGroup("/hrs/employees")
                 .WithTags("Employees");
 
             // GET all (summary list)
@@ -73,7 +73,7 @@ namespace API.System.HRS.Employees
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateEmployee.Command(dto), ct);
-                return Results.Created($"/basics/employees/{id}", new { id });
+                return Results.Created($"/hrs/employees/{id}", new { id });
             })
             .WithName("CreateEmployee")
             ;

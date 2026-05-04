@@ -13,7 +13,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapGradeStepEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/grades/steps")
+            var group = routes.MapGroup("/hrs/grades/steps")
                 .WithTags("GradeSteps");
 
             // ==================== GradeStep (Master) ====================
@@ -71,7 +71,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateGradeStep.Command(dto), ct);
-                return Results.Created($"/basics/grades/steps/{id}", new { id });
+                return Results.Created($"/hrs/grades/steps/{id}", new { id });
             })
             .WithName("CreateGradeStep")
             ;
@@ -134,7 +134,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new AddGradeStepTransaction.Command(gradeStepId, dto), ct);
-                return Results.Created($"/basics/grades/steps/{gradeStepId}/transactions/{id}", new { id });
+                return Results.Created($"/hrs/grades/steps/{gradeStepId}/transactions/{id}", new { id });
             })
             .WithName("AddGradeStepTransaction")
             ;

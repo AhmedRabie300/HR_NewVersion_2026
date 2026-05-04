@@ -11,7 +11,7 @@ namespace API.System.HRS.VacationAndEndOfService
     {
         public static IEndpointRouteBuilder MapEndOfServiceEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/vacation-end-of-service/end-of-services")
+            var group = routes.MapGroup("/hrs/vacation-end-of-service/end-of-services")
                 .WithTags("EndOfServices");
 
             // ==================== EndOfService (Header) ====================
@@ -61,7 +61,7 @@ namespace API.System.HRS.VacationAndEndOfService
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateEndOfService.Command(dto), ct);
-                return Results.Created($"/basics/vacation-end-of-service/end-of-services/{id}", new { id });
+                return Results.Created($"/hrs/vacation-end-of-service/end-of-services/{id}", new { id });
             })
             .WithName("CreateEndOfService");
 
@@ -107,7 +107,7 @@ namespace API.System.HRS.VacationAndEndOfService
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new AddEndOfServiceRule.Command(endOfServiceId, dto), ct);
-                return Results.Created($"/basics/vacation-end-of-service/end-of-services/{endOfServiceId}/rules/{id}", new { id });
+                return Results.Created($"/hrs/vacation-end-of-service/end-of-services/{endOfServiceId}/rules/{id}", new { id });
             })
             .WithName("AddEndOfServiceRule");
 

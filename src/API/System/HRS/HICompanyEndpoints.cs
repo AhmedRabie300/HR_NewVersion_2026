@@ -11,7 +11,7 @@ namespace API.System.HRS
     {
         public static IEndpointRouteBuilder MapHICompanyEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/HRS/hi-companies")
+            var group = routes.MapGroup("/hrs/hi-companies")
                 .WithTags("HICompanies");
 
             // ==================== HICompany (Master) ====================
@@ -65,7 +65,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new CreateHICompany.Command(dto), ct);
-                return Results.Created($"/basics/hi-companies/{id}", new { id });
+                return Results.Created($"/hrs/hi-companies/{id}", new { id });
             })
             .WithName("CreateHICompany")
             ;
@@ -116,7 +116,7 @@ namespace API.System.HRS
                 CancellationToken ct) =>
             {
                 var id = await mediator.Send(new AddHICompanyClass.Command(hiCompanyId, dto), ct);
-                return Results.Created($"/basics/hi-companies/{hiCompanyId}/classes/{id}", new { id });
+                return Results.Created($"/hrs/hi-companies/{hiCompanyId}/classes/{id}", new { id });
             })
             .WithName("AddHICompanyClass")
             ;
