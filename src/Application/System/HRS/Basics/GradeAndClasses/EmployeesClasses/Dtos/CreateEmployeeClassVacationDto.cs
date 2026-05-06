@@ -2,7 +2,7 @@
 {
     public sealed record CreateEmployeeClassVacationDto(
         int EmployeeClassId,
-        int VacationTypeId,
+        int? VacationTypeId,
         int DurationDays,
         int? RequiredWorkingMonths,
         float? FromMonth,

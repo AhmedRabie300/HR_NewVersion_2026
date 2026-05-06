@@ -49,7 +49,7 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
 
                 var entity = new EmployeeClassVacation(
                     employeeClassId: request.EmployeeClassId,
-                    vacationTypeId: request.Data.VacationTypeId,
+                    vacationTypeId:1,
                     durationDays: request.Data.DurationDays,
                     requiredWorkingMonths: request.Data.RequiredWorkingMonths,
                     fromMonth: request.Data.FromMonth,

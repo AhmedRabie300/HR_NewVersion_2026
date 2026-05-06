@@ -123,7 +123,7 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
                     {
                         var vacation = new EmployeeClassVacation(
                             employeeClassId: 0,
-                            vacationTypeId: vacationDto.VacationTypeId,
+                            vacationTypeId: 1,
                             durationDays: vacationDto.DurationDays,
                             requiredWorkingMonths: vacationDto.RequiredWorkingMonths,
                             fromMonth: vacationDto.FromMonth,

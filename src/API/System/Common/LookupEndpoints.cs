@@ -9,7 +9,7 @@ namespace API.Common.Endpoints
     {
         public static IEndpointRouteBuilder MapLookupEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/lookup")
+            var group = routes.MapGroup("lookup")
                 .WithTags("Lookup");
 
             // Get Lookup by Entity Name with optional criteria
@@ -23,8 +23,6 @@ namespace API.Common.Endpoints
                 return Results.Ok(result);
             })
             .WithName("GetLookup");
-      
-
             return routes;
         }
     }
