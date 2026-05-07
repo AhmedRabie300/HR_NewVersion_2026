@@ -98,12 +98,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             return new PagedResult<Document>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var item = await _db.Documents.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
                 _db.Documents.Update(item);
             }
         }

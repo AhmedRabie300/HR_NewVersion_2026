@@ -17,7 +17,7 @@ namespace Application.System.HRS.Abstractions
         Task<bool> CodeExistsAsync(string code);
         Task<bool> CodeExistsAsync(string code, int excludeId);
         Task<PagedResult<EmployeeClass>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm);
-        Task SoftDeleteAsync(int id, int? regUserId = null);
+        Task SoftDeleteAsync(int id);
         Task SaveChangesAsync(CancellationToken ct);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
         Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default);
@@ -30,7 +30,7 @@ namespace Application.System.HRS.Abstractions
         Task UpdateDelayAsync(EmployeeClassDelay entity);
         Task DeleteDelayAsync(int id);
         Task<bool> DelayExistsAsync(int id);
-        Task SoftDeleteDelayAsync(int id, int? regUserId = null);
+        Task SoftDeleteDelayAsync(int id);
 
         // ==================== EmployeeClassVacation (Detail 2) ====================
         Task<EmployeeClassVacation?> GetVacationByIdAsync(int id);
@@ -39,7 +39,7 @@ namespace Application.System.HRS.Abstractions
         Task UpdateVacationAsync(EmployeeClassVacation entity);
         Task DeleteVacationAsync(int id);
         Task<bool> VacationExistsAsync(int id);
-        Task SoftDeleteVacationAsync(int id, int? regUserId = null);
+        Task SoftDeleteVacationAsync(int id);
 
 
         Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string? orderBy, string? orderDirection, string? criteria);

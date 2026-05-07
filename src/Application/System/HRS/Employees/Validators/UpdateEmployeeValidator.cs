@@ -41,10 +41,12 @@ namespace Application.System.HRS.Basics.Employees.Validators
 
             // Names
             RuleFor(x => x.EngName)
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                 .MaximumLength(100).When(x => x.EngName != null)
                 .WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                 .MaximumLength(100).When(x => x.ArbName != null)
                 .WithMessage(x => msg.Format("MaxLength", 100));
 

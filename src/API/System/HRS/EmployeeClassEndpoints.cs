@@ -1,4 +1,5 @@
 ﻿using Application.Common.Abstractions;
+using Application.System.HRS.Basics.GradeAndClasses.EmployeesClasses.Commands;
 using Application.System.HRS.Basics.EmployeesClasses.Dtos;
 using Application.System.HRS.Basics.EmployeesClasses.Queries;
 using Application.System.HRS.Basics.GradeAndClasses.EmployeesClasses.Dtos;
@@ -19,32 +20,52 @@ namespace API.System.HRS
 
             // ==================== EmployeeClass (Master) ====================
 
-            // GET all
-            group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new ListEmployeeClasses.Query(), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetAllEmployeeClasses")
-            ;
+            //// GET all
+            //group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new ListEmployeeClasses.Query(), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetAllEmployeeClasses");
+           
+
+            //// GET paged
+            //group.MapGet("/paged", async (
+            //    IMediator mediator,
+            //    int pageNumber = 1,
+            //    int pageSize = 20,
+            //    string? searchTerm = null,
+            //    CancellationToken ct = default) =>
+            //{
+            //    var result = await mediator.Send(
+            //        new GetPagedEmployeeClasses.Query(pageNumber, pageSize, searchTerm), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetPagedEmployeeClasses")
+            //;
+
+
 
             // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
-                string? searchTerm = null,
-                CancellationToken ct = default) =>
-            {
-                var result = await mediator.Send(
-                    new GetPagedEmployeeClasses.Query(pageNumber, pageSize, searchTerm), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetPagedEmployeeClasses")
-            ;
+                string? orderBy = null,
+                string? orderDirection = null,
+string? Filters = null,
+CancellationToken ct = default) =>
 
-            // GET by id
-            group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            {
+                var result = await mediator.Send(new GetEmployeeClassList.Query(
+                    pageNumber, pageSize, orderBy, orderDirection, Filters), ct);
+                return Results.Json(result);
+
+            })
+            .WithName("GetPagedEmployeeClasses");
+            
+
+             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetEmployeeClassById.Query(id), ct);
                 return Results.Ok(result);
@@ -52,8 +73,7 @@ namespace API.System.HRS
             .WithName("GetEmployeeClassById")
             ;
 
-            // GET delays by class id
-            group.MapGet("/{classId:int}/delays", async (IMediator mediator, int classId, CancellationToken ct) =>
+             group.MapGet("/{classId:int}/delays", async (IMediator mediator, int classId, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetEmployeeClassDelays.Query(classId), ct);
                 return Results.Ok(result);
@@ -61,8 +81,7 @@ namespace API.System.HRS
             .WithName("GetEmployeeClassDelays")
             ;
 
-            // GET vacations by class id
-            group.MapGet("/{classId:int}/vacations", async (IMediator mediator, int classId, CancellationToken ct) =>
+             group.MapGet("/{classId:int}/vacations", async (IMediator mediator, int classId, CancellationToken ct) =>
             {
                 var result = await mediator.Send(new GetEmployeeClassVacations.Query(classId), ct);
                 return Results.Ok(result);
@@ -70,8 +89,7 @@ namespace API.System.HRS
             .WithName("GetEmployeeClassVacations")
             ;
 
-            // POST create
-            group.MapPost("/", async (
+             group.MapPost("/", async (
                 IMediator mediator,
                 CreateEmployeeClassDto dto,
                 CancellationToken ct) =>
@@ -79,10 +97,9 @@ namespace API.System.HRS
                 var id = await mediator.Send(new CreateEmployeeClass.Command(dto), ct);
                 return Results.Created($"/hrs/employee-classes/{id}", new { id });
             })
-            .WithName("CreateEmployeeClass")
-            ;
+            .WithName("CreateEmployeeClass");
 
-            // PUT update
+            
             group.MapPut("/{id:int}", async (
                 IMediator mediator,
                 int id,
@@ -93,157 +110,119 @@ namespace API.System.HRS
                 await mediator.Send(new UpdateEmployeeClass.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .WithName("UpdateEmployeeClass")
-            ;
+            .WithName("UpdateEmployeeClass");
 
             // DELETE soft
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteEmployeeClass.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteEmployeeClass.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteEmployeeClass")
             ;
 
-            // DELETE hard
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteEmployeeClass.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            .WithName("DeleteEmployeeClass")
-            ;
+
 
             // ==================== EmployeeClassDelay (Detail 1) ====================
 
             // POST add delay
-            group.MapPost("/{classId:int}/delays", async (
-                IMediator mediator,
-                int classId,
-                CreateEmployeeClassDelayDto dto,
-                CancellationToken ct) =>
-            {
-                var id = await mediator.Send(new AddEmployeeClassDelay.Command(classId, dto), ct);
-                return Results.Created($"/hrs/employee-classes/{classId}/delays/{id}", new { id });
-            })
-            .WithName("AddEmployeeClassDelay")
-            ;
+            //group.MapPost("/{classId:int}/delays", async (
+            //    IMediator mediator,
+            //    int classId,
+            //    CreateEmployeeClassDelayDto dto,
+            //    CancellationToken ct) =>
+            //{
+            //    var id = await mediator.Send(new AddEmployeeClassDelay.Command(classId, dto), ct);
+            //    return Results.Created($"/hrs/employee-classes/{classId}/delays/{id}", new { id });
+            //})
+            //.WithName("AddEmployeeClassDelay");
 
-            // PUT update delay
-            group.MapPut("/delays/{id:int}", async (
-                IMediator mediator,
-                int id,
-                UpdateEmployeeClassDelayDto dto,
-                CancellationToken ct) =>
-            {
-                var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateEmployeeClassDelay.Command(fixedDto), ct);
-                return Results.NoContent();
-            })
-            .WithName("UpdateEmployeeClassDelay")
-            ;
 
+            //// PUT update delay
+            //group.MapPut("/delays/{id:int}", async (
+            //    IMediator mediator,
+            //    int id,
+            //    UpdateEmployeeClassDelayDto dto,
+            //    CancellationToken ct) =>
+            //{
+            //    var fixedDto = dto with { Id = id };
+            //    await mediator.Send(new UpdateEmployeeClassDelay.Command(fixedDto), ct);
+            //    return Results.NoContent();
+            //})
+            //.WithName("UpdateEmployeeClassDelay");
+            
             // DELETE soft delay
             group.MapDelete("/delays/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
+                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteEmployeeClassDelay.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteEmployeeClassDelay.Command(id), ct);
                 return Results.NoContent();
             })
-            .WithName("SoftDeleteEmployeeClassDelay")
-            ;
+            .WithName("SoftDeleteEmployeeClassDelay");
 
-            // DELETE hard delay
-            group.MapDelete("/delays/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteEmployeeClassDelay.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            .WithName("DeleteEmployeeClassDelay")
-            ;
+
+            //// DELETE hard delay
+            //group.MapDelete("/delays/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new DeleteEmployeeClassDelay.Command(id), ct);
+            //    return result ? Results.NoContent() : Results.NotFound();
+            //})
+            //.WithName("DeleteEmployeeClassDelay");
+
 
             // ==================== EmployeeClassVacation (Detail 2) ====================
 
-            // POST add vacation
-            group.MapPost("/{classId:int}/vacations", async (
-                IMediator mediator,
-                int classId,
-                CreateEmployeeClassVacationDto dto,
+            //// POST add vacation
+            //group.MapPost("/{classId:int}/vacations", async (
+            //    IMediator mediator,
+            //    int classId,
+            //    CreateEmployeeClassVacationDto dto,
+            //    CancellationToken ct) =>
+            //{
+            //    var id = await mediator.Send(new AddEmployeeClassVacation.Command(classId, dto), ct);
+            //    return Results.Created($"/hrs/employee-classes/{classId}/vacations/{id}", new { id });
+            //})
+            //.WithName("AddEmployeeClassVacation");
+
+
+            //// PUT update vacation
+            //group.MapPut("/vacations/{id:int}", async (
+            //    IMediator mediator,
+            //    int id,
+            //    UpdateEmployeeClassVacationDto dto,
+            //    CancellationToken ct) =>
+            //{
+            //    var fixedDto = dto with { Id = id };
+            //    await mediator.Send(new UpdateEmployeeClassVacation.Command(fixedDto), ct);
+            //    return Results.NoContent();
+            //})
+            //.WithName("UpdateEmployeeClassVacation");
+
+
+            group.MapDelete("/vacations/{id:int}/soft", async (
+               IMediator mediator,
+               int id,
                 CancellationToken ct) =>
-            {
-                var id = await mediator.Send(new AddEmployeeClassVacation.Command(classId, dto), ct);
-                return Results.Created($"/hrs/employee-classes/{classId}/vacations/{id}", new { id });
-            })
-            .WithName("AddEmployeeClassVacation")
-            ;
+           {
+               await mediator.Send(new SoftDeleteEmployeeClassVacation.Command(id), ct);
+               return Results.NoContent();
+           })
+           .WithName("SoftDeleteEmployeeClassVacation");
+ 
+           // group.MapDelete("/vacations/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+           //{
+           //    var result = await mediator.Send(new DeleteEmployeeClassVacation.Command(id), ct);
+           //    return result ? Results.NoContent() : Results.NotFound();
+           //})
+           //.WithName("DeleteEmployeeClassVacation");
+           
 
-            // PUT update vacation
-            group.MapPut("/vacations/{id:int}", async (
-                IMediator mediator,
-                int id,
-                UpdateEmployeeClassVacationDto dto,
-                CancellationToken ct) =>
-            {
-                var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateEmployeeClassVacation.Command(fixedDto), ct);
-                return Results.NoContent();
-            })
-            .WithName("UpdateEmployeeClassVacation")
-            ;
-
-             group.MapDelete("/vacations/{id:int}/soft", async (
-                IMediator mediator,
-                int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
-            {
-                await mediator.Send(new SoftDeleteEmployeeClassVacation.Command(id, regUserId), ct);
-                return Results.NoContent();
-            })
-            .WithName("SoftDeleteEmployeeClassVacation")
-            ;
-
-             group.MapDelete("/vacations/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteEmployeeClassVacation.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            .WithName("DeleteEmployeeClassVacation")
-            ;
-
-
-
-            group.MapGet("/list", async (
-           IMediator mediator,
-           HttpContext httpContext,
-           CancellationToken ct) =>
-            {
-                 var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
-                var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
-                var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
-                var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
-
-                 var filters = httpContext.Request.Query
-                    .Where(x => x.Key != "pageNumber"
-                                && x.Key != "pageSize"
-                                && x.Key != "orderBy"
-                                && x.Key != "orderDirection")
-                    .ToDictionary(x => x.Key, x => x.Value.ToString());
-
-                var result = await mediator.Send(new GetEmployeeClassList.Query(
-                    pageNumber, pageSize, orderBy, orderDirection, filters), ct);
-
-                return Results.Json(result);
-            })
-       .WithName("GetEmployeeClassList");
-
+ 
 
             return routes;
         }

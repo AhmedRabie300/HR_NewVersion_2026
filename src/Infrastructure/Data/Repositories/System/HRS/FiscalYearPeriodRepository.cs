@@ -149,12 +149,12 @@ namespace Infrastructure.Data.Repositories.System.HRS.Basics.FiscalPeriod
             return new PagedResult<FiscalYearPeriod>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var item = await _db.FiscalYearPeriods.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
                 _db.FiscalYearPeriods.Update(item);
             }
         }
@@ -263,10 +263,8 @@ namespace Infrastructure.Data.Repositories.System.HRS.Basics.FiscalPeriod
                         periodType: (byte)month,
                         periodRank: (byte)month,
                         prepareFromDate: prepareFromDate,
-                        prepareToDate: prepareToDate,
-                        companyId: companyId,
-                        regComputerId: null
-                    );
+                        prepareToDate: prepareToDate
+                     );
                     periods.Add(period);
                 }
             }
@@ -292,10 +290,8 @@ namespace Infrastructure.Data.Repositories.System.HRS.Basics.FiscalPeriod
                         periodType: source.PeriodType,
                         periodRank: source.PeriodRank,
                         prepareFromDate: source.PrepareFromDate,
-                        prepareToDate: source.PrepareToDate,
-                        companyId: companyId,
-                        regComputerId: null
-                    );
+                        prepareToDate: source.PrepareToDate
+                     );
                     periods.Add(period);
                 }
             }
@@ -394,12 +390,12 @@ namespace Infrastructure.Data.Repositories.System.HRS.Basics.FiscalPeriod
         public async Task<bool> ModuleExistsAsync(int id)
             => await _db.FiscalYearPeriodModules.AnyAsync(x => x.Id == id);
 
-        public async Task SoftDeleteModuleAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteModuleAsync(int id )
         {
             var item = await _db.FiscalYearPeriodModules.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
                 _db.FiscalYearPeriodModules.Update(item);
             }
         }

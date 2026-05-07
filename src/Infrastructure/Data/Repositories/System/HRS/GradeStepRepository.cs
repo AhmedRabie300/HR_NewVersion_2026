@@ -138,12 +138,12 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<GradeStep>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id)
         {
             var item = await _db.GradeSteps.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel();
                 _db.GradeSteps.Update(item);
             }
         }
@@ -236,12 +236,11 @@ namespace Infrastructure.Data.Repositories.System.HRS
         public async Task<bool> TransactionExistsAsync(int id)
             => await _db.GradeStepTransactions.AnyAsync(x => x.Id == id);
 
-        public async Task SoftDeleteTransactionAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteTransactionAsync(int id)
         {
             var item = await _db.GradeStepTransactions.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
                 _db.GradeStepTransactions.Update(item);
             }
         }

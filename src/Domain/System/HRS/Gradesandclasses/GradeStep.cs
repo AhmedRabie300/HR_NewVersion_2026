@@ -33,9 +33,7 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             string? arbName4S,
             int gradeId,
             int? step,
-            int companyId,
-            string? remarks,
-            int? regComputerId = null)
+             string? remarks )
         {
             Code = code;
             EngName = engName;
@@ -43,10 +41,8 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             ArbName4S = arbName4S;
             GradeId = gradeId;
             Step = step;
-            CompanyId = companyId;
-            Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             Remarks = remarks;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -83,8 +79,7 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
         public void Cancel(int? regUserId = null)
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

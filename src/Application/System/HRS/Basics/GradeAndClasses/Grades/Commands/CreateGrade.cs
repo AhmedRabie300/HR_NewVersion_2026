@@ -48,9 +48,7 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Commands
                     toSalary: request.Data.ToSalary,
                     regularHours: request.Data.RegularHours,
                     overTimeTypeId: request.Data.OverTimeTypeId,
-                    companyId: companyId,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
+                     remarks: request.Data.Remarks 
                 );
 
                 // Add Transactions
@@ -61,15 +59,13 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Commands
                         var transaction = new GradeTransaction(
                             gradeId: 0,
                             transactionTypeId: transDto.TransactionTypeId,
-                            companyId: companyId,
-                            minValue: transDto.MinValue,
+                             minValue: transDto.MinValue,
                             maxValue: transDto.MaxValue,
                             paidAtVacation: transDto.PaidAtVacation,
                             onceAtPeriod: transDto.OnceAtPeriod,
                             intervalId: transDto.IntervalId,
                             numberOfTickets: transDto.NumberOfTickets,
-                            remarks: transDto.Remarks,
-                            regComputerId: transDto.RegComputerId
+                            remarks: transDto.Remarks 
                         );
                         entity.AddTransaction(transaction);
                     }

@@ -12,13 +12,14 @@ namespace Application.System.MasterData.Company.Validators
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
 
+
             RuleFor(x => x.EngName)
-                .MaximumLength(100).When(x => x.EngName != null)
-                .WithMessage(x => msg.Format("MaxLength", 100));
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(x => msg.Format("MaxLength", 100));
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(100).When(x => x.ArbName4S != null)

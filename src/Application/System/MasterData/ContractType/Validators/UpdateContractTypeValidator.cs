@@ -17,8 +17,7 @@ namespace Application.System.MasterData.ContractType.Validators
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
 
-            // ✅ EngName - مع excludeId
-            RuleFor(x => x.EngName)
+             RuleFor(x => x.EngName)
                 .MaximumLength(100).When(x => x.EngName != null)
                 .WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (dto, engName, cancellation) =>
@@ -29,8 +28,7 @@ namespace Application.System.MasterData.ContractType.Validators
                 .When(x => x.EngName != null)
                 .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
-            // ✅ ArbName - مع excludeId
-            RuleFor(x => x.ArbName)
+             RuleFor(x => x.ArbName)
                 .MaximumLength(100).When(x => x.ArbName != null)
                 .WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (dto, arbName, cancellation) =>

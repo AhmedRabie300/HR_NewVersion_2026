@@ -1,4 +1,5 @@
 ﻿using Application.Common.Abstractions;
+using Application.System.HRS.Basics.EmployeesClasses.Grades.Queries;
 using Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Commands;
 using Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Dtos;
 using Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Queries;
@@ -26,19 +27,20 @@ namespace API.System.HRS
             })
             .WithName("GetAllGradeSteps");
 
-
+ 
             // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
-                string? searchTerm = null,
-                int? gradeId = null,
-                CancellationToken ct = default) =>
+                string? orderBy = null,
+                string? orderDirection = null,
+string? Filters = null,
+CancellationToken ct = default) =>
             {
-                var result = await mediator.Send(
-                    new GetPagedGradeSteps.Query(pageNumber, pageSize, searchTerm, gradeId), ct);
-                return Results.Ok(result);
+                var result = await mediator.Send(new GetGradeStepList.Query(
+                pageNumber, pageSize, orderBy, orderDirection, Filters), ct);
+                return Results.Json(result);
             })
             .WithName("GetPagedGradeSteps");
             
@@ -94,10 +96,9 @@ namespace API.System.HRS
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
+                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteGradeStep.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteGradeStep.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteGradeStep")
@@ -157,10 +158,10 @@ namespace API.System.HRS
             group.MapDelete("/transactions/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
+          
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteGradeStepTransaction.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteGradeStepTransaction.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteGradeStepTransaction")
@@ -175,29 +176,29 @@ namespace API.System.HRS
             .WithName("DeleteGradeStepTransaction");
  
 
-             group.MapGet("/list", async (
-                IMediator mediator,
-                HttpContext httpContext,
-                CancellationToken ct) =>
-            {
-                var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
-                var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
-                var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
-                var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
+            // group.MapGet("/list", async (
+            //    IMediator mediator,
+            //    HttpContext httpContext,
+            //    CancellationToken ct) =>
+            //{
+            //    var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
+            //    var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
+            //    var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
+            //    var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
 
-                 var filters = httpContext.Request.Query
-                    .Where(x => x.Key != "pageNumber"
-                                && x.Key != "pageSize"
-                                && x.Key != "orderBy"
-                                && x.Key != "orderDirection")
-                    .ToDictionary(x => x.Key.ToLower(), x => x.Value.ToString());
+            //     var filters = httpContext.Request.Query
+            //        .Where(x => x.Key != "pageNumber"
+            //                    && x.Key != "pageSize"
+            //                    && x.Key != "orderBy"
+            //                    && x.Key != "orderDirection")
+            //        .ToDictionary(x => x.Key.ToLower(), x => x.Value.ToString());
 
-                var result = await mediator.Send(new GetGradeStepList.Query(
-                    pageNumber, pageSize, orderBy, orderDirection, filters), ct);
+            //    var result = await mediator.Send(new GetGradeStepList.Query(
+            //        pageNumber, pageSize, orderBy, orderDirection, filters), ct);
 
-                return Results.Json(result);
-            })
-            .WithName("GetGradeStepList");
+            //    return Results.Json(result);
+            //})
+            //.WithName("GetGradeStepList");
 
 
             return routes;

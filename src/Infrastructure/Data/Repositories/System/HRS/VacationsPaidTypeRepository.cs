@@ -86,12 +86,12 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<VacationsPaidType>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var item = await _db.VacationsPaidTypes.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel();
                 _db.VacationsPaidTypes.Update(item);
             }
         }

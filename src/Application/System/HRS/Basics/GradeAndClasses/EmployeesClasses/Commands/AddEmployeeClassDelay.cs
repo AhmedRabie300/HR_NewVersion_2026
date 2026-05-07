@@ -52,9 +52,7 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
                     fromMin: request.Data.FromMin,
                     toMin: request.Data.ToMin,
                     punishPCT: request.Data.PunishPCT,
-                    companyId: companyId,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
+                     remarks: request.Data.Remarks 
                 );
 
                 await _repo.AddDelayAsync(entity);

@@ -1,4 +1,7 @@
-﻿namespace Application.System.HRS.Basics.GradeAndClasses.EmployeesClasses.Dtos
+﻿using Application.System.HRS.Basics.EmployeesClasses.Dtos;
+using Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Dtos;
+
+namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Dtos
 {
     public sealed record UpdateEmployeeClassDto(
         int Id,
@@ -53,6 +56,8 @@
         int? VactionTransType,
         int? TransValue,
         bool? AddBalanceInAddEmp,
-        bool? AccumulatedBalance
+        bool? AccumulatedBalance,
+        List<UpdateEmployeeClassDelayDto>? Delays,
+        List<UpdateEmployeeClassVacationDto>? Vacations
     );
 }

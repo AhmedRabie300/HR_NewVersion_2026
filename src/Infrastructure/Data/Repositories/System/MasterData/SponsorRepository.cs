@@ -103,12 +103,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             return new PagedResult<Sponsor>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var item = await _db.Sponsors.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
                 _db.Sponsors.Update(item);
             }
         }

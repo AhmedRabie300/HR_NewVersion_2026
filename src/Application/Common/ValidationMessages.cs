@@ -33,6 +33,10 @@ public sealed class ValidationMessages : IValidationMessages
 
     public string CodeExists(string entityKey, string code)
         => Format("CodeExists", Get(entityKey), code);
+    public string EngNameRequired(string entityKey, string code)
+        => Format("EngNameRequired", Get(entityKey), code);
+    public string ArbNameRequired(string entityKey, string code)
+        => Format("ArbNameRequired", Get(entityKey), code);
 
     public string NotFound(string entityKey, object id)
         => Format("NotFound", Get(entityKey), id);

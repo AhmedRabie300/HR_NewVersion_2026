@@ -18,10 +18,7 @@ namespace Application.System.HRS.Basics.HICompanies.Commands
         {
             public Validator(IValidationMessages msg, IHICompanyRepository repo)
             {
-                RuleFor(x => x.HICompanyId)
-                    .GreaterThan(0).WithMessage(x => msg.Get("HICompanyIdRequired"))
-                    .MustAsync(async (id, cancellation) => await repo.ExistsAsync(id))
-                    .WithMessage(x => msg.Format("NotFound", msg.Get("HICompany"), x.HICompanyId));
+                 
 
                 RuleFor(x => x.Data)
                     .SetValidator(new CreateHICompanyClassValidator(msg));

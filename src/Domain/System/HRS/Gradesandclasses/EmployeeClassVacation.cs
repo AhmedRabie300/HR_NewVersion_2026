@@ -31,15 +31,13 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             int employeeClassId,
             int vacationTypeId,
             int durationDays,
-            int? requiredWorkingMonths,
-            float? fromMonth,
-            float? toMonth,
-            int companyId,
-            string? remarks,
+            int requiredWorkingMonths,
+            float fromMonth,
+            float toMonth,
+             string? remarks,
             int? ticketsRnd,
             int? dependantTicketRnd,
-            int? maxKeepDays,
-            int? regComputerId = null)
+            int? maxKeepDays )
         {
             EmployeeClassId = employeeClassId;
             VacationTypeId = vacationTypeId;
@@ -47,13 +45,11 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             RequiredWorkingMonths = requiredWorkingMonths;
             FromMonth = fromMonth;
             ToMonth = toMonth;
-            CompanyId = companyId;
-            Remarks = remarks;
+             Remarks = remarks;
             TicketsRnd = ticketsRnd;
             DependantTicketRnd = dependantTicketRnd;
             MaxKeepDays = maxKeepDays;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -76,11 +72,10 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             if (maxKeepDays.HasValue) MaxKeepDays = maxKeepDays.Value;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel()
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

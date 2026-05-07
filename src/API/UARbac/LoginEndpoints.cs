@@ -11,7 +11,7 @@ public static class LoginEndpoints
     public static IEndpointRouteBuilder MapLoginEndpoints(this IEndpointRouteBuilder routes)
     {
         // Group for authentication endpoints
-        var auth = routes.MapGroup("/api/auth").WithTags("Authentication");
+        var auth = routes.MapGroup("/auth").WithTags("Authentication");
 
         // POST /api/auth/login
         auth.MapPost("/login",

@@ -49,15 +49,13 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Commands
                 var entity = new GradeTransaction(
                     gradeId: request.GradeId,
                     transactionTypeId: request.Data.TransactionTypeId,
-                    companyId: companyId,
-                    minValue: request.Data.MinValue,
+                     minValue: request.Data.MinValue,
                     maxValue: request.Data.MaxValue,
                     paidAtVacation: request.Data.PaidAtVacation,
                     onceAtPeriod: request.Data.OnceAtPeriod,
                     intervalId: request.Data.IntervalId,
                     numberOfTickets: request.Data.NumberOfTickets,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
+                    remarks: request.Data.Remarks 
                 );
 
                 await _repo.AddTransactionAsync(entity);

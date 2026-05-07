@@ -51,6 +51,11 @@ namespace Infrastructure.EntityConfig.System.HRS.Basics.GradesAndClasses
                 .HasForeignKey(x => x.ClassId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(x => x.EmployeeClass)
+    .WithMany(x => x.Delays)
+    .HasForeignKey(x => x.ClassId)
+    .OnDelete(DeleteBehavior.Cascade);
+
             // Indexes
             builder.HasIndex(x => x.ClassId)
                 .HasDatabaseName("IX_EmployeeClassDelay_ClassId");

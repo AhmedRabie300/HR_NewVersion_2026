@@ -28,8 +28,9 @@ namespace Application.System.HRS.Basics.Gender.Validators
                .WithMessage(x => msg.Format("CodeExists", msg.Get("Gender"), x.Code));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(50).When(x => x.EngName != null)
-                .WithMessage(x => msg.Format("MaxLength", 50))
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+                .MaximumLength(100).When(x => x.EngName != null)
+                .WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (dto, engName, cancellation) =>
                 {
                     if (string.IsNullOrWhiteSpace(engName)) return true;
@@ -39,15 +40,16 @@ namespace Application.System.HRS.Basics.Gender.Validators
                 .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(50).When(x => x.ArbName != null)
-                .WithMessage(x => msg.Format("MaxLength", 50))
-                .MustAsync(async (dto, arbName, cancellation) =>
-                {
-                    if (string.IsNullOrWhiteSpace(arbName)) return true;
-                    return await _repo.IsArbNameUniqueAsync(arbName, dto.Id, cancellation);
-                })
-                .When(x => x.ArbName != null)
-                .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+               .MaximumLength(100).When(x => x.ArbName != null)
+               .WithMessage(x => msg.Format("MaxLength", 100))
+               .MustAsync(async (dto, arbName, cancellation) =>
+               {
+                   if (string.IsNullOrWhiteSpace(arbName)) return true;
+                   return await _repo.IsArbNameUniqueAsync(arbName, dto.Id, cancellation);
+               })
+               .When(x => x.ArbName != null)
+               .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 
             RuleFor(x => x)
                 .Must(HaveAtLeastOneField)

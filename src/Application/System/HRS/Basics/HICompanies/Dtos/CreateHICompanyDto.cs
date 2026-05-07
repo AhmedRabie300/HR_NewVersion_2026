@@ -2,11 +2,10 @@
 {
     public sealed record CreateHICompanyDto(
         string Code,
-        string? EngName,
-        string? ArbName,
+        string EngName,
+        string ArbName,
         string? ArbName4S,
         string? Remarks,
-        int? RegComputerId,
-        List<CreateHICompanyClassDto> Classes
+         List<CreateHICompanyClassDto> Classes
     );
 }

@@ -2,6 +2,7 @@
 using Application.Common.Abstractions;
 using Application.System.HRS.Abstractions;
 using Application.System.HRS.Basics.GradesAndClasses.Grades.Dtos;
+using Application.System.HRS.Basics.GradesAndClasses.Grades.Validators;
 using FluentValidation;
 
 namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Validators
@@ -14,19 +15,16 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Validators
         {
             _repo = repo;
 
-            RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
-
             RuleFor(x => x.Code)
-                .MaximumLength(50).When(x => x.Code != null)
-                .WithMessage(x => msg.Format("MaxLength", 50))
-                .MustAsync(async (dto, code, cancellation) =>
-                {
-                    if (string.IsNullOrWhiteSpace(code)) return true;
-                    return !await _repo.CodeExistsAsync(code.Trim(), dto.Id);
-                })
-                .When(x => x.Code != null)
-                .WithMessage(x => msg.Format("CodeExists", msg.Get("Grade"), x.Code));
+                 .MaximumLength(50).When(x => x.Code != null)
+                 .WithMessage(x => msg.Format("MaxLength", 50))
+                 .MustAsync(async (dto, code, cancellation) =>
+                 {
+                     if (string.IsNullOrWhiteSpace(code)) return true;
+                     return !await _repo.CodeExistsAsync(code.Trim(), dto.Id);
+                 })
+                 .When(x => x.Code != null)
+                 .WithMessage(x => msg.Format("CodeExists", msg.Get("Grade"), x.Code));
 
             RuleFor(x => x.EngName)
                 .MaximumLength(100).When(x => x.EngName != null)
@@ -50,10 +48,6 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Validators
                 .When(x => x.ArbName != null)
                 .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 
-            RuleFor(x => x.ArbName4S)
-                .MaximumLength(100).When(x => x.ArbName4S != null)
-                .WithMessage(x => msg.Format("MaxLength", 100));
-
             RuleFor(x => x.FromSalary)
                 .GreaterThanOrEqualTo(0).When(x => x.FromSalary.HasValue)
                 .WithMessage(x => msg.Get("FromSalaryMustBePositive"));
@@ -69,6 +63,29 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Validators
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).When(x => x.Remarks != null)
                 .WithMessage(x => msg.Format("MaxLength", 2048));
+
+            // Transactions validation
+            RuleForEach(x => x.Transactions)
+                .SetValidator(new UpdateGradeTransactionValidator(msg));
+
+            RuleFor(x => x)
+                .Must(HaveAtLeastOneField)
+                .WithMessage(x => msg.Get("AtLeastOneField"));
+        }
+
+        private bool HaveAtLeastOneField(UpdateGradeDto dto)
+        {
+            return dto.Code != null ||
+                   dto.EngName != null ||
+                   dto.ArbName != null ||
+                   dto.ArbName4S != null ||
+                   dto.GradeLevel.HasValue ||
+                   dto.FromSalary.HasValue ||
+                   dto.ToSalary.HasValue ||
+                   dto.RegularHours.HasValue ||
+                   dto.OverTimeTypeId.HasValue ||
+                   dto.Remarks != null ||
+                   (dto.Transactions != null && dto.Transactions.Any());
         }
     }
 }

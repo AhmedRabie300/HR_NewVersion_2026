@@ -47,11 +47,9 @@ namespace Application.System.HRS.Basics.Items.Commands
                     purchasePrice: request.Data.PurchasePrice,
                     expiryDate: request.Data.ExpiryDate,
                     licenseNumber: request.Data.LicenseNumber,
-                    companyId: companyId,
-                    isFromAssets: request.Data.IsFromAssets,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
-                );
+                     isFromAssets: request.Data.IsFromAssets,
+                    remarks: request.Data.Remarks
+                 );
 
                 await _repo.AddAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

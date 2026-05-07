@@ -16,7 +16,7 @@ namespace Application.System.HRS.Abstractions
         Task<bool> CodeExistsAsync(string code);
         Task<bool> CodeExistsAsync(string code, int excludeId);
         Task<PagedResult<HICompany>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? companyId = null);
-        Task SoftDeleteAsync(int id, int? regUserId = null);
+        Task SoftDeleteAsync(int id);
         Task SaveChangesAsync(CancellationToken ct);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
         Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default);
@@ -28,6 +28,6 @@ namespace Application.System.HRS.Abstractions
         Task UpdateClassAsync(HICompanyClass entity);
         Task DeleteClassAsync(int id);
         Task<bool> ClassExistsAsync(int id);
-        Task SoftDeleteClassAsync(int id, int? regUserId = null);
+        Task SoftDeleteClassAsync(int id);
     }
 }

@@ -3,8 +3,8 @@
     public sealed record ContractsTypeDto(
         int Id,
         string Code,
-        string? EngName,
-        string? ArbName,
+        string EngName,
+        string ArbName,
         string? ArbName4S,
         int CompanyId,
         bool? IsSpecial,

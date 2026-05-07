@@ -37,9 +37,7 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             decimal? toSalary,
             decimal? regularHours,
             int? overTimeTypeId,
-            int companyId,
-            string? remarks,
-            int? regComputerId = null)
+             string? remarks )
         {
             Code = code;
             EngName = engName;
@@ -50,10 +48,8 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             ToSalary = toSalary;
             RegularHours = regularHours;
             OverTimeTypeId = overTimeTypeId;
-            CompanyId = companyId;
-            Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             Remarks = remarks;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(

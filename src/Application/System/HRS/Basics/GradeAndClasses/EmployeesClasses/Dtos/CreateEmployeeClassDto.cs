@@ -4,8 +4,8 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Dtos
 {
     public sealed record CreateEmployeeClassDto(
         string Code,
-        string? EngName,
-        string? ArbName,
+        string EngName,
+        string ArbName,
         string? ArbName4S,
         byte? NoOfDaysPerPeriod,
         float? WorkHoursPerDay,
@@ -19,7 +19,6 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Dtos
         bool? WorkingUnitsIsHours,
         int? DefaultProjectId,
         string? Remarks,
-        int? RegComputerId,
         int? NonPermiLatTransaction,
         int? PerDailyDelaying,
         int? PerMonthlyDelaying,

@@ -16,14 +16,13 @@ namespace Domain.System.HRS.VacationAndEndOfService
         public VacationsPaidType(
             string? code,
             string? engName,
-            string? arbName,
-            int? regUserId)
+            string? arbName
+             )
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
-            RegUserId = regUserId;
-            RegDate = DateTime.Now;
+             RegDate = DateTime.Now;
         }
 
         public void Update(

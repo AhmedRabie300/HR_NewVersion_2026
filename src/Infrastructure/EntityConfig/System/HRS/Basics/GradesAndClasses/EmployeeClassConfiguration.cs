@@ -208,10 +208,14 @@ namespace Infrastructure.EntityConfig.System.HRS.Basics.GradesAndClasses
                 .HasForeignKey(x => x.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.DefaultProject)
-                .WithMany()
-                .HasForeignKey(x => x.DefaultProjectId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x => x.Delays)
+                      .WithOne(x => x.EmployeeClass)
+                      .HasForeignKey(x => x.ClassId);
+
+            builder.HasMany(x => x.Vacations)
+                .WithOne(x => x.EmployeeClass)
+                .HasForeignKey(x => x.EmployeeClassId)
+                .OnDelete(DeleteBehavior.Cascade);   
 
             // Indexes
             builder.HasIndex(x => new { x.Code, x.CompanyId })
@@ -220,9 +224,7 @@ namespace Infrastructure.EntityConfig.System.HRS.Basics.GradesAndClasses
 
             builder.HasIndex(x => x.CompanyId)
                 .HasDatabaseName("IX_EmployeeClasses_CompanyId");
-
-            builder.HasIndex(x => x.DefaultProjectId)
-                .HasDatabaseName("IX_EmployeeClasses_DefaultProjectId");
+ 
         }
     }
 }

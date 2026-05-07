@@ -34,10 +34,8 @@ namespace Domain.System.HRS.Basics
             decimal? purchasePrice,
             DateTime? expiryDate,
             string? licenseNumber,
-            int companyId,
             bool? isFromAssets,
-            string? remarks,
-            int? regComputerId = null)
+            string? remarks )
         {
             Code = code;
             EngName = engName;
@@ -47,11 +45,9 @@ namespace Domain.System.HRS.Basics
             PurchasePrice = purchasePrice;
             ExpiryDate = expiryDate;
             LicenseNumber = licenseNumber;
-            CompanyId = companyId;
-            IsFromAssets = isFromAssets;
+             IsFromAssets = isFromAssets;
             Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -78,11 +74,10 @@ namespace Domain.System.HRS.Basics
             if (remarks != null) Remarks = remarks;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

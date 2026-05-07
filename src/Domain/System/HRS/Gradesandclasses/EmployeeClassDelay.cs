@@ -25,18 +25,14 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             int? fromMin,
             int? toMin,
             int? punishPCT,
-            int companyId,
-            string? remarks,
-            int? regComputerId = null)
+             string? remarks )
         {
             ClassId = classId;
             FromMin = fromMin;
             ToMin = toMin;
             PunishPCT = punishPCT;
-            CompanyId = companyId;
-            Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             Remarks = remarks;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -51,10 +47,9 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             if (remarks != null) Remarks = remarks;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel()
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
         }
 
         public bool IsActive() => !CancelDate.HasValue;

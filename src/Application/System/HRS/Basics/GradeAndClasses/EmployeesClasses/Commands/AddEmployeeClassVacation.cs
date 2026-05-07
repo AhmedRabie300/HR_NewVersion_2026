@@ -54,13 +54,11 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
                     requiredWorkingMonths: request.Data.RequiredWorkingMonths,
                     fromMonth: request.Data.FromMonth,
                     toMonth: request.Data.ToMonth,
-                    companyId: companyId,
-                    remarks: request.Data.Remarks,
+                     remarks: request.Data.Remarks,
                     ticketsRnd: request.Data.TicketsRnd,
                     dependantTicketRnd: request.Data.DependantTicketRnd,
-                    maxKeepDays: request.Data.MaxKeepDays,
-                    regComputerId: request.Data.RegComputerId
-                );
+                    maxKeepDays: request.Data.MaxKeepDays
+                 );
 
                 await _repo.AddVacationAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

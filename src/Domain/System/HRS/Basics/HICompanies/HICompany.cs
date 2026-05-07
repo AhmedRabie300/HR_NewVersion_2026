@@ -69,10 +69,9 @@ namespace Domain.System.HRS.Basics.HICompanies
             _classes.Clear();
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel()
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
         }
 
         public bool IsActive() => !CancelDate.HasValue;

@@ -50,11 +50,10 @@ namespace Domain.System.MasterData
              CompanyId = companyId;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

@@ -43,10 +43,8 @@ namespace Application.System.HRS.Basics.FiscalYears.Commands
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
-                    companyId: companyId,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
-                );
+                     remarks: request.Data.Remarks 
+                 );
 
                 await _repo.AddAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

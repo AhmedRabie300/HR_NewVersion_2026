@@ -88,10 +88,10 @@ namespace API.System.HRS
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
+               
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteHICompany.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteHICompany.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteHICompany")
@@ -139,10 +139,9 @@ namespace API.System.HRS
             group.MapDelete("/classes/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteHICompanyClass.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteHICompanyClass.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteHICompanyClass")

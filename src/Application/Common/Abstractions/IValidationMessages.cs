@@ -11,6 +11,8 @@ namespace Application.Common.Abstractions
 
         // Common patterns used across all handlers
         string CodeExists(string entityKey, string code);
+        string EngNameRequired(string entityKey, string code);
+        string ArbNameRequired(string entityKey, string code);
         string NotFound(string entityKey, object id);
         string CreatedSuccessfully(string entityKey);
         string UpdatedSuccessfully(string entityKey);

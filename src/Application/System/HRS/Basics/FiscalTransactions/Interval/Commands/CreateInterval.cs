@@ -42,8 +42,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.Interval.Commands
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
                     number: request.Data.Number,
-                    companyId: _currentUser.CompanyId,
-                    remarks: request.Data.Remarks
+                     remarks: request.Data.Remarks
                 );
 
                 await _repo.AddAsync(entity);

@@ -25,18 +25,15 @@ namespace Domain.System.HRS.Basics.FiscalPeriod
             string? engName,
             string? arbName,
             string? arbName4S,
-            int companyId,
-            string? remarks,
-            int? regComputerId = null)
+             string? remarks 
+            )
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
-            CompanyId = companyId;
-            Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             Remarks = remarks;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -53,11 +50,10 @@ namespace Domain.System.HRS.Basics.FiscalPeriod
             if (remarks != null) Remarks = remarks;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel()
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

@@ -132,12 +132,27 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<EmployeeClass>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id)
         {
-            var item = await _db.EmployeeClasses.FindAsync(id);
+            var item = await _db.EmployeeClasses
+                .Include(x => x.Delays)
+                .Include(x => x.Vacations)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
+
+                 foreach (var delay in item.Delays)
+                {
+                    delay.Cancel( );
+                }
+
+                 foreach (var vacation in item.Vacations)
+                {
+                    vacation.Cancel( );
+                }
+
                 _db.EmployeeClasses.Update(item);
             }
         }
@@ -227,12 +242,12 @@ namespace Infrastructure.Data.Repositories.System.HRS
         public async Task<bool> DelayExistsAsync(int id)
             => await _db.EmployeeClassDelays.AnyAsync(x => x.Id == id);
 
-        public async Task SoftDeleteDelayAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteDelayAsync(int id)
         {
             var item = await _db.EmployeeClassDelays.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel();
                 _db.EmployeeClassDelays.Update(item);
             }
         }
@@ -273,12 +288,12 @@ namespace Infrastructure.Data.Repositories.System.HRS
         public async Task<bool> VacationExistsAsync(int id)
             => await _db.EmployeeClassVacations.AnyAsync(x => x.Id == id);
 
-        public async Task SoftDeleteVacationAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteVacationAsync(int id)
         {
             var item = await _db.EmployeeClassVacations.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel();
                 _db.EmployeeClassVacations.Update(item);
             }
         }
@@ -296,7 +311,7 @@ namespace Infrastructure.Data.Repositories.System.HRS
             var criteriaObj = string.IsNullOrEmpty(criteria)
                 ? new JObject()
                 : JObject.Parse(criteria);
-            criteriaObj["companyId"] = companyId;
+            criteriaObj["companyid"] = companyId;
             criteria = criteriaObj.ToString();
 
             return await DataHelper.ExecuteListProcedureAsync(

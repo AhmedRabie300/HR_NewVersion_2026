@@ -111,12 +111,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             return new PagedResult<Religion>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var religion = await _db.Religions.FindAsync(id);
             if (religion != null)
             {
-                religion.Cancel(regUserId);
+                religion.Cancel( );
                 _db.Religions.Update(religion);
             }
         }

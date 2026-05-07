@@ -99,10 +99,9 @@ namespace API.System.HRS.Basics.FiscalPeriod
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
+                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteFiscalYearPeriod.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteFiscalYearPeriod.Command(id ), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteFiscalYearPeriod")
@@ -158,10 +157,9 @@ namespace API.System.HRS.Basics.FiscalPeriod
             group.MapDelete("/modules/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
+                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteFiscalYearPeriodModule.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteFiscalYearPeriodModule.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteFiscalYearPeriodModule")

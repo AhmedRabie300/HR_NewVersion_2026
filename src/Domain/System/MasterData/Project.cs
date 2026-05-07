@@ -216,11 +216,10 @@ namespace Domain.System.MasterData
             if (costCenterCode4 != null) CostCenterCode4 = costCenterCode4;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

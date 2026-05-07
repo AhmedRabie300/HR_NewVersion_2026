@@ -32,28 +32,24 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
         public GradeTransaction(
             int gradeId,
             int transactionTypeId,
-            int companyId,
-            decimal? minValue,
+             decimal? minValue,
             decimal? maxValue,
             int? paidAtVacation,
             bool? onceAtPeriod,
             int? intervalId,
             int? numberOfTickets,
-            string? remarks,
-            int? regComputerId = null)
+            string? remarks )
         {
             GradeId = gradeId;
             TransactionTypeId = transactionTypeId;
-            CompanyId = companyId;
-            MinValue = minValue;
+             MinValue = minValue;
             MaxValue = maxValue;
             PaidAtVacation = paidAtVacation;
             OnceAtPeriod = onceAtPeriod;
             IntervalId = intervalId;
             NumberOfTickets = numberOfTickets;
             Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -74,11 +70,10 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             if (remarks != null) Remarks = remarks;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

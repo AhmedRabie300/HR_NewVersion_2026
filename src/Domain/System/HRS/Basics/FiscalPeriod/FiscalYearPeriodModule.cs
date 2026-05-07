@@ -26,20 +26,17 @@ namespace Domain.System.HRS.Basics.FiscalPeriod
         public FiscalYearPeriodModule(
             int fiscalYearPeriodId,
             int moduleId,
-            int companyId,
-            DateTime? openDate,
+             DateTime? openDate,
             DateTime? closeDate,
-            string? remarks,
-            int? regComputerId = null)
+            string? remarks
+            )
         {
             FiscalYearPeriodId = fiscalYearPeriodId;
             ModuleId = moduleId;
-            CompanyId = companyId;
-            OpenDate = openDate;
+             OpenDate = openDate;
             CloseDate = closeDate;
             Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(DateTime? openDate, DateTime? closeDate, string? remarks)
@@ -61,11 +58,10 @@ namespace Domain.System.HRS.Basics.FiscalPeriod
             if (userId.HasValue) RegUserId = userId;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
         public bool IsOpen => OpenDate.HasValue && !CloseDate.HasValue;

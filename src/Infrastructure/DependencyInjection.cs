@@ -101,6 +101,7 @@ namespace Infrastructure
             services.AddScoped<IFiscalYearRepository, FiscalYearRepository>();
             services.AddScoped<IFiscalYearPeriodRepository, FiscalYearPeriodRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IContractRepository, ContractRepository>();
 
 
 

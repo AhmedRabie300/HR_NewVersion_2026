@@ -53,13 +53,11 @@ namespace Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Commands
                 var entity = new GradeStepTransaction(
                     gradeStepId: request.GradeStepId,
                     gradeTransactionId: request.Data.GradeTransactionId,
-                    companyId: companyId,
-                    amount: request.Data.Amount,
+                     amount: request.Data.Amount,
                     remarks: request.Data.Remarks,
                     active: request.Data.Active,
                     activeDate: request.Data.ActiveDate,
-                    activeDateD: request.Data.ActiveDateD,
-                    regComputerId: request.Data.RegComputerId
+                    activeDateD: request.Data.ActiveDateD 
                 );
 
                 await _repo.AddTransactionAsync(entity);

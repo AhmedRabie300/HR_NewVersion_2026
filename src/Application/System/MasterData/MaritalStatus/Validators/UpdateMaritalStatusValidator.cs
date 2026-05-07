@@ -18,6 +18,7 @@ namespace Application.System.MasterData.MaritalStatus.Validators
 
 
             RuleFor(x => x.EngName)
+               .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                .MaximumLength(100).When(x => x.EngName != null)
                .WithMessage(x => msg.Format("MaxLength", 100))
                .MustAsync(async (dto, engName, cancellation) =>
@@ -29,6 +30,7 @@ namespace Application.System.MasterData.MaritalStatus.Validators
                .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                .MaximumLength(100).When(x => x.ArbName != null)
                .WithMessage(x => msg.Format("MaxLength", 100))
                .MustAsync(async (dto, arbName, cancellation) =>

@@ -63,9 +63,6 @@ namespace Domain.System.HRS.Basics.FiscalTransactions
             bool? isBasicSalary,
             bool? isDistributable,
             bool? isAllowPosting,
-            int companyId,
-            int regUserId,
-            int? regComputerId,
             string? remarks,
             bool? hasInsuranceTiers)
         {
@@ -91,10 +88,7 @@ namespace Domain.System.HRS.Basics.FiscalTransactions
             IsBasicSalary = isBasicSalary;
             IsDistributable = isDistributable;
             IsAllowPosting = isAllowPosting;
-            CompanyId = companyId;
-            Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
+             Remarks = remarks;
             HasInsuranceTiers = hasInsuranceTiers;
             RegDate = DateTime.UtcNow;
         }

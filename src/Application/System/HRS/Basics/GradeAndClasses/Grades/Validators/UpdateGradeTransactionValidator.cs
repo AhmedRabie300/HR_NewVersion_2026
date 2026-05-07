@@ -9,8 +9,7 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Validators
     {
         public UpdateGradeTransactionValidator(IValidationMessages msg)
         {
-            RuleFor(x => x.Id)
-                .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
+           
 
             RuleFor(x => x.GradeId)
                 .GreaterThan(0).WithMessage(x => msg.Get("GradeIdRequired"));

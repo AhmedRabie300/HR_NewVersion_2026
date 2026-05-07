@@ -28,24 +28,20 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
         public GradeStepTransaction(
             int gradeStepId,
             int? gradeTransactionId,
-            int companyId,
-            decimal? amount,
+             decimal? amount,
             string? remarks,
             bool? active,
             DateTime? activeDate,
-            string? activeDateD,
-            int? regComputerId = null)
+            string? activeDateD )
         {
             GradeStepId = gradeStepId;
             GradeTransactionId = gradeTransactionId;
-            CompanyId = companyId;
-            Amount = amount;
+             Amount = amount;
             Remarks = remarks;
             Active = active;
             ActiveDate = activeDate;
             ActiveDateD = activeDateD;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -62,10 +58,10 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             if (activeDateD != null) ActiveDateD = activeDateD;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel()
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
+            
         }
 
         public bool IsActive() => !CancelDate.HasValue;

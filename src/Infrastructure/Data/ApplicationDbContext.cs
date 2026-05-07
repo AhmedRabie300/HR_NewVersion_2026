@@ -96,6 +96,8 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<FiscalYearPeriod> FiscalYearPeriods => Set<FiscalYearPeriod>();
     public DbSet<FiscalYearPeriodModule> FiscalYearPeriodModules => Set<FiscalYearPeriodModule>();
     public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<Domain.System.HRS.Basics.Contracts.Contract> Contracts => Set<Domain.System.HRS.Basics.Contracts.Contract>();
+    public DbSet<Domain.System.HRS.Basics.Contracts.ContractTransaction> ContractTransactions => Set<Domain.System.HRS.Basics.Contracts.ContractTransaction>();
 
 
 

@@ -23,16 +23,14 @@ namespace Domain.System.HRS.Basics.FiscalTransactions
             string? arbName,
             string? arbName4S,
             int number,
-            int companyId,     
-            string? remarks)
+             string? remarks)
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
             Number = number;
-            CompanyId = companyId;
-            Remarks = remarks;
+             Remarks = remarks;
             RegDate = DateTime.UtcNow;
         }
 

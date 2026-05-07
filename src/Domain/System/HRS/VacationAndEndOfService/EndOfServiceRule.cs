@@ -27,8 +27,7 @@ namespace Domain.System.HRS.VacationAndEndOfService
             float? amountPercent,
             string? formula,
             string? extraDedFormula,
-            string? remarks,
-            int? regComputerId = null)
+            string? remarks )
         {
             EndOfServiceId = endOfServiceId;
             FromWorkingMonths = fromWorkingMonths;
@@ -37,8 +36,7 @@ namespace Domain.System.HRS.VacationAndEndOfService
             Formula = formula;
             ExtraDedFormula = extraDedFormula;
             Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(

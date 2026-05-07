@@ -56,8 +56,7 @@ namespace Domain.System.HRS.VacationAndEndOfService
             bool? isFromAnnual,
             int? forSalaryTransaction,
             string? remarks,
-            int? regComputerId,
-            int? oBalanceTransactionId,
+             int? oBalanceTransactionId,
             int? overDueVacationId,
             float? stage1Pct,
             float? stage2Pct,
@@ -87,8 +86,7 @@ namespace Domain.System.HRS.VacationAndEndOfService
             IsFromAnnual = isFromAnnual;
             ForSalaryTransaction = forSalaryTransaction;
             Remarks = remarks;
-            RegComputerId = regComputerId;
-            OBalanceTransactionId = oBalanceTransactionId;
+             OBalanceTransactionId = oBalanceTransactionId;
             OverDueVacationId = overDueVacationId;
             Stage1Pct = stage1Pct;
             Stage2Pct = stage2Pct;
@@ -171,11 +169,10 @@ namespace Domain.System.HRS.VacationAndEndOfService
             if (excludedFromSsRequests.HasValue) ExcludedFromSsRequests = excludedFromSsRequests;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

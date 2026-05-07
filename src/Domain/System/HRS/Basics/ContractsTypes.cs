@@ -26,20 +26,16 @@ namespace Domain.System.HRS.Basics.ContractsTypes
             string? engName,
             string? arbName,
             string? arbName4S,
-            int companyId,
-            bool? isSpecial,
-            string? remarks,
-            int? regComputerId = null)
+             bool? isSpecial,
+            string? remarks )
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
-            CompanyId = companyId;
-            IsSpecial = isSpecial;
+             IsSpecial = isSpecial;
             Remarks = remarks;
-            RegComputerId = regComputerId;
-            RegDate = DateTime.UtcNow;
+             RegDate = DateTime.UtcNow;
         }
 
         public void Update(
@@ -58,10 +54,10 @@ namespace Domain.System.HRS.Basics.ContractsTypes
             if (remarks != null) Remarks = remarks;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
+           
         }
 
         public bool IsActive() => !CancelDate.HasValue;

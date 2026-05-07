@@ -22,7 +22,7 @@ namespace Application.System.MasterData.Abstractions
         Task<List<Domain.System.MasterData.Nationality?>> GetMainNationalitiesAsync();
         Task<PagedResult<Domain.System.MasterData.Nationality>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm);
 
-         Task SoftDeleteAsync(int id, int? regUserId = null);
+         Task SoftDeleteAsync(int id);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
         Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default);
         Task<bool> IsArbNameUniqueAsync(string arbName, int? excludeId = null, CancellationToken ct = default);

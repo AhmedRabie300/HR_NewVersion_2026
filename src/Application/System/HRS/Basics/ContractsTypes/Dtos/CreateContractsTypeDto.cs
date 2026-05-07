@@ -2,8 +2,8 @@
 {
     public sealed record CreateContractsTypeDto(
         string Code,
-        string? EngName,
-        string? ArbName,
+        string EngName,
+        string ArbName,
         string? ArbName4S,
         bool? IsSpecial,
         string? Remarks,

@@ -21,6 +21,7 @@ namespace Application.System.HRS.Basics.FiscalYears.Validators
                 .WithMessage(x => msg.Format("CodeExists", msg.Get("FiscalYear"), x.Code));
 
             RuleFor(x => x.EngName)
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (engName, cancellation) =>
                 {
@@ -30,6 +31,7 @@ namespace Application.System.HRS.Basics.FiscalYears.Validators
                 .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (arbName, cancellation) =>
                 {

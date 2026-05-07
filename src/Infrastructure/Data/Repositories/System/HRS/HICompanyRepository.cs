@@ -116,12 +116,12 @@ namespace Infrastructure.Data.Repositories.System.HRS.Basics.HICompanies
             return new PagedResult<HICompany>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id)
         {
             var item = await _db.HICompanies.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel();
                 _db.HICompanies.Update(item);
             }
         }
@@ -231,13 +231,12 @@ namespace Infrastructure.Data.Repositories.System.HRS.Basics.HICompanies
         public async Task<bool> ClassExistsAsync(int id)
             => await _db.HICompanyClasses.AnyAsync(x => x.Id == id);
 
-        public async Task SoftDeleteClassAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteClassAsync(int id)
         {
             var item = await _db.HICompanyClasses.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
-                _db.HICompanyClasses.Update(item);
+                 _db.HICompanyClasses.Update(item);
             }
         }
 

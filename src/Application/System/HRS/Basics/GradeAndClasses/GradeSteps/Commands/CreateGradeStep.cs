@@ -46,9 +46,7 @@ namespace Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Commands
                     arbName4S: request.Data.ArbName4S,
                     gradeId: request.Data.GradeId,
                     step: request.Data.Step,
-                    companyId: companyId,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
+                     remarks: request.Data.Remarks 
                 );
 
                 // Add Transactions
@@ -59,13 +57,11 @@ namespace Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Commands
                         var transaction = new GradeStepTransaction(
                             gradeStepId: 0,
                             gradeTransactionId: transDto.GradeTransactionId,
-                            companyId: companyId,
-                            amount: transDto.Amount,
+                             amount: transDto.Amount,
                             remarks: transDto.Remarks,
                             active: transDto.Active,
                             activeDate: transDto.ActiveDate,
-                            activeDateD: transDto.ActiveDateD,
-                            regComputerId: transDto.RegComputerId
+                            activeDateD: transDto.ActiveDateD 
                         );
                         entity.AddTransaction(transaction);
                     }

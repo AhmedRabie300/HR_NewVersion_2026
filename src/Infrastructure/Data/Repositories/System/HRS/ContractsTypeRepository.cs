@@ -1,20 +1,23 @@
 ﻿using Application.Common.Models;
 using Application.System.HRS.Abstractions;
 using Domain.System.HRS.Basics.ContractsTypes;
+using Infrastructure.Common.Helpers;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
-
+ 
+ 
 namespace Infrastructure.Data.Repositories.System.HRS
 {
     public sealed class ContractsTypeRepository : IContractsTypeRepository
     {
         private readonly ApplicationDbContext _db;
-
-        public ContractsTypeRepository(ApplicationDbContext db)
+ 
+        public ContractsTypeRepository(ApplicationDbContext db )
         {
             _db = db;
-        }
+         }
 
         public async Task<ContractsType?> GetByIdAsync(int id)
             => await _db.ContractsTypes
@@ -108,12 +111,12 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<ContractsType>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var item = await _db.ContractsTypes.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
                 _db.ContractsTypes.Update(item);
             }
         }
@@ -168,6 +171,9 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return !await query.AnyAsync(ct);
         }
 
-        public Task SaveChangesAsync(CancellationToken ct) => _db.SaveChangesAsync(ct);
+
+
+
+    public Task SaveChangesAsync(CancellationToken ct) => _db.SaveChangesAsync(ct);
     }
 }

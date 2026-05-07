@@ -11,7 +11,6 @@
         decimal? RegularHours,
         int? OverTimeTypeId,
         string? Remarks,
-        int? RegComputerId,
-        List<CreateGradeTransactionDto> Transactions
+         List<CreateGradeTransactionDto> Transactions
     );
 }

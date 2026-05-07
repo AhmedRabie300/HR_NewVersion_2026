@@ -43,11 +43,9 @@ namespace Application.System.HRS.Basics.ContractsTypes.Commands
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
-                    companyId: companyId,
-                    isSpecial: request.Data.IsSpecial,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
-                );
+                     isSpecial: request.Data.IsSpecial,
+                    remarks: request.Data.Remarks
+                 );
 
                 await _repo.AddAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

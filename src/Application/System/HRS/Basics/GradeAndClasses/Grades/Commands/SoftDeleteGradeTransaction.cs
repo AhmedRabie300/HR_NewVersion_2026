@@ -8,7 +8,7 @@ namespace Application.System.HRS.Basics.Grades.Commands
 {
     public static class SoftDeleteGradeTransaction
     {
-        public record Command(int Id, int? RegUserId = null) : IRequest<Unit>;
+        public record Command(int Id ) : IRequest<Unit>;
 
         public sealed class Validator : AbstractValidator<Command>
         {
@@ -36,7 +36,7 @@ namespace Application.System.HRS.Basics.Grades.Commands
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _repo.SoftDeleteTransactionAsync(request.Id, request.RegUserId);
+                await _repo.SoftDeleteTransactionAsync(request.Id );
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

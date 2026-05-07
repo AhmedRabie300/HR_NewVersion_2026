@@ -1,5 +1,6 @@
 ﻿using Application.Common.Abstractions;
 using Application.System.HRS.Basics.EmployeesClasses.Grades.Queries;
+using Application.System.HRS.Basics.EmployeesClasses.Queries;
 using Application.System.HRS.Basics.GradeAndClasses.Grades.Commands;
 using Application.System.HRS.Basics.Grades.Commands;
 using Application.System.HRS.Basics.Grades.Queries;
@@ -27,22 +28,33 @@ namespace API.System.HRS.Basics.Grades
                 var result = await mediator.Send(new ListGrades.Query(), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetAllGrades")
-            ;
+            .WithName("GetAllGrades");
 
+
+
+            // GET paged
             group.MapGet("/paged", async (
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
-                string? searchTerm = null,
-                CancellationToken ct = default) =>
+                string? orderBy = null,
+                string? orderDirection = null,
+string? Filters = null,
+CancellationToken ct = default) =>
+
             {
-                var result = await mediator.Send(
-                    new GetPagedGrades.Query(pageNumber, pageSize, searchTerm), ct);
-                return Results.Ok(result);
+
+
+                var result = await mediator.Send(new GetGradeList.Query(
+                    pageNumber, pageSize, orderBy, orderDirection, Filters), ct);
+
+                return Results.Json(result);
+
+                 
             })
-            .WithName("GetPagedGrades")
-            ;
+                .WithName("GetPagedGrades");
+ 
+            //;
 
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
             {
@@ -63,26 +75,26 @@ namespace API.System.HRS.Basics.Grades
             .WithName("CreateGrade")
             ;
 
-            group.MapPut("/{id:int}", async (
-                IMediator mediator,
-                int id,
-                UpdateGradeDto dto,
-                CancellationToken ct) =>
+            group.MapPut("/{id:int}/UpdateGrade", async (
+        IMediator mediator,
+        int id,
+        UpdateGradeDto dto,
+        CancellationToken ct) =>
             {
                 var fixedDto = dto with { Id = id };
                 await mediator.Send(new UpdateGrade.Command(fixedDto), ct);
                 return Results.NoContent();
             })
-            .WithName("UpdateGrade")
-            ;
+
+            .WithName("UpdateGrade");
+            
 
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
+                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteGrade.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteGrade.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteGrade")
@@ -117,27 +129,14 @@ namespace API.System.HRS.Basics.Grades
             })
             .WithName("AddGradeTransaction")
             ;
-
-            group.MapPut("/transactions/{id:int}", async (
-                IMediator mediator,
-                int id,
-                UpdateGradeTransactionDto dto,
-                CancellationToken ct) =>
-            {
-                var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateGradeTransaction.Command(fixedDto), ct);
-                return Results.NoContent();
-            })
-            .WithName("UpdateGradeTransaction")
-            ;
+ 
 
             group.MapDelete("/transactions/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
+                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteGradeTransaction.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteGradeTransaction.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteGradeTransaction")
@@ -153,29 +152,7 @@ namespace API.System.HRS.Basics.Grades
 
 
 
-             group.MapGet("/list", async (
-                IMediator mediator,
-                HttpContext httpContext,
-                CancellationToken ct) =>
-            {
-                var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
-                var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
-                var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
-                var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
-
-                 var filters = httpContext.Request.Query
-                    .Where(x => x.Key != "pageNumber"
-                                && x.Key != "pageSize"
-                                && x.Key != "orderBy"
-                                && x.Key != "orderDirection")
-                    .ToDictionary(x => x.Key, x => x.Value.ToString());
-
-                var result = await mediator.Send(new GetGradeList.Query(
-                    pageNumber, pageSize, orderBy, orderDirection, filters), ct);
-
-                return Results.Json(result);
-            })
-            .WithName("GetGradeList");
+         
             return routes;
         }
     }

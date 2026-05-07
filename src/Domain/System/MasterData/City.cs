@@ -3,7 +3,7 @@ using System.Diagnostics.Metrics;
 
 namespace Domain.System.MasterData
 {
-    public class City : LegacyEntity
+    public class City : LegacyEntity,ICompanyScoped
     {
         public string Code { get; private set; } = null!;
         public string? EngName { get; private set; }
@@ -16,8 +16,9 @@ namespace Domain.System.MasterData
         public string? Remarks { get; private set; }
         public int? RegUserId { get; private set; }
         public int? RegComputerId { get; private set; }
+        public int CompanyId { get; private set; }
         public DateTime? CancelDate { get; private set; }
-
+       
         // Navigation properties
         public Country? Country { get; private set; }
         public Region? Region { get; private set; }
@@ -66,11 +67,10 @@ namespace Domain.System.MasterData
             if (remarks != null) Remarks = remarks;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

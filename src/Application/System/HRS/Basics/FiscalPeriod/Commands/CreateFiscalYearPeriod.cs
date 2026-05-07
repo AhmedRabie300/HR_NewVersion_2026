@@ -52,9 +52,7 @@ namespace Application.System.HRS.Basics.FiscalPeriod.Commands
                     periodType: request.Data.PeriodType,
                     periodRank: request.Data.PeriodRank,
                     prepareFromDate: request.Data.PrepareFromDate,
-                    prepareToDate: request.Data.PrepareToDate,
-                    companyId: companyId,
-                    regComputerId: request.Data.RegComputerId
+                    prepareToDate: request.Data.PrepareToDate 
                 );
 
                 await _repo.AddAsync(entity);

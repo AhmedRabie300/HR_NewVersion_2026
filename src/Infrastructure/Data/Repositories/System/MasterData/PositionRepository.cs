@@ -136,12 +136,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
             return new PagedResult<Position>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var position = await _db.Positions.FindAsync(id);
             if (position != null)
             {
-                position.Cancel(regUserId);
+                position.Cancel( );
                 _db.Positions.Update(position);
             }
         }

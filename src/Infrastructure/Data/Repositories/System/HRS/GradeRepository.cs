@@ -122,12 +122,12 @@ namespace Infrastructure.Data.Repositories.System.HRS
             return new PagedResult<Grade>(items, pageNumber, pageSize, totalCount);
         }
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var item = await _db.Grades.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
                 _db.Grades.Update(item);
             }
         }
@@ -222,12 +222,12 @@ namespace Infrastructure.Data.Repositories.System.HRS
         public async Task<bool> TransactionExistsAsync(int id)
             => await _db.GradeTransactions.AnyAsync(x => x.Id == id);
 
-        public async Task SoftDeleteTransactionAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteTransactionAsync(int id )
         {
             var item = await _db.GradeTransactions.FindAsync(id);
             if (item != null)
             {
-                item.Cancel(regUserId);
+                item.Cancel( );
                 _db.GradeTransactions.Update(item);
             }
         }
@@ -254,7 +254,7 @@ public async Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string
         {
             criteriaObj = JObject.Parse(criteria);
         }
-        criteriaObj["companyId"] = companyId;
+        criteriaObj["companyid"] = companyId;
         criteria = criteriaObj.ToString();
 
         return await DataHelper.ExecuteListProcedureAsync(

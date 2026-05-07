@@ -41,12 +41,10 @@ namespace Application.System.HRS.Basics.FiscalPeriod.Commands
                 var entity = new FiscalYearPeriodModule(
                     fiscalYearPeriodId: request.Data.FiscalYearPeriodId,
                     moduleId: request.Data.ModuleId,
-                    companyId: companyId,
-                    openDate: request.Data.OpenDate,
+                     openDate: request.Data.OpenDate,
                     closeDate: request.Data.CloseDate,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
-                );
+                    remarks: request.Data.Remarks
+                 );
 
                 await _repo.AddModuleAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

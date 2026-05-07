@@ -25,7 +25,7 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Validators
 
             RuleFor(x => x.EngName)
                 .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (engName, cancellation) =>
                 {
                     if (string.IsNullOrWhiteSpace(engName)) return true;
@@ -35,7 +35,7 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Validators
 
             RuleFor(x => x.ArbName)
                 .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (arbName, cancellation) =>
                 {
                     if (string.IsNullOrWhiteSpace(arbName)) return true;

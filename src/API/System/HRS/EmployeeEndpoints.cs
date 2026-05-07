@@ -1,6 +1,7 @@
 ﻿using Application.Common.Abstractions;
 using Application.System.HRS.Basics.Employees.Commands;
 using Application.System.HRS.Basics.Employees.Queries;
+using Application.System.HRS.Basics.EmployeesClasses.Queries;
 using Application.System.HRS.Employees.Dtos;
 using Application.System.HRS.Employees.Queries;
 using MediatR;
@@ -29,12 +30,16 @@ namespace API.System.HRS.Employees
                 IMediator mediator,
                 int pageNumber = 1,
                 int pageSize = 20,
-                string? searchTerm = null,
-                CancellationToken ct = default) =>
+                string? orderBy = null,
+                string? orderDirection = null,
+string? Filters = null,
+CancellationToken ct = default) =>
+
             {
-                var result = await mediator.Send(
-                    new GetPagedEmployees.Query(pageNumber, pageSize, searchTerm), ct);
-                return Results.Ok(result);
+                var result = await mediator.Send(new GetEmployeeList.Query(
+                    pageNumber, pageSize, orderBy, orderDirection, Filters), ct);
+                return Results.Json(result);
+
             })
             .WithName("GetPagedEmployees")
             ;
@@ -96,10 +101,9 @@ namespace API.System.HRS.Employees
             group.MapDelete("/{id:int}/soft", async (
                 IMediator mediator,
                 int id,
-                [FromQuery] int? regUserId,
-                CancellationToken ct) =>
+                 CancellationToken ct) =>
             {
-                await mediator.Send(new SoftDeleteEmployee.Command(id, regUserId), ct);
+                await mediator.Send(new SoftDeleteEmployee.Command(id), ct);
                 return Results.NoContent();
             })
             .WithName("SoftDeleteEmployee")
@@ -115,29 +119,29 @@ namespace API.System.HRS.Employees
 
            
 
-            group.MapGet("/list", async (
-                IMediator mediator,
-                HttpContext httpContext,
-                CancellationToken ct) =>
-            {
-                var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
-                var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
-                var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
-                var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
+            //group.MapGet("/list", async (
+            //    IMediator mediator,
+            //    HttpContext httpContext,
+            //    CancellationToken ct) =>
+            //{
+            //    var pageNumber = int.Parse(httpContext.Request.Query["pageNumber"].FirstOrDefault() ?? "1");
+            //    var pageSize = int.Parse(httpContext.Request.Query["pageSize"].FirstOrDefault() ?? "20");
+            //    var orderBy = httpContext.Request.Query["orderBy"].FirstOrDefault();
+            //    var orderDirection = httpContext.Request.Query["orderDirection"].FirstOrDefault();
 
-                 var filters = httpContext.Request.Query
-                    .Where(x => x.Key != "pageNumber"
-                                && x.Key != "pageSize"
-                                && x.Key != "orderBy"
-                                && x.Key != "orderDirection")
-                    .ToDictionary(x => x.Key.ToLower(), x => x.Value.ToString());
+            //     var filters = httpContext.Request.Query
+            //        .Where(x => x.Key != "pageNumber"
+            //                    && x.Key != "pageSize"
+            //                    && x.Key != "orderBy"
+            //                    && x.Key != "orderDirection")
+            //        .ToDictionary(x => x.Key.ToLower(), x => x.Value.ToString());
 
-                var result = await mediator.Send(new GetEmployeeList.Query(
-                    pageNumber, pageSize, orderBy, orderDirection, filters), ct);
+            //    var result = await mediator.Send(new GetEmployeeList.Query(
+            //        pageNumber, pageSize, orderBy, orderDirection, filters), ct);
 
-                return Results.Json(result);
-            })
-            .WithName("GetEmployeeList");
+            //    return Results.Json(result);
+            //})
+            //.WithName("GetEmployeeList");
 
 
             return routes;

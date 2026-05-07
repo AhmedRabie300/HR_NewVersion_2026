@@ -70,6 +70,7 @@ namespace Infrastructure.EntityConfig.System.HRS.Basics.GradesAndClasses
                 .WithMany(x => x.Vacations)
                 .HasForeignKey(x => x.EmployeeClassId)
                 .OnDelete(DeleteBehavior.Cascade);
+               
 
             builder.HasOne(x => x.VacationType)
                 .WithMany()

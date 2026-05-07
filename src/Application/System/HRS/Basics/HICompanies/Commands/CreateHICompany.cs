@@ -44,8 +44,7 @@ namespace Application.System.HRS.Basics.HICompanies.Commands
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
                     companyId: companyId,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
+                    remarks: request.Data.Remarks 
                 );
 
                  if (request.Data.Classes != null)

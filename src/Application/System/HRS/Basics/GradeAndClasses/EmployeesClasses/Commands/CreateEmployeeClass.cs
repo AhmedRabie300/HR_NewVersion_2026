@@ -37,8 +37,7 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
 
             public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
-                var companyId = _currentUser.CompanyId;
-                var regUserId = _currentUser.UserId ?? 0;
+             
 
                 var entity = new EmployeeClass(
                     code: request.Data.Code,
@@ -56,11 +55,8 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
                     defultEndTime: request.Data.DefultEndTime,
                     workingUnitsIsHours: request.Data.WorkingUnitsIsHours,
                     defaultProjectId: request.Data.DefaultProjectId,
-                    companyId: companyId,
-                    remarks: request.Data.Remarks,
-                    regUserId: regUserId,
-                    regComputerId: request.Data.RegComputerId,
-                    nonPermiLatTransaction: request.Data.NonPermiLatTransaction,
+                     remarks: request.Data.Remarks,
+                      nonPermiLatTransaction: request.Data.NonPermiLatTransaction,
                     perDailyDelaying: request.Data.PerDailyDelaying,
                     perMonthlyDelaying: request.Data.PerMonthlyDelaying,
                     nonProfitOverTimeH: request.Data.NonProfitOverTimeH,
@@ -108,10 +104,8 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
                             fromMin: delayDto.FromMin,
                             toMin: delayDto.ToMin,
                             punishPCT: delayDto.PunishPCT,
-                            companyId: companyId,
-                            remarks: delayDto.Remarks,
-                            regComputerId: delayDto.RegComputerId
-                        );
+                             remarks: delayDto.Remarks
+                         );
                         entity.AddDelay(delay);
                     }
                 }
@@ -128,13 +122,11 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
                             requiredWorkingMonths: vacationDto.RequiredWorkingMonths,
                             fromMonth: vacationDto.FromMonth,
                             toMonth: vacationDto.ToMonth,
-                            companyId: companyId,
-                            remarks: vacationDto.Remarks,
+                             remarks: vacationDto.Remarks,
                             ticketsRnd: vacationDto.TicketsRnd,
                             dependantTicketRnd: vacationDto.DependantTicketRnd,
-                            maxKeepDays: vacationDto.MaxKeepDays,
-                            regComputerId: vacationDto.RegComputerId
-                        );
+                            maxKeepDays: vacationDto.MaxKeepDays
+                         );
                         entity.AddVacation(vacation);
                     }
                 }

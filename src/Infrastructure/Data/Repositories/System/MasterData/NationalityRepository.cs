@@ -131,12 +131,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
         // ========== Soft Delete ==========
 
-        public async Task SoftDeleteAsync(int id, int? regUserId = null)
+        public async Task SoftDeleteAsync(int id )
         {
             var nationality = await _db.Nationalities.FindAsync(id);
             if (nationality != null)
             {
-                nationality.Cancel(regUserId);
+                nationality.Cancel( );
                 _db.Nationalities.Update(nationality);
             }
         }

@@ -21,20 +21,20 @@ namespace Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Validators
                 .WithMessage(x => msg.Format("CodeExists", msg.Get("GradeStep"), x.Code));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
-                .MustAsync(async (engName, cancellation) =>
-                {
-                    if (string.IsNullOrWhiteSpace(engName)) return true;
-                    return await _repo.IsEngNameUniqueAsync(engName.Trim(), null, cancellation);
-                })
-                .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
+           .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+           .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
+           .MustAsync(async (engName, cancellation) =>
+           {
+               return await _repo.IsEngNameUniqueAsync(engName, null, cancellation);
+           })
+           .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
                 .MustAsync(async (arbName, cancellation) =>
                 {
-                    if (string.IsNullOrWhiteSpace(arbName)) return true;
-                    return await _repo.IsArbNameUniqueAsync(arbName.Trim(), null, cancellation);
+                    return await _repo.IsArbNameUniqueAsync(arbName, null, cancellation);
                 })
                 .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 

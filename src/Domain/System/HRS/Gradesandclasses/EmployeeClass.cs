@@ -76,8 +76,8 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
 
         public EmployeeClass(
             string code,
-            string? engName,
-            string? arbName,
+            string engName,
+            string arbName,
             string? arbName4S,
             byte? noOfDaysPerPeriod,
             float? workHoursPerDay,
@@ -90,11 +90,8 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             DateTime? defultEndTime,
             bool? workingUnitsIsHours,
             int? defaultProjectId,
-            int companyId,
-            string? remarks,
-            int regUserId,
-            int? regComputerId,
-            int? nonPermiLatTransaction,
+             string? remarks,
+              int? nonPermiLatTransaction,
             int? perDailyDelaying,
             int? perMonthlyDelaying,
             int? nonProfitOverTimeH,
@@ -146,11 +143,8 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             DefultEndTime = defultEndTime;
             WorkingUnitsIsHours = workingUnitsIsHours;
             DefaultProjectId = defaultProjectId;
-            CompanyId = companyId;
-            Remarks = remarks;
-            RegUserId = regUserId;
-            RegComputerId = regComputerId;
-            NonPermiLatTransaction = nonPermiLatTransaction;
+             Remarks = remarks;
+              NonPermiLatTransaction = nonPermiLatTransaction;
             PerDailyDelaying = perDailyDelaying;
             PerMonthlyDelaying = perMonthlyDelaying;
             NonProfitOverTimeH = nonProfitOverTimeH;
@@ -327,11 +321,10 @@ namespace Domain.System.HRS.Basics.GradesAndClasses
             _vacations.Clear();
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel()
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId.Value;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

@@ -24,7 +24,7 @@ namespace Application.System.MasterData.Abstractions
         Task<List<Domain.System.MasterData.Location>> GetActiveLocationsAsync();   
         Task<PagedResult<Domain.System.MasterData.Location>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm, int? branchId = null);   
 
-         Task SoftDeleteAsync(int id, int? regUserId = null);
+         Task SoftDeleteAsync(int id);
 
          Task SaveChangesAsync(CancellationToken ct);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);

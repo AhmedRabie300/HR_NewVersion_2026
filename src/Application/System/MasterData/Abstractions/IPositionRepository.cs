@@ -22,7 +22,7 @@ namespace Application.System.MasterData.Abstractions
         Task<List<Domain.System.MasterData.Position>> GetActivePositionsAsync();
         Task<PagedResult<Domain.System.MasterData.Position>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm);
 
-         Task SoftDeleteAsync(int id, int? regUserId = null);
+         Task SoftDeleteAsync(int id);
 
          Task SaveChangesAsync(CancellationToken ct);
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);

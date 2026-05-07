@@ -14,8 +14,7 @@ namespace Application.System.HRS.Basics.Employees.Validators
         {
             _repo = repo;
 
-            // Code is optional - will be generated if empty
-            RuleFor(x => x.Code)
+             RuleFor(x => x.Code)
                 .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50))
                 .MustAsync(async (code, cancellation) =>
                 {
@@ -25,8 +24,7 @@ namespace Application.System.HRS.Basics.Employees.Validators
                 .When(x => !string.IsNullOrWhiteSpace(x.Code))
                 .WithMessage(x => msg.Format("CodeExists", msg.Get("Employee"), x.Code));
 
-            // SSN is required and must be unique
-            RuleFor(x => x.SSnNo)
+             RuleFor(x => x.SSnNo)
                 .NotEmpty().WithMessage(x => msg.Get("SSNRequired"))
                 .MaximumLength(20).WithMessage(x => msg.Format("MaxLength", 20))
                 .MustAsync(async (ssnNo, cancellation) =>
@@ -36,11 +34,12 @@ namespace Application.System.HRS.Basics.Employees.Validators
                 })
                 .WithMessage(x => msg.Get("SSNAlreadyExists"));
 
-            // Names are not required to be unique (can be duplicated)
-            RuleFor(x => x.EngName)
+             RuleFor(x => x.EngName)
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName4S)
@@ -56,8 +55,7 @@ namespace Application.System.HRS.Basics.Employees.Validators
             RuleFor(x => x.FamilyArbName4S)
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
-            // Father Names
-            RuleFor(x => x.FatherEngName)
+             RuleFor(x => x.FatherEngName)
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.FatherArbName)

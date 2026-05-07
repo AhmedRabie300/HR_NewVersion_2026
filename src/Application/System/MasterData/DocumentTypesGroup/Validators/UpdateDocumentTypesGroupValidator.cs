@@ -17,7 +17,8 @@ namespace Application.System.MasterData.DocumentTypesGroup.Validators
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"));
 
-           RuleFor(x => x.EngName)
+            RuleFor(x => x.EngName)
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                 .MaximumLength(100).When(x => x.EngName != null)
                 .WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (dto, engName, cancellation) =>
@@ -28,16 +29,17 @@ namespace Application.System.MasterData.DocumentTypesGroup.Validators
                 .When(x => x.EngName != null)
                 .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
-             RuleFor(x => x.ArbName)
-                .MaximumLength(100).When(x => x.ArbName != null)
-                .WithMessage(x => msg.Format("MaxLength", 100))
-                .MustAsync(async (dto, arbName, cancellation) =>
-                {
-                    if (string.IsNullOrWhiteSpace(arbName)) return true;
-                    return await _repo.IsArbNameUniqueAsync(arbName, dto.Id, cancellation);
-                })
-                .When(x => x.ArbName != null)
-                .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
+            RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
+               .MaximumLength(100).When(x => x.ArbName != null)
+               .WithMessage(x => msg.Format("MaxLength", 100))
+               .MustAsync(async (dto, arbName, cancellation) =>
+               {
+                   if (string.IsNullOrWhiteSpace(arbName)) return true;
+                   return await _repo.IsArbNameUniqueAsync(arbName, dto.Id, cancellation);
+               })
+               .When(x => x.ArbName != null)
+               .WithMessage(x => msg.Format("ArbNameAlreadyExists", x.ArbName));
 
             RuleFor(x => x.Remarks)
                 .MaximumLength(2048).When(x => x.Remarks != null)

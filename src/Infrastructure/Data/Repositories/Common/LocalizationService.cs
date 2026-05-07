@@ -175,6 +175,10 @@ public class LocalizationService : ILocalizationService
         Add("PercentageBetween0And100", "Percentage must be between 0 and 100", "النسبة المئوية يجب أن تكون بين 0 و 100");
         Add("EngNameAlreadyExists", "English name '{0}' already exists", "الاسم الإنجليزي '{0}' موجود بالفعل");
         Add("ArbNameAlreadyExists", "Arabic name '{0}' already exists", "الاسم العربي '{0}' موجود بالفعل");
+        Add("ArbNameAlreadyExists", "Arabic name '{0}' already exists", "الاسم العربي '{0}' موجود بالفعل");
+        Add("EngNameRequired", "English Name is required", "الاسم الانجليزي مطلوب");
+        Add("ArbNameRequired", "Arab Name is required", "الاسم العربي مطلوب");
+
         //
         // FiscalYear
         Add("FiscalYear", "Fiscal year", "السنة المالية");

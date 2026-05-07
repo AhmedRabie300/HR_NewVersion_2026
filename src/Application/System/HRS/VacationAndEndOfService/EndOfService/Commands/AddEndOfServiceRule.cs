@@ -51,8 +51,7 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Commands
                     amountPercent: request.Data.AmountPercent,
                     formula: request.Data.Formula,
                     extraDedFormula: request.Data.ExtraDedFormula,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId
+                    remarks: request.Data.Remarks 
                 );
 
                 await _repo.AddRuleAsync(rule);

@@ -26,7 +26,7 @@ namespace Application.System.HRS.Abstractions
         Task<PagedResult<Employee>> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm);
 
         // Soft delete
-        Task SoftDeleteAsync(int id, int? regUserId = null);
+        Task SoftDeleteAsync(int id );
         Task SaveChangesAsync(CancellationToken ct);
 
         // Get next code with prefix logic

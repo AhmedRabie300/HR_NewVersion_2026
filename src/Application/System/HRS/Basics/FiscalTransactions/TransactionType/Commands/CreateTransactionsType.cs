@@ -72,10 +72,7 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Comma
                     isBasicSalary: request.Data.IsBasicSalary,
                     isDistributable: request.Data.IsDistributable,
                     isAllowPosting: request.Data.IsAllowPosting,
-                    companyId: companyId,
-                    regUserId: regUserId,
-                    regComputerId: request.Data.RegComputerId,
-                    remarks: request.Data.Remarks,
+                     remarks: request.Data.Remarks,
                     hasInsuranceTiers: request.Data.HasInsuranceTiers
                 );
 

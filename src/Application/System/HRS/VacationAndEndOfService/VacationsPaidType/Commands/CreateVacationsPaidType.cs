@@ -42,8 +42,7 @@ namespace Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Comma
                 var entity = new Domain.System.HRS.VacationAndEndOfService.VacationsPaidType(
                     code: request.Data.Code,
                     engName: request.Data.EngName,
-                    arbName: request.Data.ArbName,
-                    regUserId: null
+                    arbName: request.Data.ArbName 
                 );
 
                 await _repo.AddAsync(entity);

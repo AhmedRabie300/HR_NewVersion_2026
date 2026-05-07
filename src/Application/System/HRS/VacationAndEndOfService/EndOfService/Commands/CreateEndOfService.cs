@@ -43,10 +43,8 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Commands
                     engName: request.Data.EngName,
                     arbName: request.Data.ArbName,
                     arbName4S: request.Data.ArbName4S,
-                    companyId: companyId,
-                    remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId,
-                    extraTransactionId: request.Data.ExtraTransactionId,
+                     remarks: request.Data.Remarks,
+                     extraTransactionId: request.Data.ExtraTransactionId,
                     excludedFromSSRequests: request.Data.ExcludedFromSSRequests
                 );
 
@@ -62,9 +60,8 @@ namespace Application.System.HRS.VacationAndEndOfService.EndOfService.Commands
                             amountPercent: ruleDto.AmountPercent,
                             formula: ruleDto.Formula,
                             extraDedFormula: ruleDto.ExtraDedFormula,
-                            remarks: ruleDto.Remarks,
-                            regComputerId: ruleDto.RegComputerId
-                        );
+                            remarks: ruleDto.Remarks
+                         );
                         entity.AddRule(rule);
                     }
                 }

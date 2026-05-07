@@ -162,6 +162,8 @@ v1Api.MapEmployeeClassEndpoints();
 v1Api.MapFiscalYearEndpoints();
 v1Api.MapFiscalYearPeriodEndpoints();
 v1Api.MapEmployeeEndpoints();
+v1Api.MapContractEndpoints();
+
 
 
 app.Run();

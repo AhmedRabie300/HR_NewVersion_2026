@@ -59,13 +59,21 @@ namespace Application.System.HRS.Basics.HICompanies.Validators
 
     public class CreateHICompanyClassValidator : AbstractValidator<CreateHICompanyClassDto>
     {
+        private readonly IHICompanyRepository _repo;
+
         public CreateHICompanyClassValidator(IValidationMessages msg)
         {
+
+
             RuleFor(x => x.EngName)
-                .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));
+              .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+              .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));
+              
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                 .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));
+                 
 
             RuleFor(x => x.ArbName4S)
                 .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));

@@ -29,20 +29,16 @@ namespace Domain.System.HRS.VacationAndEndOfService
             string? engName,
             string? arbName,
             string? arbName4S,
-            int companyId,
-            string? remarks,
-            int? regComputerId = null,
-            int? extraTransactionId = null,
+             string? remarks,
+             int? extraTransactionId = null,
             bool? excludedFromSSRequests = null)
         {
             Code = code;
             EngName = engName;
             ArbName = arbName;
             ArbName4S = arbName4S;
-            CompanyId = companyId;
-            Remarks = remarks;
-            RegComputerId = regComputerId;
-            ExtraTransactionId = extraTransactionId;
+             Remarks = remarks;
+             ExtraTransactionId = extraTransactionId;
             ExcludedFromSSRequests = excludedFromSSRequests;
             RegDate = DateTime.UtcNow;
         }

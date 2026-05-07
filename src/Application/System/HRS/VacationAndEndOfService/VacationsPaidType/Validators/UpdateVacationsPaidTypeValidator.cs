@@ -29,6 +29,7 @@ namespace Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Valid
                 .WithMessage(x => msg.Format("CodeExists", msg.Get("VacationsPaidType"), x.Code));
 
             RuleFor(x => x.EngName)
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                 .MaximumLength(50).When(x => x.EngName != null)
                 .WithMessage(x => msg.Format("MaxLength", 50))
                 .MustAsync(async (dto, engName, cancellation) =>
@@ -40,6 +41,7 @@ namespace Application.System.HRS.VacationAndEndOfService.VacationsPaidType.Valid
                 .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                 .MaximumLength(50).When(x => x.ArbName != null)
                 .WithMessage(x => msg.Format("MaxLength", 50))
                 .MustAsync(async (dto, arbName, cancellation) =>

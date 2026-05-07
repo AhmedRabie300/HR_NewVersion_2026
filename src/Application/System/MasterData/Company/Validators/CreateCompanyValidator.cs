@@ -14,9 +14,11 @@ namespace Application.System.MasterData.Company.Validators
                 .MaximumLength(50).WithMessage(x => msg.Format("MaxLength", 50));
 
             RuleFor(x => x.EngName)
+                .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100));
 
             RuleFor(x => x.ArbName4S)

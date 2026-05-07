@@ -21,7 +21,8 @@ namespace Application.System.HRS.Basics.ContractsTypes.Validators
                 .WithMessage(x => msg.Format("CodeExists", msg.Get("ContractsType"), x.Code));
 
             RuleFor(x => x.EngName)
-                .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
+              .NotEmpty().WithMessage(x => msg.Get("EngNameRequired"))
+              .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (engName, cancellation) =>
                 {
                     if (string.IsNullOrWhiteSpace(engName)) return true;
@@ -30,6 +31,7 @@ namespace Application.System.HRS.Basics.ContractsTypes.Validators
                 .WithMessage(x => msg.Format("EngNameAlreadyExists", x.EngName));
 
             RuleFor(x => x.ArbName)
+                .NotEmpty().WithMessage(x => msg.Get("ArbNameRequired"))
                 .MaximumLength(100).WithMessage(x => msg.Format("MaxLength", 100))
                 .MustAsync(async (arbName, cancellation) =>
                 {

@@ -88,11 +88,10 @@ namespace Domain.System.MasterData
             if (positionBudget != null) PositionBudget = positionBudget;
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
         // Domain/System/MasterData/Position.cs
         // أضف هذه الدوال داخل الكلاس
 

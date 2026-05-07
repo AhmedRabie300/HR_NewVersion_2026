@@ -1,19 +1,19 @@
 ﻿using Application.System.HRS.Abstractions;
 using MediatR;
 using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace Application.System.HRS.Employees.Queries
 {
     public static class GetEmployeeList
     {
         public record Query(
-            int PageNumber = 1,
-            int PageSize = 20,
-            string? OrderBy = null,
-            string? OrderDirection = null,
-            Dictionary<string, string>? Filters = null
-        ) : IRequest<string?>;
-
+         int PageNumber = 1,
+         int PageSize = 20,
+         string? OrderBy = null,
+         string? OrderDirection = null,
+         string? Filters = null
+     ) : IRequest<string?>;
         public class Handler : IRequestHandler<Query, string?>
         {
             private readonly IEmployeeRepository _repo;
@@ -25,15 +25,20 @@ namespace Application.System.HRS.Employees.Queries
 
             public async Task<string?> Handle(Query request, CancellationToken cancellationToken)
             {
-                 var criteriaObj = new JObject();
+                var criteriaObj = new JObject();
 
-                if (request.Filters != null)
+                if (!string.IsNullOrEmpty(request.Filters))
                 {
-                    foreach (var filter in request.Filters)
+                    var filtersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(request.Filters);
+
+                    if (filtersDict != null)
                     {
-                        if (!string.IsNullOrEmpty(filter.Value))
+                        foreach (var filter in filtersDict)
                         {
-                            criteriaObj[filter.Key.ToLower()] = filter.Value;
+                            if (!string.IsNullOrEmpty(filter.Value))
+                            {
+                                criteriaObj[filter.Key] = filter.Value;
+                            }
                         }
                     }
                 }

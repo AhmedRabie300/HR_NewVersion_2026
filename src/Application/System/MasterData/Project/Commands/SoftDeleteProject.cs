@@ -36,7 +36,7 @@ namespace Application.System.MasterData.Project.Commands
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await _repo.SoftDeleteAsync(request.Id, request.RegUserId);
+                await _repo.SoftDeleteAsync(request.Id );
                 await _repo.SaveChangesAsync(cancellationToken);
 
                 return Unit.Value;

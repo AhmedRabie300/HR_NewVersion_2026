@@ -46,9 +46,8 @@ namespace Domain.System.HRS.Basics.FiscalPeriod
             byte? periodType,
             byte? periodRank,
             DateTime? prepareFromDate,
-            DateTime? prepareToDate,
-            int companyId,
-            int? regComputerId = null)
+            DateTime? prepareToDate
+           )
         {
             Code = code;
             FiscalYearId = fiscalYearId;
@@ -64,8 +63,7 @@ namespace Domain.System.HRS.Basics.FiscalPeriod
             PeriodRank = periodRank;
             PrepareFromDate = prepareFromDate;
             PrepareToDate = prepareToDate;
-            CompanyId = companyId;
-            RegComputerId = regComputerId;
+       
             RegDate = DateTime.UtcNow;
         }
 
@@ -114,11 +112,10 @@ namespace Domain.System.HRS.Basics.FiscalPeriod
             _modules.Clear();
         }
 
-        public void Cancel(int? regUserId = null)
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }

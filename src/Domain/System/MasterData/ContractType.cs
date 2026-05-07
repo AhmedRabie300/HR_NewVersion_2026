@@ -49,17 +49,11 @@ namespace Domain.System.MasterData
             if (isSpecial.HasValue) IsSpecial = isSpecial;
             if (remarks != null) Remarks = remarks;
         }
-
-        public void UpdateCompany(int? companyId)
-        {
-            if (companyId.HasValue) CompanyId = companyId.Value;
-        }
-
-        public void Cancel(int? regUserId = null)
+ 
+        public void Cancel( )
         {
             CancelDate = DateTime.Now;
-            if (regUserId.HasValue) RegUserId = regUserId;
-        }
+         }
 
         public bool IsActive() => !CancelDate.HasValue;
     }
