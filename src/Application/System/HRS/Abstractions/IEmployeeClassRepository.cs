@@ -44,5 +44,7 @@ namespace Application.System.HRS.Abstractions
 
         Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string? orderBy, string? orderDirection, string? criteria);
 
+         Task<bool> IsUsedInContractsAsync(int id);
+
     }
 }

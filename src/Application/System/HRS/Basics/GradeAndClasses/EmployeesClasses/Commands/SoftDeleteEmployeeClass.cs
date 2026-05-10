@@ -10,8 +10,21 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Comman
     {
         public record Command(int Id) : IRequest<Unit>;
 
-    
 
+        public sealed class Validator : AbstractValidator<Command>
+        {
+            private readonly IEmployeeClassRepository _repo;
+
+            public Validator(IValidationMessages msg, IEmployeeClassRepository repo)
+            {
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+          .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"))
+          .MustAsync(async (id, cancellation) => !await _repo.IsUsedInContractsAsync(id))
+          .WithMessage(x => msg.Get("EmployeeClassUsedInActiveContracts"));
+            }
+        }
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IEmployeeClassRepository _repo;

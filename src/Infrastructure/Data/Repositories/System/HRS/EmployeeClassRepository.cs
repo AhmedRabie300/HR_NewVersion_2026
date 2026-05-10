@@ -327,5 +327,15 @@ namespace Infrastructure.Data.Repositories.System.HRS
                 criteria);
         }
 
+
+
+  
+        public async Task<bool> IsUsedInContractsAsync(int id)
+        {
+ 
+            return await _db.Contracts
+                .AnyAsync(x => x.EmployeeClassId == id);
+        }
+
     }
 }
