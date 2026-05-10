@@ -263,6 +263,79 @@ public class LocalizationService : ILocalizationService
         Add("Project", "Project", "المشروع");
         Add("CreditLimitPositive", "Credit limit must be positive", "الحد الائتماني يجب أن يكون موجب");
         Add("ProjectPeriodPositive", "Project period must be positive", "فترة المشروع يجب أن تكون موجبة");
- 
+
+
+
+        // Nationality
+        Add("NationalityUsedInEmployees", "Cannot delete nationality because it is used in employee records", "لا يمكن حذف الجنسية لأنها مستخدمة في بيانات الموظفين");
+        Add("NationalityUsedInDependants", "Cannot delete nationality because it is used in dependant records", "لا يمكن حذف الجنسية لأنها مستخدمة في بيانات المعالين");
+        Add("CannotDeleteMainNationality", "Cannot delete the main nationality", "لا يمكن حذف الجنسية الرئيسية");
+        Add("CannotSoftDeleteMainNationality", "Cannot deactivate the main nationality", "لا يمكن إلغاء تفعيل الجنسية الرئيسية");
+
+        // Employee Class
+        Add("EmployeeClassUsedInEmployees", "Cannot delete employee class because it is used in employee records", "لا يمكن حذف فئة الموظف لأنها مستخدمة في بيانات الموظفين");
+        Add("EmployeeClassUsedInActiveContracts", "Cannot delete employee class because it is used in active contracts", "لا يمكن حذف فئة الموظف لأنها مستخدمة في عقود سارية");
+
+        // Grade
+        Add("GradeUsedInEmployees", "Cannot delete grade because it is used in employee records", "لا يمكن حذف الدرجة لأنها مستخدمة في بيانات الموظفين");
+        Add("GradeUsedInContracts", "Cannot delete grade because it is used in contracts", "لا يمكن حذف الدرجة لأنها مستخدمة في العقود");
+
+        // Department
+        Add("DepartmentUsedInEmployees", "Cannot delete department because it is used in employee records", "لا يمكن حذف القسم لأنه مستخدم في بيانات الموظفين");
+        Add("DepartmentUsedInProjects", "Cannot delete department because it is used in projects", "لا يمكن حذف القسم لأنه مستخدم في المشاريع");
+
+        // Branch
+        Add("BranchUsedInEmployees", "Cannot delete branch because it is used in employee records", "لا يمكن حذف الفرع لأنه مستخدم في بيانات الموظفين");
+        Add("BranchUsedInProjects", "Cannot delete branch because it is used in projects", "لا يمكن حذف الفرع لأنه مستخدم في المشاريع");
+
+        // Position
+        Add("PositionUsedInEmployees", "Cannot delete position because it is used in employee records", "لا يمكن حذف الوظيفة لأنها مستخدمة في بيانات الموظفين");
+        Add("PositionUsedInContracts", "Cannot delete position because it is used in contracts", "لا يمكن حذف الوظيفة لأنها مستخدمة في العقود");
+
+        // Item
+        Add("ItemUsedInEmployeesItems", "Cannot delete item because it is assigned to employees", "لا يمكن حذف الصنف لأنه مرتبط بموظفين");
+
+        // Project
+        Add("ProjectUsedInEmployees", "Cannot delete project because it is used in employee records", "لا يمكن حذف المشروع لأنه مستخدم في بيانات الموظفين");
+        Add("ProjectUsedInContracts", "Cannot delete project because it is used in contracts", "لا يمكن حذف المشروع لأنه مستخدم في العقود");
+
+        // Bank
+        Add("BankUsedInEmployees", "Cannot delete bank because it is used in employee records", "لا يمكن حذف البنك لأنه مستخدم في بيانات الموظفين");
+        Add("BankUsedInSuppliers", "Cannot delete bank because it is used in supplier records", "لا يمكن حذف البنك لأنه مستخدم في بيانات الموردين");
+
+        // Religion
+        Add("ReligionUsedInEmployees", "Cannot delete religion because it is used in employee records", "لا يمكن حذف الديانة لأنها مستخدمة في بيانات الموظفين");
+
+        // Marital Status
+        Add("MaritalStatusUsedInEmployees", "Cannot delete marital status because it is used in employee records", "لا يمكن حذف الحالة الاجتماعية لأنها مستخدمة في بيانات الموظفين");
+
+        // Blood Group
+        Add("BloodGroupUsedInEmployees", "Cannot delete blood group because it is used in employee records", "لا يمكن حذف فصيلة الدم لأنها مستخدمة في بيانات الموظفين");
+
+        // Sponsor
+        Add("SponsorUsedInEmployees", "Cannot delete sponsor because it is used in employee records", "لا يمكن حذف الكفيل لأنه مستخدم في بيانات الموظفين");
+
+        // Profession
+        Add("ProfessionUsedInEmployees", "Cannot delete profession because it is used in employee records", "لا يمكن حذف المهنة لأنها مستخدمة في بيانات الموظفين");
+        Add("ProfessionUsedInContracts", "Cannot delete profession because it is used in contracts", "لا يمكن حذف المهنة لأنها مستخدمة في العقود");
+
+        // Contract Type
+        Add("ContractTypeUsedInContracts", "Cannot delete contract type because it is used in contracts", "لا يمكن حذف نوع العقد لأنه مستخدم في العقود");
+
+        // HICompany (Health Insurance Company)
+        Add("HICompanyUsedInClasses", "Cannot delete health insurance company because it has classes", "لا يمكن حذف شركة التأمين الصحي لأنها تحتوي على فئات");
+        Add("HICompanyUsedInEmployees", "Cannot delete health insurance company because it is used in employee records", "لا يمكن حذف شركة التأمين الصحي لأنها مستخدمة في بيانات الموظفين");
+
+        // HICompanyClass
+        Add("HICompanyClassUsedInEmployees", "Cannot delete insurance class because it is used in employee records", "لا يمكن حذف فئة التأمين لأنها مستخدمة في بيانات الموظفين");
+
+        // TransactionsType
+        Add("TransactionsTypeUsedInContracts", "Cannot delete transaction type because it is used in contracts", "لا يمكن حذف نوع المعاملة لأنه مستخدم في العقود");
+        Add("TransactionsTypeUsedInGrades", "Cannot delete transaction type because it is used in grades", "لا يمكن حذف نوع المعاملة لأنه مستخدم في الدرجات");
+
+        // Interval
+        Add("IntervalUsedInContracts", "Cannot delete interval because it is used in contracts", "لا يمكن حذف الفاصل الزمني لأنه مستخدم في العقود");
+        Add("IntervalUsedInGrades", "Cannot delete interval because it is used in grades", "لا يمكن حذف الفاصل الزمني لأنه مستخدم في الدرجات");
+
     }
 }
