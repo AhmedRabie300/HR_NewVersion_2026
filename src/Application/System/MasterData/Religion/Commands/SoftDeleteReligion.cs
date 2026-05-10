@@ -1,7 +1,8 @@
+using Application.Abstractions;
+using Application.Common.Abstractions;
 using Application.System.MasterData.Abstractions;
 using FluentValidation;
 using MediatR;
-using Application.Abstractions;
 
 namespace Application.System.MasterData.Religion.Commands
 {
@@ -11,9 +12,17 @@ namespace Application.System.MasterData.Religion.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator()
+            private readonly IReligionRepository _repo;
+
+            public Validator(IValidationMessages msg, IReligionRepository repo)
             {
-                RuleFor(x => x.Id).GreaterThan(0);
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInEmployeesAsync(id))
+                    .WithMessage(msg.Get("ReligionUsedInEmployees"));
+
             }
         }
 

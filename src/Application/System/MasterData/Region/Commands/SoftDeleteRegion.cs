@@ -12,11 +12,20 @@ namespace Application.System.MasterData.Region.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            private readonly IRegionRepository _repo;
+
+            public Validator(IValidationMessages msg, IRegionRepository repo)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInCountriesAsync(id))
+                    .WithMessage(msg.Get("RegionUsedInCountries"));
+
             }
         }
+
 
         public class Handler : IRequestHandler<Command, Unit>
         {

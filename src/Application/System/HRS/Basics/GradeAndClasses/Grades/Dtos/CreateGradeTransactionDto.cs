@@ -8,7 +8,6 @@
         bool? OnceAtPeriod,
         int? IntervalId,
         int? NumberOfTickets,
-        string? Remarks,
-        int? RegComputerId
-    );
+        string? Remarks
+     );
 }

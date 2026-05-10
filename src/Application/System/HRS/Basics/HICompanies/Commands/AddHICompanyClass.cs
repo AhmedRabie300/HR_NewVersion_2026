@@ -54,9 +54,8 @@ namespace Application.System.HRS.Basics.HICompanies.Commands
                     arbName4S: request.Data.ArbName4S,
                     remarks: request.Data.Remarks,
                     companyAmount: request.Data.CompanyAmount,
-                    employeeAmount: request.Data.EmployeeAmount,
-                    regComputerId: request.Data.RegComputerId
-                );
+                    employeeAmount: request.Data.EmployeeAmount
+                 );
 
                 await _repo.AddClassAsync(entity);
                 await _repo.SaveChangesAsync(cancellationToken);

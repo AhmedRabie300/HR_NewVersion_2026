@@ -33,5 +33,10 @@ namespace Application.System.HRS.Abstractions
         Task SoftDeleteTransactionAsync(int id);
 
         Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string? orderBy, string? orderDirection, string? criteria);
+
+        Task<bool> IsUsedInGradeStepAsync(int id);
+
+
+     
     }
 }

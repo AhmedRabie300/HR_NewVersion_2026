@@ -178,5 +178,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
             return !await query.AnyAsync(ct);
         }
+
+        public async Task<bool> IsUsedInEmployeesContractsAsync(int id)
+        {
+
+            return await _db.Contracts
+                .AnyAsync(x => x.ProfessionId == id);
+        }
     }
 }

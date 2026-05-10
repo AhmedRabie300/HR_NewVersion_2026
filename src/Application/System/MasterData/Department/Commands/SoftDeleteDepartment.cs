@@ -12,9 +12,17 @@ namespace Application.System.MasterData.Department.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            private readonly IDepartmentRepository _repo;
+
+            public Validator(IValidationMessages msg, IDepartmentRepository repo)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInEmployeesAsync(id))
+                    .WithMessage(msg.Get("DepartmentUsedInEmployees"));
+
             }
         }
 

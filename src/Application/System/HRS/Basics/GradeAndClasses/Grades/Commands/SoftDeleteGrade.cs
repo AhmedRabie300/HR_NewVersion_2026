@@ -9,21 +9,21 @@ namespace Application.System.HRS.Basics.GradesAndClasses.Grades.Commands
     {
         public record Command(int Id ) : IRequest<Unit>;
 
+
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IGradeRepository _repo;
 
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg, IGradeRepository repo)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-                var lang = _contextService.GetCurrentLanguage();
+                _repo = repo;
+
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
+          .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"))
+          .MustAsync(async (id, cancellation) => !await _repo.IsUsedInGradeStepAsync(id))
+          .WithMessage(x => msg.Get("GradeUsedInGradeSteps"));
             }
         }
-
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IGradeRepository _repo;

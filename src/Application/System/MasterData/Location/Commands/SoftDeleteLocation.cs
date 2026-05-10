@@ -10,15 +10,24 @@ using MediatR;
             {
                 public record Command(int Id) : IRequest<Unit>;
 
-                public sealed class Validator : AbstractValidator<Command>
-                {
-                    public Validator(IValidationMessages msg)
-                    {
-                        RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
-                    }
-                }
+        public sealed class Validator : AbstractValidator<Command>
+        {
+            private readonly ILocationRepository _repo;
 
-                public class Handler : IRequestHandler<Command, Unit>
+            public Validator(IValidationMessages msg, ILocationRepository repo)
+            {
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInEmployeesAsync(id))
+                    .WithMessage(msg.Get("LocationUsedInEmployees"));
+
+            }
+        }
+
+
+        public class Handler : IRequestHandler<Command, Unit>
                 {
                     private readonly ILocationRepository _repo;
 

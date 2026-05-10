@@ -77,7 +77,13 @@ namespace Infrastructure.EntityConfig.System.MasterData
             builder.HasIndex(x => x.TravelRoute)
                 .HasDatabaseName("IX_Nationalities_TravelRoute");
 
-           
+
+            builder.HasMany(x => x.Employees)
+      .WithOne(x => x.Nationality)
+      .HasForeignKey(x => x.NationalityId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+
         }
     }
 }

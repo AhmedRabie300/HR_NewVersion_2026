@@ -180,5 +180,7 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
             return !await query.AnyAsync(ct);
         }
+
+
     }
 }

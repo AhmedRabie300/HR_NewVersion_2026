@@ -22,5 +22,9 @@ namespace Application.System.MasterData.Abstractions
         Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default);
         Task<bool> IsArbNameUniqueAsync(string arbName, int? excludeId = null, CancellationToken ct = default);
 
+        Task<bool> IsUsedInContractsAsync(int id);
+
+
+
     }
 }

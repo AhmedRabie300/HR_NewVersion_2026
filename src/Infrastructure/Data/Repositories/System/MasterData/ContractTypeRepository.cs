@@ -187,5 +187,13 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
             return !await query.AnyAsync(ct);
         }
+
+
+        public async Task<bool> IsUsedInContractsAsync(int id)
+        {
+
+            return await _db.Contracts
+                .AnyAsync(x => x.ContractTypeId == id);
+        }
     }
 }

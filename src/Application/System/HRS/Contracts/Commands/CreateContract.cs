@@ -8,6 +8,7 @@ using Application.System.MasterData.Abstractions;
 using Domain.System.HRS.Basics.Contracts;
 using FluentValidation;
 using MediatR;
+using Application.System.MasterData.Abstractions;
 
 namespace Application.System.HRS.Contracts.Commands
 {
@@ -22,7 +23,7 @@ namespace Application.System.HRS.Contracts.Commands
                 IContractRepository repo,
                 IEmployeeRepository employeeRepo,
                 IEmployeeClassRepository employeeClassRepo,
-                IContractsTypeRepository contractTypeRepo)
+                IContractTypeRepository contractTypeRepo)
             {
                 RuleFor(x => x.Data)
                     .SetValidator(new CreateContractValidator(msg, repo, employeeRepo, employeeClassRepo, contractTypeRepo));

@@ -24,5 +24,9 @@ namespace Application.System.MasterData.Abstractions
         Task<string?> GetMaxCodeAsync(int companyId, CancellationToken ct);
         Task<bool> IsEngNameUniqueAsync(string engName, int? excludeId = null, CancellationToken ct = default);
         Task<bool> IsArbNameUniqueAsync(string arbName, int? excludeId = null, CancellationToken ct = default);
+        Task<bool> IsUsedInCitiesAsync(int id);
+
+
+     
     }
 }

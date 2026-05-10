@@ -6,7 +6,6 @@
         string? ArbName4S,
         string? Remarks,
         decimal? CompanyAmount,
-        decimal? EmployeeAmount,
-        int? RegComputerId
-    );
+        decimal? EmployeeAmount
+     );
 }

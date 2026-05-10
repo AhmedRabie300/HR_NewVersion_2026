@@ -269,5 +269,13 @@ public async Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string
             orderDirection,
             criteria);
     }
-}
+
+
+        public async Task<bool> IsUsedInGradeStepAsync(int id)
+        {
+
+            return await _db.GradeSteps
+                .AnyAsync(x => x.GradeId == id);
+        }
+    }
 }

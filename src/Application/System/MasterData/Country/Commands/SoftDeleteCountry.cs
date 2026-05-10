@@ -9,12 +9,19 @@ namespace Application.System.MasterData.Country.Commands
     public static class SoftDeleteCountry
     {
         public record Command(int Id) : IRequest<Unit>;
-
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            private readonly ICountryRepository _repo;
+
+            public Validator(IValidationMessages msg, ICountryRepository repo)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInCitiesAsync(id))
+                    .WithMessage(msg.Get("CountryUsedInCities"));
+
             }
         }
 

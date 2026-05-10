@@ -12,9 +12,17 @@ namespace Application.System.MasterData.Profession.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            private readonly IProfessionRepository _repo;
+
+            public Validator(IValidationMessages msg, IProfessionRepository repo)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInEmployeesContractsAsync(id))
+                    .WithMessage(msg.Get("ProfessionUsedInContracts"));
+
             }
         }
 

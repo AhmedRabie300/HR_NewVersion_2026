@@ -210,5 +210,17 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
             return !await query.AnyAsync(ct);
         }
+
+
+        public async Task<bool> IsUsedInEmployeesAsync(int id)
+        {
+ 
+            return await _db.Employees
+                .AnyAsync(x => x.NationalityId == id
+                     && x.CancelDate == null);
+        }
+
+  
+       
     }
 }

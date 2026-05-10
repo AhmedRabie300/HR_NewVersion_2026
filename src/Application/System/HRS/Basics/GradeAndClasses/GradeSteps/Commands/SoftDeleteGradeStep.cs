@@ -11,16 +11,16 @@ namespace Application.System.HRS.Basics.GradeAndClasses.GradeSteps.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            private readonly IContextService _contextService;
-            private readonly ILocalizationService _localizer;
+            private readonly IGradeStepRepository _repo;
 
-            public Validator(IContextService contextService, ILocalizationService localizer)
+            public Validator(IValidationMessages msg, IGradeStepRepository repo)
             {
-                _contextService = contextService;
-                _localizer = localizer;
-                var lang = _contextService.GetCurrentLanguage();
+                _repo = repo;
+
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(_localizer.GetMessage("IdGreaterThanZero", lang));
+          .GreaterThan(0).WithMessage(x => msg.Get("IdGreaterThanZero"))
+          .MustAsync(async (id, cancellation) => !await _repo.IsUsedInEmployeeContractAsync(id))
+          .WithMessage(x => msg.Get("GradeStepUsedInEmployeeContract"));
             }
         }
 

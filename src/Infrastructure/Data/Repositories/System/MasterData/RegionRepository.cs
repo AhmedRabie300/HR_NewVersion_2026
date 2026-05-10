@@ -182,5 +182,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
             return !await query.AnyAsync(ct);
         }
+
+        public async Task<bool> IsUsedInCountriesAsync(int id)
+        {
+
+            return await _db.Countries
+                .AnyAsync(x => x.RegionId == id);
+        }
     }
 }

@@ -6,7 +6,6 @@
         string? Remarks,
         bool? Active,
         DateTime? ActiveDate,
-        string? ActiveDateD,
-        int? RegComputerId
-    );
+        string? ActiveDateD
+     );
 }

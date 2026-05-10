@@ -281,5 +281,12 @@ public async Task<string?> GetListJsonAsync(int pageNumber, int pageSize, string
             orderDirection,
             criteria);
     }
-}
+
+        public async Task<bool> IsUsedInEmployeeContractAsync(int id)
+        {
+
+            return await _db.Contracts
+                .AnyAsync(x => x.GradeStepId == id);
+        }
+    }
 }

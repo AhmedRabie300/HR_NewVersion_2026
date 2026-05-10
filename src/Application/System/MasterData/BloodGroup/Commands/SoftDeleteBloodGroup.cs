@@ -12,13 +12,19 @@ namespace Application.System.MasterData.BloodGroup.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            private readonly IBloodGroupRepository _repo;
+
+            public Validator(IValidationMessages msg, IBloodGroupRepository repo)
             {
+                _repo = repo;
+
                 RuleFor(x => x.Id)
-                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInEmployeesAsync(id))
+                    .WithMessage(msg.Get("BloodGroupUsedInEmployees"));
+
             }
         }
-
         public class Handler : IRequestHandler<Command, Unit>
         {
             private readonly IBloodGroupRepository _repo;

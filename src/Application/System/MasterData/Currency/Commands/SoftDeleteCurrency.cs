@@ -12,11 +12,20 @@ namespace Application.System.MasterData.Currency.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            private readonly ICurrencyRepository _repo;
+
+            public Validator(IValidationMessages msg, ICurrencyRepository repo)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInContractAsync(id))
+                    .WithMessage(msg.Get("CurrencyUsedInContract"));
+
             }
         }
+
 
         public class Handler : IRequestHandler<Command, Unit>
         {

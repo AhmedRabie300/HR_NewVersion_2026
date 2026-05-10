@@ -20,12 +20,12 @@ namespace API.System.HRS
             // ==================== GradeStep (Master) ====================
 
             // GET all
-            group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new ListGradeSteps.Query(), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetAllGradeSteps");
+            //group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new ListGradeSteps.Query(), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetAllGradeSteps");
 
  
             // GET paged
@@ -45,17 +45,17 @@ CancellationToken ct = default) =>
             .WithName("GetPagedGradeSteps");
             
 
-            // GET by grade id
-            group.MapGet("/by-grade/{gradeId:int}", async (
-                IMediator mediator,
-                int gradeId,
-                CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new GetGradeStepsByGradeId.Query(gradeId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetGradeStepsByGradeId")
-            ;
+            //// GET by grade id
+            //group.MapGet("/by-grade/{gradeId:int}", async (
+            //    IMediator mediator,
+            //    int gradeId,
+            //    CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new GetGradeStepsByGradeId.Query(gradeId), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetGradeStepsByGradeId");
+          
 
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -104,55 +104,55 @@ CancellationToken ct = default) =>
             .WithName("SoftDeleteGradeStep")
             ;
 
-            // DELETE hard
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteGradeStep.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            .WithName("DeleteGradeStep")
-            ;
+            //// DELETE hard
+            //group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new DeleteGradeStep.Command(id), ct);
+            //    return result ? Results.NoContent() : Results.NotFound();
+            //})
+            //.WithName("DeleteGradeStep")
+            //;
 
             // ==================== GradeStepTransaction (Detail) ====================
 
             // GET transactions by grade step id
-            group.MapGet("/{gradeStepId:int}/transactions", async (
-                IMediator mediator,
-                int gradeStepId,
-                CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new GetGradeStepTransactions.Query(gradeStepId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetGradeStepTransactions")
-            ;
+            //group.MapGet("/{gradeStepId:int}/transactions", async (
+            //    IMediator mediator,
+            //    int gradeStepId,
+            //    CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new GetGradeStepTransactions.Query(gradeStepId), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetGradeStepTransactions")
+            //;
 
-            // POST add transaction
-            group.MapPost("/{gradeStepId:int}/transactions", async (
-                IMediator mediator,
-                int gradeStepId,
-                CreateGradeStepTransactionDto dto,
-                CancellationToken ct) =>
-            {
-                var id = await mediator.Send(new AddGradeStepTransaction.Command(gradeStepId, dto), ct);
-                return Results.Created($"/hrs/grades/steps/{gradeStepId}/transactions/{id}", new { id });
-            })
-            .WithName("AddGradeStepTransaction")
-            ;
+            //// POST add transaction
+            //group.MapPost("/{gradeStepId:int}/transactions", async (
+            //    IMediator mediator,
+            //    int gradeStepId,
+            //    CreateGradeStepTransactionDto dto,
+            //    CancellationToken ct) =>
+            //{
+            //    var id = await mediator.Send(new AddGradeStepTransaction.Command(gradeStepId, dto), ct);
+            //    return Results.Created($"/hrs/grades/steps/{gradeStepId}/transactions/{id}", new { id });
+            //})
+            //.WithName("AddGradeStepTransaction")
+            //;
 
             // PUT update transaction
-            group.MapPut("/transactions/{id:int}", async (
-                IMediator mediator,
-                int id,
-                UpdateGradeStepTransactionDto dto,
-                CancellationToken ct) =>
-            {
-                var fixedDto = dto with { Id = id };
-                await mediator.Send(new UpdateGradeStepTransaction.Command(fixedDto), ct);
-                return Results.NoContent();
-            })
-            .WithName("UpdateGradeStepTransaction")
-            ;
+            //group.MapPut("/transactions/{id:int}", async (
+            //    IMediator mediator,
+            //    int id,
+            //    UpdateGradeStepTransactionDto dto,
+            //    CancellationToken ct) =>
+            //{
+            //    var fixedDto = dto with { Id = id };
+            //    await mediator.Send(new UpdateGradeStepTransaction.Command(fixedDto), ct);
+            //    return Results.NoContent();
+            //})
+            //.WithName("UpdateGradeStepTransaction")
+            //;
 
             // DELETE soft transaction
             group.MapDelete("/transactions/{id:int}/soft", async (
@@ -167,13 +167,13 @@ CancellationToken ct = default) =>
             .WithName("SoftDeleteGradeStepTransaction")
             ;
 
-            // DELETE hard transaction
-            group.MapDelete("/transactions/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteGradeStepTransaction.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            .WithName("DeleteGradeStepTransaction");
+            //// DELETE hard transaction
+            //group.MapDelete("/transactions/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new DeleteGradeStepTransaction.Command(id), ct);
+            //    return result ? Results.NoContent() : Results.NotFound();
+            //})
+            //.WithName("DeleteGradeStepTransaction");
  
 
             // group.MapGet("/list", async (

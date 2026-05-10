@@ -11,9 +11,17 @@ namespace Application.System.MasterData.Bank.Commands
 
         public sealed class Validator : AbstractValidator<Command>
         {
-            public Validator(IValidationMessages msg)
+            private readonly IBankRepository _repo;
+
+            public Validator(IValidationMessages msg, IBankRepository repo)
             {
-                RuleFor(x => x.Id).GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"));
+                _repo = repo;
+
+                RuleFor(x => x.Id)
+                    .GreaterThan(0).WithMessage(msg.Get("IdGreaterThanZero"))
+                    .MustAsync(async (id, cancellation) => !await _repo.IsUsedInEmployeesAsync(id))
+                    .WithMessage(msg.Get("BankUsedInEmployees"));
+                 
             }
         }
         public class Handler : IRequestHandler<Command, Unit>

@@ -162,7 +162,7 @@ namespace Infrastructure.Data.Repositories.System.HRS
 
             return !await query.AnyAsync(ct);
         }
+       
 
-     
     }
 }

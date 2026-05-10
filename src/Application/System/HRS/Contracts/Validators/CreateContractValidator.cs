@@ -3,7 +3,7 @@ using Application.Common.Abstractions;
 using Application.System.HRS.Abstractions;
 using Application.System.HRS.Contracts.Dtos;
 using FluentValidation;
-
+using Application.System.MasterData.Abstractions;
 namespace Application.System.HRS.Contracts.Validators
 {
     public class CreateContractValidator : AbstractValidator<CreateContractDto>
@@ -11,14 +11,14 @@ namespace Application.System.HRS.Contracts.Validators
         private readonly IContractRepository _repo;
         private readonly IEmployeeRepository _employeeRepo;
         private readonly IEmployeeClassRepository _employeeClassRepo;
-        private readonly IContractsTypeRepository _contractTypeRepo;
+        private readonly IContractTypeRepository _contractTypeRepo;
 
         public CreateContractValidator(
             IValidationMessages msg,
             IContractRepository repo,
             IEmployeeRepository employeeRepo,
             IEmployeeClassRepository employeeClassRepo,
-            IContractsTypeRepository contractTypeRepo)
+            IContractTypeRepository contractTypeRepo)
         {
             _repo = repo;
             _employeeRepo = employeeRepo;

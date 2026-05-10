@@ -204,5 +204,12 @@ namespace Infrastructure.Data.Repositories.System.MasterData
 
             return !await query.AnyAsync(ct);
         }
+
+        public async Task<bool> IsUsedInCitiesAsync(int id)
+        {
+
+            return await _db.Cities
+                .AnyAsync(x => x.CountryId == id);
+        }
     }
 }

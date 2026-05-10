@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.System.HRS.Employees;
 
 namespace Domain.System.MasterData
 {
@@ -20,6 +21,7 @@ namespace Domain.System.MasterData
 
         // Navigation properties
         // public TicketRoute? TicketRoute { get; private set; } // هتضاف بعدين
+        public ICollection<Employee>? Employees { get; private set; }
 
         private Nationality() { } // For EF Core
 

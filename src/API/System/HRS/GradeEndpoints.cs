@@ -23,12 +23,12 @@ namespace API.System.HRS.Basics.Grades
 
             // ==================== Grade (Master) ====================
 
-            group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new ListGrades.Query(), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetAllGrades");
+            //group.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new ListGrades.Query(), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetAllGrades");
 
 
 
@@ -100,35 +100,35 @@ CancellationToken ct = default) =>
             .WithName("SoftDeleteGrade")
             ;
 
-            group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteGrade.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            .WithName("DeleteGrade")
-            ;
+            //group.MapDelete("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new DeleteGrade.Command(id), ct);
+            //    return result ? Results.NoContent() : Results.NotFound();
+            //})
+            //.WithName("DeleteGrade")
+            //;
 
             // ==================== GradeTransaction (Detail) ====================
 
-            group.MapGet("/{gradeId:int}/transactions", async (IMediator mediator, int gradeId, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new GetGradeTransactions.Query(gradeId), ct);
-                return Results.Ok(result);
-            })
-            .WithName("GetGradeTransactions")
-            ;
+            //group.MapGet("/{gradeId:int}/transactions", async (IMediator mediator, int gradeId, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new GetGradeTransactions.Query(gradeId), ct);
+            //    return Results.Ok(result);
+            //})
+            //.WithName("GetGradeTransactions")
+            //;
 
-            group.MapPost("/{gradeId:int}/transactions", async (
-                IMediator mediator,
-                int gradeId,
-                CreateGradeTransactionDto dto,
-                CancellationToken ct) =>
-            {
-                var id = await mediator.Send(new AddGradeTransaction.Command(gradeId, dto), ct);
-                return Results.Created($"/hrs/grades/{gradeId}/transactions/{id}", new { id });
-            })
-            .WithName("AddGradeTransaction")
-            ;
+            //group.MapPost("/{gradeId:int}/transactions", async (
+            //    IMediator mediator,
+            //    int gradeId,
+            //    CreateGradeTransactionDto dto,
+            //    CancellationToken ct) =>
+            //{
+            //    var id = await mediator.Send(new AddGradeTransaction.Command(gradeId, dto), ct);
+            //    return Results.Created($"/hrs/grades/{gradeId}/transactions/{id}", new { id });
+            //})
+            //.WithName("AddGradeTransaction")
+            //;
  
 
             group.MapDelete("/transactions/{id:int}/soft", async (
@@ -142,13 +142,13 @@ CancellationToken ct = default) =>
             .WithName("SoftDeleteGradeTransaction")
             ;
 
-            group.MapDelete("/transactions/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(new DeleteGradeTransaction.Command(id), ct);
-                return result ? Results.NoContent() : Results.NotFound();
-            })
-            .WithName("DeleteGradeTransaction")
-            ;
+            //group.MapDelete("/transactions/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
+            //{
+            //    var result = await mediator.Send(new DeleteGradeTransaction.Command(id), ct);
+            //    return result ? Results.NoContent() : Results.NotFound();
+            //})
+            //.WithName("DeleteGradeTransaction")
+            //;
 
 
 

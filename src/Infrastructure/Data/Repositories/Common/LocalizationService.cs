@@ -277,8 +277,9 @@ public class LocalizationService : ILocalizationService
         Add("EmployeeClassUsedInActiveContracts", "Cannot delete employee class because it is used in active contracts", "لا يمكن حذف فئة الموظف لأنها مستخدمة في عقود سارية");
 
         // Grade
-        Add("GradeUsedInEmployees", "Cannot delete grade because it is used in employee records", "لا يمكن حذف الدرجة لأنها مستخدمة في بيانات الموظفين");
-        Add("GradeUsedInContracts", "Cannot delete grade because it is used in contracts", "لا يمكن حذف الدرجة لأنها مستخدمة في العقود");
+        Add("GradeUsedInGradeSteps", "Cannot delete grade because it is used in employee records", "لا يمكن حذف الدرجة لأنها مستخدمة في بيانات الموظفين");
+        // Grade Step
+        Add("GradeStepUsedInEmployeeContract", "Cannot delete grade because it is used in employees contracts records", "لا يمكن حذف الدرجة لأنها مستخدمة في بيانات عقود الموظفين");
 
         // Department
         Add("DepartmentUsedInEmployees", "Cannot delete department because it is used in employee records", "لا يمكن حذف القسم لأنه مستخدم في بيانات الموظفين");
@@ -289,8 +290,7 @@ public class LocalizationService : ILocalizationService
         Add("BranchUsedInProjects", "Cannot delete branch because it is used in projects", "لا يمكن حذف الفرع لأنه مستخدم في المشاريع");
 
         // Position
-        Add("PositionUsedInEmployees", "Cannot delete position because it is used in employee records", "لا يمكن حذف الوظيفة لأنها مستخدمة في بيانات الموظفين");
-        Add("PositionUsedInContracts", "Cannot delete position because it is used in contracts", "لا يمكن حذف الوظيفة لأنها مستخدمة في العقود");
+         Add("PositionUsedInContracts", "Cannot delete position because it is used in contracts", "لا يمكن حذف الوظيفة لأنها مستخدمة في العقود");
 
         // Item
         Add("ItemUsedInEmployeesItems", "Cannot delete item because it is assigned to employees", "لا يمكن حذف الصنف لأنه مرتبط بموظفين");
@@ -311,13 +311,24 @@ public class LocalizationService : ILocalizationService
 
         // Blood Group
         Add("BloodGroupUsedInEmployees", "Cannot delete blood group because it is used in employee records", "لا يمكن حذف فصيلة الدم لأنها مستخدمة في بيانات الموظفين");
+        // City
+        Add("CityUsedInEmployees", "Cannot delete City because it is used in employee records", "لا يمكن حذف المدينة لأنها مستخدمة في بيانات الموظفين");
+        // Country
+        Add("CountryUsedInCities", "Cannot delete Country because it is used in Cities records", "لا يمكن حذف الدولة لأنها مستخدمة في بيانات المدن");
+        // Currency
+        Add("CurrencyUsedInContract", "Cannot delete Currency because it is used in Contract records", "لا يمكن حذف العملة لأنها مستخدمة في بيانات العقود");
+        // Location
+        Add("LocationUsedInEmployees", "Cannot delete Location because it is used in Employee records", "لا يمكن حذف الموقع لأنه مستخدم في بيانات الموظفين");
+        // Region
+        Add("RegionUsedInCountries", "Cannot delete Region because it is used in Countries records", "لا يمكن حذف المنطقة لأنه مستخدم في بيانات الدول");
+        // Sector
+        Add("SectorUsedInEmployees", "Cannot delete Sector because it is used in employee records", "لا يمكن حذف القطلاع لأنه مستخدم في بيانات الموظفين");
 
         // Sponsor
         Add("SponsorUsedInEmployees", "Cannot delete sponsor because it is used in employee records", "لا يمكن حذف الكفيل لأنه مستخدم في بيانات الموظفين");
 
         // Profession
-        Add("ProfessionUsedInEmployees", "Cannot delete profession because it is used in employee records", "لا يمكن حذف المهنة لأنها مستخدمة في بيانات الموظفين");
-        Add("ProfessionUsedInContracts", "Cannot delete profession because it is used in contracts", "لا يمكن حذف المهنة لأنها مستخدمة في العقود");
+         Add("ProfessionUsedInContracts", "Cannot delete profession because it is used in contracts", "لا يمكن حذف المهنة لأنها مستخدمة في العقود");
 
         // Contract Type
         Add("ContractTypeUsedInContracts", "Cannot delete contract type because it is used in contracts", "لا يمكن حذف نوع العقد لأنه مستخدم في العقود");

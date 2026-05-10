@@ -59,9 +59,8 @@ namespace Application.System.HRS.Basics.HICompanies.Commands
                             arbName4S: classDto.ArbName4S,
                             remarks: classDto.Remarks,
                             companyAmount: classDto.CompanyAmount,
-                            employeeAmount: classDto.EmployeeAmount,
-                            regComputerId: classDto.RegComputerId
-                        );
+                            employeeAmount: classDto.EmployeeAmount
+                         );
                         entity.AddClass(hiCompanyClass);
                     }
                 }

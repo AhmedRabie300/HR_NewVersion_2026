@@ -94,7 +94,7 @@ namespace Infrastructure
             services.AddScoped<ILookupService, LookupService>();
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IHICompanyRepository, HICompanyRepository>();
-            services.AddScoped<IContractsTypeRepository, ContractsTypeRepository>();
+            services.AddScoped<IContractTypeRepository, ContractTypeRepository>();
             services.AddScoped<IGradeRepository, GradeRepository>();
             services.AddScoped<IGradeStepRepository, GradeStepRepository>();
             services.AddScoped<IEmployeeClassRepository, EmployeeClassRepository>();
