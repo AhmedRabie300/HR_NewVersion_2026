@@ -5,7 +5,6 @@
         int? FromMin,
         int? ToMin,
         int? PunishPCT,
-        string? Remarks,
-        int? RegComputerId
-    );
+        string? Remarks
+     );
 }
