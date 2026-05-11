@@ -57,7 +57,6 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionsGroup.Que
                     CompanyId: entity.CompanyId,
                     CompanyName: entity.Company?.EngName,
                     Remarks: entity.Remarks,
-                    RegComputerId: entity.RegComputerId,
                     RegDate: entity.RegDate,
                     CancelDate: entity.CancelDate,
                     IsActive: entity.IsActive()

@@ -21,7 +21,6 @@
         bool? IsMANF,
         bool? IsSYS,
         int? RegUserId,
-        int? regComputerId,
         DateTime RegDate,
         DateTime? CancelDate,
         bool IsActive  

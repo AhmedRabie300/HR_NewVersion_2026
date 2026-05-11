@@ -6,7 +6,6 @@
         string? ArbName,
         string? ArbName4S,
         string? Remarks,
-        int? RegComputerId,
         int? ExtraTransactionId,
         bool? ExcludedFromSSRequests,
         List<CreateEndOfServiceRuleDto> Rules

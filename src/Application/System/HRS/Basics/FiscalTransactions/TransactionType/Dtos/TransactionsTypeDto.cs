@@ -27,7 +27,6 @@
         int CompanyId,
         string? Remarks,
         int RegUserId,
-        int? RegComputerId,
         bool? HasInsuranceTiers,
         DateTime RegDate,
         DateTime? CancelDate,

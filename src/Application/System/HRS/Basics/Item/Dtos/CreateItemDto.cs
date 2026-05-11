@@ -10,7 +10,6 @@
         DateTime? ExpiryDate,
         string? LicenseNumber,
         bool? IsFromAssets,
-        string? Remarks,
-        int? RegComputerId
+        string? Remarks
     );
 }

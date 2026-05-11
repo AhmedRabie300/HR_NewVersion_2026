@@ -50,9 +50,8 @@ namespace Application.UARbac.Modules.Commands
                     fiscalYearDependant: request.Data.FiscalYearDependant,
                     rank: request.Data.Rank,
                     remarks: request.Data.Remarks,
-                    regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.regComputerId
-                );
+                    regUserId: request.Data.RegUserId
+                 );
 
                 await _repo.AddAsync(module);
                 await _repo.SaveChangesAsync(cancellationToken);

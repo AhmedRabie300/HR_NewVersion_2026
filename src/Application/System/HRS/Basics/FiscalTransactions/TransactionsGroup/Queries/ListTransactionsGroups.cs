@@ -35,7 +35,6 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionsGroup.Que
                     CompanyId: x.CompanyId,
                     CompanyName: x.Company?.EngName,
                     Remarks: x.Remarks,
-                    RegComputerId: x.RegComputerId,
                     RegDate: x.RegDate,
                     CancelDate: x.CancelDate,
                     IsActive: x.IsActive()

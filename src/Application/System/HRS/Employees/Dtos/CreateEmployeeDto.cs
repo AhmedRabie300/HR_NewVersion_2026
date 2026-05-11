@@ -32,7 +32,6 @@
         DateTime? JoinDate,
         DateTime? ExcludeDate,
         string? Remarks,
-        int? RegComputerId,
         int? BranchId,
         int? SponsorId,
         string? Email,
@@ -67,7 +66,7 @@
         string? AddressAsPerContract,
         bool? InsertRequestsForAnotherEmployee,
         bool? IsSocialInsuranceIncluded,
-        int? ContractTypeId,     // For prefix generation (if PrefixType = 4)
-        int? PositionId          // For prefix generation (if PrefixType = 3)
+        int? ContractTypeId,      
+        int? PositionId           
     );
 }

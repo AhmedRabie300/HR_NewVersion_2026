@@ -14,7 +14,6 @@
         string? EmpNameSeparator,
         string? Remarks,
         int? RegUserId,
-        int? regComputerId,
         int? PrepareDay,
         string? DefaultTheme,
         bool? VacationIsAccum,

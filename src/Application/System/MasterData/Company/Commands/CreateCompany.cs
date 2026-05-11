@@ -55,7 +55,6 @@ namespace Application.System.MasterData.Company.Commands
                     empNameSeparator: request.Data.EmpNameSeparator,
                     remarks: request.Data.Remarks,
                     regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.regComputerId,
                     prepareDay: request.Data.PrepareDay,
                     defaultTheme: request.Data.DefaultTheme,
                     vacationIsAccum: request.Data.VacationIsAccum,

@@ -6,7 +6,6 @@
         string? ArbName,
         string? ArbName4S,
         bool? IsSpecial,
-        string? Remarks,
-        int? RegComputerId
+        string? Remarks
     );
 }

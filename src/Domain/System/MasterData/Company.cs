@@ -58,8 +58,7 @@ namespace Domain.System.MasterData
             string? empNameSeparator,
             string? remarks,
             int? regUserId,
-            int? regComputerId,
-            int? prepareDay,
+             int? prepareDay,
             string? defaultTheme,
             bool? vacationIsAccum,
             bool? hasSequence,
@@ -90,8 +89,7 @@ namespace Domain.System.MasterData
             EmpNameSeparator = empNameSeparator;
             Remarks = remarks;
             RegUserId = regUserId;
-            regComputerId = regComputerId;
-            PrepareDay = prepareDay;
+             PrepareDay = prepareDay;
             DefaultTheme = defaultTheme;
             VacationIsAccum = vacationIsAccum;
             HasSequence = hasSequence;

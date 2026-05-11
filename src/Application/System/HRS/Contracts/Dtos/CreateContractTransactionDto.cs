@@ -8,7 +8,6 @@
         byte? PaidAtVacation,
         bool? OnceAtPeriod,
         string? Remarks,
-        int? RegComputerId,
         DateTime? ActiveDate,
         string? ActiveDateD
     );

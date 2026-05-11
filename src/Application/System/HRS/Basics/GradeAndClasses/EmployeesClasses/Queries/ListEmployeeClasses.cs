@@ -51,7 +51,6 @@ namespace Application.System.HRS.Basics.GradesAndClasses.EmployeesClasses.Querie
                     CompanyName: lang == 2 ? x.Company?.ArbName : x.Company?.EngName,
                     Remarks: x.Remarks,
                     RegUserId: x.RegUserId,
-                    RegComputerId: x.RegComputerId,
                     CancelDate: x.CancelDate,
                     NonPermiLatTransaction: x.NonPermiLatTransaction,
                     PerDailyDelaying: x.PerDailyDelaying,

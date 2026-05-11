@@ -32,8 +32,8 @@ namespace Domain.UARbac
             bool? allowEdit,
             bool? allowDelete,
             bool? allowPrint,
-            int? regUserId,
-            int? regComputerId)
+            int? regUserId
+            )
         {
             FormId = formId;
             GroupId = groupId;
@@ -44,8 +44,7 @@ namespace Domain.UARbac
             AllowDelete = allowDelete;
             AllowPrint = allowPrint;
             RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.Now;
+             RegDate = DateTime.Now;
         }
 
         public void UpdatePermissions(

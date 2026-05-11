@@ -7,7 +7,6 @@
         string? ArbName4S,
         int? Level,
         float? RequiredYears,
-        string? Remarks,
-        int? regComputerId
+        string? Remarks
     );
 }

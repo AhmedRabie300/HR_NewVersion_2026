@@ -5,7 +5,6 @@
         int? GroupId,
         int? UserId,
         bool? CanView,
-        int? RegUserId,
-        int? regComputerId
-    );
+        int? RegUserId
+     );
 }

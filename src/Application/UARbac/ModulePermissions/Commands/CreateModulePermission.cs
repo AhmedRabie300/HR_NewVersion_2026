@@ -77,9 +77,8 @@ namespace Application.UARbac.ModulePermissions.Commands
                     groupId: request.Data.GroupId,
                     userId: request.Data.UserId,
                     canView: request.Data.CanView,
-                    regUserId: request.Data.RegUserId,
-                    regComputerId: request.Data.regComputerId
-                );
+                    regUserId: request.Data.RegUserId
+                 );
 
                 await _repo.AddAsync(permission);
                 await _repo.SaveChangesAsync(cancellationToken);

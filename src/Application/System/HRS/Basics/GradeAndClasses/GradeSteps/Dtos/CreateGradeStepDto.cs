@@ -8,7 +8,6 @@
         int GradeId,
         int? Step,
         string? Remarks,
-        int? RegComputerId,
         List<CreateGradeStepTransactionDto> Transactions
     );
 }

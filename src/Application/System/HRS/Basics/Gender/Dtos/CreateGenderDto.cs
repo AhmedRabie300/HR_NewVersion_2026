@@ -3,7 +3,6 @@
     public sealed record CreateGenderDto(
         string? Code,
         string? EngName,
-        string? ArbName,
-        int? regComputerId
+        string? ArbName
     );
 }

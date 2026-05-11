@@ -65,7 +65,6 @@ namespace Application.System.HRS.Basics.FiscalTransactions.TransactionType.Queri
                     CompanyId: x.CompanyId,
                     Remarks: x.Remarks,
                     RegUserId: x.RegUserId,
-                    RegComputerId: x.RegComputerId,
                     HasInsuranceTiers: x.HasInsuranceTiers,
                     RegDate: x.RegDate,
                     CancelDate: x.CancelDate,

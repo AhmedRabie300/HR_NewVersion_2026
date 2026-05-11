@@ -89,8 +89,7 @@ namespace Application.UARbac.FormPermissions.Commands
                     request.Data.AllowEdit,
                     request.Data.AllowDelete,
                     request.Data.AllowPrint,
-                    request.Data.RegUserId,
-                    request.Data.regComputerId
+                    request.Data.RegUserId
                 );
 
                 await _repo.AddAsync(permission);

@@ -3,7 +3,7 @@
 namespace Application.System.HRS.Contracts.Dtos
 {
     public sealed record CreateContractDto(
-        int? Number,  // Optional - will be generated if null
+        int? Number,   
         int ContractTypeId,
         int EmployeeClassId,
         int EmployeeId,
@@ -14,7 +14,6 @@ namespace Application.System.HRS.Contracts.Dtos
         int? GradeStepId,
         int? CurrencyId,
         string? Remarks,
-        int? RegComputerId,
         int? ContractPeriod,
         List<CreateContractTransactionDto>? Transactions
     );

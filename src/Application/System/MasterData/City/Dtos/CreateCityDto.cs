@@ -9,7 +9,6 @@
         int? RegionId,
         string? TimeZone,
         int? CountryId,
-        string? Remarks,
-        int? RegComputerId
+        string? Remarks
     );
 }

@@ -9,7 +9,6 @@
         bool? AllowEdit,
         bool? AllowDelete,
         bool? AllowPrint,
-        int? RegUserId,
-        int? regComputerId
-    );
+        int? RegUserId
+        );
 }

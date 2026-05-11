@@ -63,8 +63,7 @@ namespace Application.UARbac.Menus.Commands
                     request.Data.IsHide,
                     request.Data.Image,
                     request.Data.ViewType,
-                    request.Data.RegUserId,
-                    request.Data.regComputerId
+                    request.Data.RegUserId
                 );
 
                 await _repo.AddAsync(menu);

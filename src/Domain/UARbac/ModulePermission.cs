@@ -25,8 +25,8 @@ namespace Domain.UARbac
             int? groupId,
             int? userId,
             bool? canView,
-            int? regUserId,
-            int? regComputerId)
+            int? regUserId 
+            )
         {
              if (!groupId.HasValue && !userId.HasValue)
                 throw new ArgumentException("Either GroupId or UserId must be provided");
@@ -39,7 +39,6 @@ namespace Domain.UARbac
             UserId = userId;
             CanView = canView;
             RegUserId = regUserId;
-            regComputerId = regComputerId;
             RegDate = DateTime.Now;
         }
 

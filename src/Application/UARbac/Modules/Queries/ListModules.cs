@@ -42,7 +42,6 @@ namespace Application.UARbac.Modules.Queries
                     IsMANF: m.IsMANF,
                     IsSYS: m.IsSYS,
                     RegUserId: m.RegUserId,
-                    regComputerId: m.regComputerId,
                     RegDate: m.RegDate,
                     CancelDate: m.CancelDate,
                     IsActive: m.IsActive()

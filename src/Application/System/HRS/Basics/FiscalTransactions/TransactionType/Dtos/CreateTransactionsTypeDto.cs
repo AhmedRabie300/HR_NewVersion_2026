@@ -24,7 +24,6 @@
         bool? IsDistributable,
         bool? IsAllowPosting,
         string? Remarks,
-        int? RegComputerId,
         bool? HasInsuranceTiers
     );
 }

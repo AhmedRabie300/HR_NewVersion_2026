@@ -19,7 +19,6 @@
         bool? IsHR,
         bool? IsMANF,
         bool? IsSYS,
-        int? RegUserId,
-        int? regComputerId
-    );
+        int? RegUserId
+     );
 }

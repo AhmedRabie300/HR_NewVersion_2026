@@ -22,8 +22,7 @@ namespace API.System.HRS.Employees
                 var result = await mediator.Send(new ListEmployees.Query(), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetAllEmployees")
-            ;
+            .WithName("GetAllEmployees");
 
             // GET paged
             group.MapGet("/paged", async (
@@ -41,8 +40,7 @@ CancellationToken ct = default) =>
                 return Results.Json(result);
 
             })
-            .WithName("GetPagedEmployees")
-            ;
+            .WithName("GetPagedEmployees");
 
             // GET by id
             group.MapGet("/{id:int}", async (IMediator mediator, int id, CancellationToken ct) =>
@@ -50,8 +48,7 @@ CancellationToken ct = default) =>
                 var result = await mediator.Send(new GetEmployeeById.Query(id), ct);
                 return Results.Ok(result);
             })
-            .WithName("GetEmployeeById")
-            ;
+            .WithName("GetEmployeeById");
 
             // GET by code
             group.MapGet("/by-code/{code}", async (IMediator mediator, string code, CancellationToken ct) =>

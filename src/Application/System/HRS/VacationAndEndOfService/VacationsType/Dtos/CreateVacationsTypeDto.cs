@@ -12,7 +12,6 @@
         bool? IsFromAnnual,
         int? ForSalaryTransaction,
         string? Remarks,
-        int? RegComputerId,
         int? OBalanceTransactionId,
         int? OverDueVacationId,
         float? Stage1Pct,

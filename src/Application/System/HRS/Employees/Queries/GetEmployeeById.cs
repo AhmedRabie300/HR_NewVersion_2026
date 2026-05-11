@@ -83,7 +83,6 @@ namespace Application.System.HRS.Basics.Employees.Queries
                     CompanyName: lang == 2 ? entity.Company?.ArbName : entity.Company?.EngName,
                     Remarks: entity.Remarks,
                     RegUserId: entity.RegUserId,
-                    RegComputerId: entity.RegComputerId,
                     BranchId: entity.BranchId,
                     BranchName: lang == 2 ? entity.Branch?.ArbName : entity.Branch?.EngName,
                     SponsorId: entity.SponsorId,

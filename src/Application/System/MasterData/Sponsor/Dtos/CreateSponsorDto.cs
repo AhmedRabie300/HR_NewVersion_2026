@@ -6,7 +6,6 @@
         string? ArbName,
         string? ArbName4S,
         int? SponsorNumber,
-        string? Remarks,
-        int? RegComputerId
-    );
+        string? Remarks
+     );
 }

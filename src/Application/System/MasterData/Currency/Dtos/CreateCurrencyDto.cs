@@ -12,7 +12,6 @@
         string? DecimalArbName,
         decimal? Amount,
         int? NoDecimalPlaces,
-        string? Remarks,
-        int? regComputerId
+        string? Remarks
     );
 }

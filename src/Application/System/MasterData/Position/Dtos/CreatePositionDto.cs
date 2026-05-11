@@ -11,7 +11,6 @@
         int? EmployeesNo,
         bool? ApplyValidation,
         string? PositionBudget,
-        int? AppraisalTypeGroupId,
-        int? RegComputerId
+        int? AppraisalTypeGroupId
     );
 }

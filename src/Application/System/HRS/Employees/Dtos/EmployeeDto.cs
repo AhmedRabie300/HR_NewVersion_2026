@@ -46,7 +46,6 @@ namespace Application.System.HRS.Employees.Dtos
         string? CompanyName,
         string? Remarks,
         int RegUserId,
-        int? RegComputerId,
         int? BranchId,
         string? BranchName,
         int? SponsorId,

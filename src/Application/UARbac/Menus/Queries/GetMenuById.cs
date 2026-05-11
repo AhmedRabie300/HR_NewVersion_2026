@@ -55,7 +55,6 @@ namespace Application.UARbac.Menus.Queries
                     Image: menu.Image,
                     ViewType: menu.ViewType,
                     RegUserId: menu.RegUserId,
-                    regComputerId: menu.regComputerId,
                     RegDate: menu.RegDate,
                     CancelDate: menu.CancelDate,
                     ChildrenCount: menu.Children?.Count ?? 0

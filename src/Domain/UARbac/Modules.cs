@@ -46,8 +46,8 @@ namespace Domain.UARbac
             bool? fiscalYearDependant,
             int? rank,
             string? remarks,
-            int? regUserId,
-            int? regComputerId)
+            int? regUserId 
+            )
         {
             Code = code;
             Prefix = prefix;
@@ -60,7 +60,6 @@ namespace Domain.UARbac
             Rank = rank;
             Remarks = remarks;
             RegUserId = regUserId;
-            regComputerId = regComputerId;
             RegDate = DateTime.Now;
 
              IsAR = false;

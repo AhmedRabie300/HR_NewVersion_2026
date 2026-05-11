@@ -15,7 +15,6 @@ namespace Application.UARbac.Menus.Dtos
         bool? IsHide,
         string? Image,
         int? ViewType,
-        int? RegUserId,
-        int? regComputerId
-    );
+        int? RegUserId
+     );
 }

@@ -6,7 +6,6 @@
         float? AmountPercent,
         string? Formula,
         string? ExtraDedFormula,
-        string? Remarks,
-        int? RegComputerId
-    );
+        string? Remarks
+        );
 }

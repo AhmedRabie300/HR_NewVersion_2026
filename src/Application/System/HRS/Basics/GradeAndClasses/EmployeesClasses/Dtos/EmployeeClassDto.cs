@@ -24,7 +24,6 @@ namespace Application.System.HRS.Basics.GradeAndClasses.EmployeesClasses.Dtos
         string? CompanyName,
         string? Remarks,
         int RegUserId,
-        int? RegComputerId,
         DateTime? CancelDate,
         int? NonPermiLatTransaction,
         int? PerDailyDelaying,

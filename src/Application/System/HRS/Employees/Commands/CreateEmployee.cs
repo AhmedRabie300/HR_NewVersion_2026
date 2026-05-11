@@ -115,7 +115,6 @@ namespace Application.System.HRS.Basics.Employees.Commands
                     joinDate: request.Data.JoinDate,
                     excludeDate: request.Data.ExcludeDate,
                     remarks: request.Data.Remarks,
-                    regComputerId: request.Data.RegComputerId,
                     branchId: request.Data.BranchId,
                     sponsorId: request.Data.SponsorId,
                     email: request.Data.Email,

@@ -45,8 +45,8 @@ namespace Domain.UARbac
             bool? isHide,
             string? image,
             int? viewType,
-            int? regUserId,
-            int? regComputerId)
+            int? regUserId
+            )
         {
             Code = code;
             EngName = engName;
@@ -62,8 +62,7 @@ namespace Domain.UARbac
             Image = image;
             ViewType = viewType;
             RegUserId = regUserId;
-            regComputerId = regComputerId;
-            RegDate = DateTime.Now;
+             RegDate = DateTime.Now;
         }
 
         // Update methods
